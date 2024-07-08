@@ -3,6 +3,7 @@ import React from "react";
 const Header = () => {
   return (
     <header className="relative w-full bg-white px-4">
+      {/* Main header content */}
       <div className="flex items-center justify-between h-24">
         <div className="text-2xl font-abril-fatface text-primary">
           Someone to Check Out
@@ -16,18 +17,25 @@ const Header = () => {
         </div>
       </div>
 
-//sub header section containg elements to be below main header 
-      <div className="mt-4">
-        <div className="flex space-x-4 justify-center">
+      {/* Horizontal divider above sub-header content */}
+      <div className="border-t border-gray-300" />
+
+      {/* Sub-header content */}
+      <div className="flex items-center justify-between mt-2">
+        <div className="flex space-x-4">
           <Text text="Properties" />
           <Text text="About" />
           <Text text="Contact Us" />
           <Text text="Request Viewing" />
+        </div>
+        <div className="flex space-x-4">
           <Button label="Post Listing" customStyle="border border-teal-400 bg-teal-100 text-gray-900" />
           <Icon />
         </div>
-        <div className="mt-4 border-t border-gray-300" />
       </div>
+
+      {/* Horizontal divider below sub-header content */}
+      <div className="mt-2 border-t border-gray-300" />
     </header>
   );
 };
