@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between">
           <div>
-            <FooterText text="Someone to Check Out" customStyle="text-4xl font-abril-fatface mb-4" />
+            <FooterText text="Someone to Check Out" customStyle="text-32px font-abril-fatface mb-4" />
             <FooterText text="Your number one site for making the renting process as stressfree and easy as possible." customStyle="text-base text-gray-700 mb-4" />
             <FooterInput placeholder="Enter your e-mail" />
           </div>
