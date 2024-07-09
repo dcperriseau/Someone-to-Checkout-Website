@@ -20,7 +20,8 @@ module.exports = {
         textSecondary: '#737373', //light grey text color
         textTeritary: '#212121', // price text color, near black color
         blueTextColor: '#47cad2', //turquoise font color
-        webTitleFontColor: '#2d6064' //Dark blue/indago website header font color
+        webTitleFontColor: '#2d6064', //Dark blue/indago website header font color
+        bubbleIconColor: '#ebf9fa', //light blue color for bubble icon 
 
       },
       fontFamily: {
@@ -32,6 +33,12 @@ module.exports = {
         '40px' : ['40px', '52 px'], //font size and line height for Contact Us page Title
         '20px': ['20px', '28px'],
         '16px': ['16px', '24px'],
+      },
+      lineHeight: {
+        '22px': '22px',
+      },
+      boxShadow: {
+        'custom-light' : '0px 2px 8px rgba(0,0,0,0.12)', //custom shadowing for picture 
       },
     },
   },
