@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ContactUs from './pages/Contact Page/ContactPage';
+import PostListings from './pages/PostListings';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
         <Header />
         <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>
-          <Route path="/" element={<ContactUs />} />
+          <Route path="/" element={<PostListings />} />
           </Routes>
         </main>
         <Footer />

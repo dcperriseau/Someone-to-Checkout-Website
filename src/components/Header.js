@@ -8,9 +8,6 @@ const Header = () => {
         <div className="text-2xl font-abril-fatface text-primary">
           Someone to Check Out
         </div>
-        <div className="relative w-24 h-14 rounded-lg bg-center bg-cover bg-no-repeat"
-          style={{ backgroundImage: 'url(https://assets.api.uizard.io/api/cdn/stream/c382e6ca-8999-42a9-b1e0-3de638bcce5d.png)' }}>
-        </div>
         <div className="flex space-x-4">
           <Button label="Viewer's Hub" customStyle="border border-gray-900 bg-white text-gray-900" />
           <Button label="Your Profile" customStyle="bg-gray-900 text-white" />
