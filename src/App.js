@@ -1,24 +1,26 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ContactUs from './pages/Contact Page/ContactPage';
 import PostListings from './pages/PostListings';
+import SuggestListing from './pages/SuggestListing';
 import AboutUsPage from './pages/AboutUsPage';
 
 function App() {
   return (
-    <Router>
-      <div className="App flex flex-col min-h-screen">
+    <div className="App flex flex-col min-h-screen">
+      <Router>
         <Header />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <div className="flex-grow">
           <Routes>
-          <Route path="/" element={<AboutUsPage />} />
+            <Route path='/' element={<AboutUsPage />} />
+            <Route path="/postlistings" element={<PostListings />} />
+            <Route path="/suggestlisting" element={<SuggestListing />} />
           </Routes>
-        </main>
+        </div>
         <Footer />
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
 }
 
