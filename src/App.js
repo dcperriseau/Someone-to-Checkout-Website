@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import PostListings from './pages/PostListings';
 import SuggestListing from './pages/SuggestListing';
-import AboutUsPage from './pages/AboutUsPage';
+import ShoppingBasket from './pages/ShoppingBasket';
 
 function App() {
   return (
@@ -13,9 +13,9 @@ function App() {
         <Header />
         <div className="flex-grow">
           <Routes>
-            <Route path='/' element={<AboutUsPage />} />
             <Route path="/postlistings" element={<PostListings />} />
             <Route path="/suggestlisting" element={<SuggestListing />} />
+            <Route path="/shoppingbasket" element={<ShoppingBasket />} />
           </Routes>
         </div>
         <Footer />
