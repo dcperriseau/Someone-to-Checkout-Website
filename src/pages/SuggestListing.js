@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PostListings = () => {
+const SuggestedListing = () => {
   return (
     <div className="container mx-auto px-4">
       <header className="w-full">
@@ -22,4 +22,4 @@ const PostListings = () => {
   );
 };
 
-export default PostListings;
+export default SuggestedListing;
