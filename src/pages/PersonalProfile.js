@@ -56,9 +56,9 @@ const PersonalProfile = () => {
 
   return (
     <div className="w-full overflow-hidden font-red-hat-display">
-      <div className="relative w-full p-3 ml-4">
+      <div className="relative w-full p-3 md:ml-4">
         <button className="absolute z-10 p-2 font-light text-gray-500 top-5 left-5">&lt;&nbsp;&nbsp;Back</button>
-        <div className="flex flex-row items-start mt-12 md:justify-start">
+        <div className="flex flex-col items-start mt-12 md:flex-row md:justify-start">
           <div className="relative w-32 h-32 md:w-40 md:h-40">
             <img
               src={process.env.PUBLIC_URL + "/personalProfile/propic1.png"}
@@ -66,23 +66,23 @@ const PersonalProfile = () => {
               className="object-cover w-full h-full rounded-full"
             />
           </div>
-          <div className="flex flex-col items-start w-full mt-0 ml-4 md:ml-8 md:w-auto">
-            <h1 className="text-3xl font-bold md:text-5xl whitespace-nowrap text-textTeritary" style={{ fontSize: '46px' }}>Dominique Perriseau</h1>
+          <div className="flex flex-col items-start w-full mt-4 md:mt-0 md:ml-8 md:w-auto">
+            <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>Dominique Perriseau</h1>
             <p className="text-xl md:text-2xl text-textTeritary" style={{ fontSize: '16px' }}>Los Angeles, CA</p>
           </div>
         </div>
-        <div className="flex mt-4 ml-4 space-x-2">
-          <button className="flex items-center justify-center min-w-[160px] px-8 py-2 text-white bg-[#47CAD2] rounded-full">Request a Viewing</button>
-          <button className="flex items-center justify-center min-w-[160px] px-16 py-2 text-textTeritary border border-black rounded-full">Edit Profile</button>
+        <div className="flex flex-col mt-4 space-y-2 md:flex-row md:space-y-0 md:ml-4 md:space-x-2">
+          <button className="flex items-center justify-center min-w-[160px] max-w-[200px] px-8 py-2 text-white bg-[#47CAD2] rounded-full">Request a Viewing</button>
+          <button className="flex items-center justify-center min-w-[160px] max-w-[200px] px-8 py-2 text-textTeritary border border-black rounded-full">Edit Profile</button>
         </div>
       </div>
-      <div className="w-full px-10 py-5">
+      <div className="w-full px-5 py-5 md:px-10">
         <h2 className="mb-5 text-2xl font-semibold text-textTeritary">Saved Listings</h2>
-        <div className="flex space-x-6 overflow-x-auto flex-nowrap">
+        <div className="flex space-x-4 overflow-x-auto md:space-x-6 flex-nowrap">
           {savedListings.map((item, index) => (
             <div key={index} className="flex-shrink-0 mb-5">
               <button className="focus:outline-none">
-                <img src={item.image} alt={item.title} className="w-64 h-64 mb-2 rounded-md" />
+                <img src={item.image} alt={item.title} className="w-48 h-48 mb-2 rounded-md md:w-64 md:h-64" />
               </button>
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-lg font-thin text-textPrimary">{item.title}</h2>
@@ -97,11 +97,11 @@ const PersonalProfile = () => {
           ))}
         </div>
         <h2 className="mt-10 mb-5 text-2xl font-semibold text-textTeritary">Listings You've Had Us View</h2>
-        <div className="flex space-x-6 overflow-x-auto flex-nowrap">
+        <div className="flex space-x-4 overflow-x-auto md:space-x-6 flex-nowrap">
           {viewedListings.map((item, index) => (
             <div key={index} className="flex-shrink-0 mb-5">
               <button className="focus:outline-none">
-                <img src={item.image} alt={item.description} className="w-64 mb-2 rounded-md h-36" style={{ width: '256px', height: '148px' }} />
+                <img src={item.image} alt={item.description} className="w-48 h-24 mb-2 rounded-md md:w-64 md:h-36" style={{ width: '256px', height: '148px' }} />
               </button>
               <p className="text-lg font-thin text-textPrimary">{item.description}</p>
             </div>
@@ -113,5 +113,3 @@ const PersonalProfile = () => {
 };
 
 export default PersonalProfile;
-
-
