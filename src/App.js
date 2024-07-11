@@ -5,10 +5,12 @@ import Footer from './components/Footer';
 import PostListings from './pages/PostListings';
 import SuggestListing from './pages/SuggestListing';
 import ShoppingBasket from './pages/ShoppingBasket';
+import PersonalProfile from './pages/PersonalProfile';
+import './index.css';
 
 function App() {
   return (
-    <div className="App flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen App">
       <Router>
         <Header />
         <div className="flex-grow">
@@ -16,6 +18,7 @@ function App() {
             <Route path="/postlistings" element={<PostListings />} />
             <Route path="/suggestlisting" element={<SuggestListing />} />
             <Route path="/shoppingbasket" element={<ShoppingBasket />} />
+            <Route path="/personalprofile" element={<PersonalProfile />} />
           </Routes>
         </div>
         <Footer />

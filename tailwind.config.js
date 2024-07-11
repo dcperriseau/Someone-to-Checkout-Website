@@ -21,7 +21,6 @@ module.exports = {
         textTeritary: '#212121', // price text color, near black color
         blueTextColor: '#47cad2', //turquoise font color
         webTitleFontColor: '#2d6064' //Dark blue/indago website header font color
-
       },
       fontFamily: {
         'abril-fatface': ['"Abril Fatface"', 'cursive'],
