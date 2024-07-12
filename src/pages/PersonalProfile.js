@@ -63,26 +63,31 @@ const PersonalProfile = () => {
         </div>
       </div>
       <div className="w-full px-5 py-5 md:px-10">
-        <h2 className="mb-5 text-2xl font-semibold text-textTeritary">Saved Listings</h2>
-        <div className="flex flex-wrap -mx-2">
-          {savedListings.map((item, index) => (
-            <div key={index} className="w-48 px-2 mb-5 md:w-64">
-              <button className="focus:outline-none">
-                <img src={item.image} alt={item.title} className="w-full h-48 mb-2 rounded-md md:h-64" />
-              </button>
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-lg font-thin text-textPrimary">{item.title}</h2>
-                <span className="flex items-center space-x-2 text-textPrimary">
-                  {item.hearts}
-                  <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
-                </span>
-              </div>
-              <p className="mb-1 font-thin text-textSecondary">{item.location}</p>
-              <p className="mb-1 text-xl font-bold text-textTeritary">{item.price}</p>
-            </div>
-          ))}
+  <h2 className="mb-5 text-2xl font-semibold text-textTeritary">Saved Listings</h2>
+  <div className="flex flex-wrap justify-start -mx-2">
+    {savedListings.map((item, index) => (
+      <div key={index} className="w-1/2 px-2 mb-5 md:w-1/3 lg:w-1/5">
+        <button className="w-full focus:outline-none">
+          <img src={item.image} alt={item.title} className="object-cover w-full h-48 mb-2 rounded-md md:h-64" />
+        </button>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-lg font-thin text-textPrimary">{item.title}</p>
+          <span className="flex items-center space-x-2 text-textPrimary">
+              {item.hearts}
+              <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
+            </span>
         </div>
+        <p className="mb-1 font-thin text-textSecondary">{item.location}</p>
+        <p className="mb-1 text-xl font-bold text-textTeritary">{item.price}</p>
       </div>
+    ))}
+    {[...Array(5 - savedListings.length)].map((_, index) => (
+      <div key={`placeholder-${index}`} className="invisible w-1/2 px-2 mb-5 md:w-1/3 lg:w-1/5">
+        Placeholder
+      </div>
+    ))}
+  </div>
+</div>
     </div>
   );
 };
