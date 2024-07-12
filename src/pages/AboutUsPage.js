@@ -2,7 +2,7 @@ import React from 'react';
 
 const AboutUsPage = () => {
   return (
-    <div className="p-8 relative"> {/* Ensure the container is relatively positioned */}
+    <div className="p-8 relative"> 
       <div className="absolute top-[121px] left-[756px] w-[209px] h-[251px]">
         <svg className="text-bubbleIconColor fill-current w-full h-full" viewBox="0 0 24 24">
           <path d="M0 0h24v24H0z" fill="none"></path>
