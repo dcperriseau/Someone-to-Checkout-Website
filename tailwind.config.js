@@ -27,6 +27,7 @@ module.exports = {
       fontFamily: {
         'abril-fatface': ['"Abril Fatface"', 'cursive'],
         'red-hat-display': ['"Red Hat Display"', 'sans-serif'],
+        'roboto': ['Roboto', 'sans-serif'],
       },
       fontSize: {
         '32px' :['32px', '42px'], //font size and line height for footer "Someone To Check Out"

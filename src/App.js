@@ -7,6 +7,8 @@ import SuggestListing from './pages/SuggestListing';
 import ShoppingBasket from './pages/ShoppingBasket';
 import AboutUsPage from './pages/AboutUsPage';
 import ContactUs from './pages/Contact Page/ContactPage';
+import ListingPage from './pages/ListingPage';
+
 
 function App() {
   return (
@@ -15,7 +17,7 @@ function App() {
         <Header />
         <div className="flex-grow">
           <Routes>
-          <Route path="/" element={<AboutUsPage />} />
+          <Route path="/" element={<ListingPage />} />
             <Route path="/postlistings" element={<PostListings />} />
             <Route path="/suggestlisting" element={<SuggestListing />} />
             <Route path="/shoppingbasket" element={<ShoppingBasket />} />
