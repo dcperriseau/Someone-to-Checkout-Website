@@ -39,20 +39,6 @@ const PersonalProfile = () => {
       image: process.env.PUBLIC_URL + "/personalProfile/listimage4.png"
     }
   ];
-  const viewedListings = [
-    {
-      image: process.env.PUBLIC_URL + "/personalProfile/viewedlisting.png",
-      description: 'Viewed on 12/04/23'
-    },
-    {
-      image: process.env.PUBLIC_URL + "/personalProfile/viewedlisting1.png",
-      description: 'Viewed on 12/04/23'
-    },
-    {
-      image: process.env.PUBLIC_URL + "/personalProfile/viewedlisting2.png",
-      description: 'Viewed on 12/04/23'
-    }  
-  ];
 
   return (
     <div className="w-full overflow-hidden font-red-hat-display">
@@ -78,11 +64,11 @@ const PersonalProfile = () => {
       </div>
       <div className="w-full px-5 py-5 md:px-10">
         <h2 className="mb-5 text-2xl font-semibold text-textTeritary">Saved Listings</h2>
-        <div className="flex space-x-4 overflow-x-auto md:space-x-6 flex-nowrap">
+        <div className="flex flex-wrap -mx-2">
           {savedListings.map((item, index) => (
-            <div key={index} className="flex-shrink-0 mb-5">
+            <div key={index} className="w-48 px-2 mb-5 md:w-64">
               <button className="focus:outline-none">
-                <img src={item.image} alt={item.title} className="w-48 h-48 mb-2 rounded-md md:w-64 md:h-64" />
+                <img src={item.image} alt={item.title} className="w-full h-48 mb-2 rounded-md md:h-64" />
               </button>
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-lg font-thin text-textPrimary">{item.title}</h2>
@@ -93,17 +79,6 @@ const PersonalProfile = () => {
               </div>
               <p className="mb-1 font-thin text-textSecondary">{item.location}</p>
               <p className="mb-1 text-xl font-bold text-textTeritary">{item.price}</p>
-            </div>
-          ))}
-        </div>
-        <h2 className="mt-10 mb-5 text-2xl font-semibold text-textTeritary">Listings You've Had Us View</h2>
-        <div className="flex space-x-4 overflow-x-auto md:space-x-6 flex-nowrap">
-          {viewedListings.map((item, index) => (
-            <div key={index} className="flex-shrink-0 mb-5">
-              <button className="focus:outline-none">
-                <img src={item.image} alt={item.description} className="w-48 h-24 mb-2 rounded-md md:w-64 md:h-36" style={{ width: '256px', height: '148px' }} />
-              </button>
-              <p className="text-lg font-thin text-textPrimary">{item.description}</p>
             </div>
           ))}
         </div>
