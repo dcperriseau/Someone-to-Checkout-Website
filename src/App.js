@@ -18,7 +18,7 @@ function App() {
         <Header />
         <div className="flex-grow">
           <Routes>
-          <Route path="/" element={<ContactUs />} />
+          <Route path="/" element={<HomePage />} />
             <Route path="/postlistings" element={<PostListings />} />
             <Route path="/suggestlisting" element={<SuggestListing />} />
             <Route path="/shoppingbasket" element={<ShoppingBasket />} />
