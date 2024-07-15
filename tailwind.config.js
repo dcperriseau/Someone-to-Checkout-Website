@@ -26,6 +26,12 @@ module.exports = {
         'abril-fatface': ['"Abril Fatface"', 'cursive'],
         'red-hat-display': ['"Red Hat Display"', 'sans-serif'],
       },
+      fontSize: {
+        '32px' :['32px', '42px'], //font size and line height for footer "Someone To Check Out"
+        '40px' : ['40px', '52 px'], //font size and line height for Contact Us page Title
+        '20px': ['20px', '28px'],
+        '16px': ['16px', '24px'],
+      },
     },
   },
   plugins: [],
