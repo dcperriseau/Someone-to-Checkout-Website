@@ -6,6 +6,7 @@ import PostListings from './pages/PostListings';
 import SuggestListing from './pages/SuggestListing';
 import ShoppingBasket from './pages/ShoppingBasket';
 import PersonalProfile from './pages/PersonalProfile';
+import PropertyDetails from './pages/PropertyDetails';
 import './index.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/suggestlisting" element={<SuggestListing />} />
             <Route path="/shoppingbasket" element={<ShoppingBasket />} />
             <Route path="/personalprofile" element={<PersonalProfile />} />
+            <Route path="/propertydetails" element={<PropertyDetails />} />
           </Routes>
         </div>
         <Footer />
