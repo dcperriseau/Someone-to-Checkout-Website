@@ -9,8 +9,8 @@ const Header = () => {
           Someone to Check Out
         </div>
         <div className="flex space-x-4">
-          <Button label="Viewer's Hub" customStyle="border border-gray-900 bg-white text-gray-900" />
-          <Button label="Your Profile" customStyle="bg-gray-900 text-white" />
+          <Button label="Log In" customStyle="border border-gray-900 bg-white text-gray-900" />
+          <Button label="Sign Up" customStyle="bg-gray-900 text-white" />
         </div>
       </div>
 

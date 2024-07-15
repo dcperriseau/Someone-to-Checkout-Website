@@ -67,20 +67,20 @@ const PostButton = () => {
   const styles = {
     Button: {
       cursor: 'pointer',
-      width: '509px',
-      height: '91px',
+      width: '306px',
+      height: '72px',
       padding: '0px 8px',
       border: '0',
       boxSizing: 'border-box',
       borderRadius: '100px',
       backgroundColor: '#47cad2',
       color: '#ffffff',
-      fontSize: '32px',
+      fontSize: '27px',
       fontFamily: 'Red Hat Display',
       fontWeight: '500',
       lineHeight: '42px',
       outline: 'none',
-      marginTop: '20px', // Add margin to separate from the previous section
+      marginTop: '45px',
     },
   };
 

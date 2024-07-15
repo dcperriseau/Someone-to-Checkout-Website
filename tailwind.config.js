@@ -22,6 +22,7 @@ module.exports = {
         blueTextColor: '#47cad2', //turquoise font color
         webTitleFontColor: '#2d6064', //Dark blue/indago website header font color
         bubbleIconColor: '#ebf9fa', //light blue color for bubble icon 
+        black: '#212121',
 
       },
       fontFamily: {
