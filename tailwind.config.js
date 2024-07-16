@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      spacing: {
+        '3p': '10.7%', // Define custom spacing values
+      },
       colors: {
         primary: '#2d6064', //white background color
         secondary: '#f9f9f9', // light grey background color
