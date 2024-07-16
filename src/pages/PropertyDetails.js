@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import Heart from '../components/Heart';
+import Icon from '../components/ThreeDots';
+import BackButton from '../components/BackButton';
+import Modal from '../components/DetailsModel'; 
 
 const PropertyDetails = () => {
   const [isHearted, setIsHearted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const availableTimes = [
     { day: 'Sunday', time: '10:30am - 3:00pm' },
@@ -13,10 +17,10 @@ const PropertyDetails = () => {
   ];
 
   const images = [
-    { src: process.env.PUBLIC_URL + "/propertyDetails/propertypic1.png", alt: 'Bathroom' },
+    { src: process.env.PUBLIC_URL + "/propertyDetails/propertypic4.png", alt: 'Bathroom' },
     { src: process.env.PUBLIC_URL + "/propertyDetails/propertypic2.png", alt: 'Bedroom' },
     { src: process.env.PUBLIC_URL + "/propertyDetails/propertypic3.png", alt: 'Living Room' },
-    { src: process.env.PUBLIC_URL + "/propertyDetails/propertypic4.png", alt: 'Kitchen' }
+    { src: process.env.PUBLIC_URL + "/propertyDetails/propertypic1.png", alt: 'Kitchen' }
   ];
 
   const listingDetails = {
@@ -24,21 +28,21 @@ const PropertyDetails = () => {
     price: '$1,900/Month',
     user: {
       name: 'Eric M.',
-      profilePic: process.env.PUBLIC_URL + "/propertyDetails/profile-pic.jpg"
+      profilePic: process.env.PUBLIC_URL + "/propertyDetails/propic.png"
     },
     listedOn: '06/12/2024',
     updatedOn: '07/03/2024',
     description: 'I am subletting a super charming and cute apartment in Silverlake for 5 months. The unit has in-unit washing and drying as well as a dishwasher.',
     location: '123 Main Street, Silverlake',
     unitDetails: [
-      { detail: 'Apartment', icon: process.env.PUBLIC_URL + '/propertyDetails/apartment-icon.png' },
-      { detail: '1 Bed, 2 Bath', icon: process.env.PUBLIC_URL + '/propertyDetails/bed-bath-icon.png' },
-      { detail: 'Central AC', icon: process.env.PUBLIC_URL + '/propertyDetails/ac-icon.png' },
-      { detail: 'Natural Lighting', icon: process.env.PUBLIC_URL + '/propertyDetails/lighting-icon.png' },
-      { detail: 'In-unit laundry', icon: process.env.PUBLIC_URL + '/propertyDetails/laundry-icon.png' },
-      { detail: 'Street parking', icon: process.env.PUBLIC_URL + '/propertyDetails/parking-icon.png' },
-      { detail: 'Furnished', icon: process.env.PUBLIC_URL + '/propertyDetails/furnished-icon.png' },
-      { detail: '3 month sublet', icon: process.env.PUBLIC_URL + '/propertyDetails/sublet-icon.png' }
+      { detail: 'Apartment', icon: process.env.PUBLIC_URL + '/propertyDetails/Apartment.png' },
+      { detail: '1 Bed, 2 Bath', icon: process.env.PUBLIC_URL + '/propertyDetails/Bed:Bath.png' },
+      { detail: 'Central AC', icon: process.env.PUBLIC_URL + '/propertyDetails/AC.png' },
+      { detail: 'Natural Lighting', icon: process.env.PUBLIC_URL + '/propertyDetails/naturalLighting.png' },
+      { detail: 'In-unit laundry', icon: process.env.PUBLIC_URL + '/propertyDetails/Laundry.png' },
+      { detail: 'Street parking', icon: process.env.PUBLIC_URL + '/propertyDetails/StreetParking.png' },
+      { detail: 'Furnished', icon: process.env.PUBLIC_URL + '/propertyDetails/Furnished.png' },
+      { detail: '3 month sublet', icon: process.env.PUBLIC_URL + '/propertyDetails/Calander.png' }
     ]
   };
 
@@ -51,21 +55,31 @@ const PropertyDetails = () => {
     setIsHearted(!isHearted);
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="w-full p-4 font-red-hat-display md:px-12">
-      <button className="absolute p-2 text-gray-500 top-4 left-4">&lt;&nbsp;&nbsp;Back</button>
-      <div className="flex flex-col mt-12 md:flex-row md:space-x-[49px]">
-        <div className="flex flex-col w-full md:flex-row md:w-auto">
-          <div className="flex flex-col w-full space-y-4 md:w-auto">
+    <div className="w-full px-4 pb-4 font-red-hat-display">
+      <div className="mt-2">
+        <BackButton />
+      </div>
+      <div className="flex flex-col md:flex-row space-y-4 md:space-y-2 md:space-x-[49px] pt-8">
+        <div className="flex h-[524px] aspect-w-4 aspect-h-3 flex-1">
+          <div className="flex flex-col space-y-4">
             {images.slice(0, 3).map((image, index) => (
-              <button key={index} onClick={() => handleImageClick(index)} className="w-full md:w-[148px] h-[164px] rounded-md">
-                <img src={image.src} alt={image.alt} className="object-cover w-full h-full rounded-md" />
+              <button key={index} onClick={() => handleImageClick(index)} className="flex-1 w-full rounded-md aspect-w-4 aspect-h-3">
+                <img src={image.src} alt={image.alt} className="object-cover w-full h-full rounded-2xl"/>
               </button>
             ))}
           </div>
-          <div className="relative w-full mt-4 md:mt-0 md:ml-4 md:w-auto">
-            <button onClick={() => handleImageClick(3)} className="w-full md:w-[466px] h-[524px] md:h-[524px] rounded-md">
-              <img src={images[3].src} alt={images[3].alt} className="object-cover w-full h-full rounded-md" />
+          <div className="relative flex-1 ml-3.5">
+            <button onClick={() => handleImageClick(3)} className="w-full h-full rounded-2xl aspect-w-4 aspect-h-3">
+              <img src={images[3].src} alt={images[3].alt} className="object-cover w-full h-full rounded-2xl" />
               <button
                 onClick={toggleHeart}
                 className="absolute flex items-center justify-center w-12 h-12 text-gray-400 bg-gray-200 rounded-full top-2 right-2"
@@ -75,12 +89,17 @@ const PropertyDetails = () => {
             </button>
           </div>
         </div>
-        <div className="flex flex-col w-full mt-4 md:flex-1 md:mt-0">
-          <div className="flex flex-col items-center space-x-4 md:flex-row">
-            <h1 className="text-2xl font-bold md:text-3xl">{listingDetails.title}</h1>
-            <div className="flex items-center justify-center w-32 md:w-48 h-10 md:h-12 px-2 text-xl md:text-2xl font-bold text-[#47cad2] bg-[#ebf9fa] rounded-full">
-              {listingDetails.price}
+        <div className="flex-col flex-initial w-full md:flex-1">
+          <div className="flex flex-col items-center justify-between md:flex-row md:space-x-4">
+            <div className="flex justify-between">
+              <h1 className="mr-3 text-2xl font-bold md:text-3xl">{listingDetails.title}</h1>
+              <div className="flex items-center justify-center w-32 md:w-48 h-10 md:h-12 px-2 text-xl md:text-2xl font-bold text-[#47cad2] bg-[#ebf9fa] rounded-full">
+                {listingDetails.price}
+              </div>
             </div>
+            <button onClick={openModal} className="ml-auto">
+              <Icon />
+            </button>
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
@@ -97,9 +116,10 @@ const PropertyDetails = () => {
               </p>
             </div>
             {listingDetails.location && (
-              <div className="flex-shrink-0 mt-4 md:mt-0 md:ml-4">
+              <div className="flex-1 mt-4 md:mt-0 md:ml-4">
                 <img
-                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(listingDetails.location)}&zoom=14&size=300x200&key=YOUR_GOOGLE_MAPS_API_KEY`}
+                  src={process.env.PUBLIC_URL + "/PropertyDetails/map.png"}
+                  // src={`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(listingDetails.location)}&zoom=14&size=300x200&key=YOUR_GOOGLE_MAPS_API_KEY`}
                   alt="Map of location"
                   className="w-full h-auto rounded-md"
                 />
@@ -109,10 +129,10 @@ const PropertyDetails = () => {
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
-              <button className="mb-4 py-2 px-2 w-full md:w-[172px] h-8 md:h-[28px] bg-gray-200 text-black text-xs md:text-sm font-medium rounded-full flex items-center justify-center">
+              <button className="mb-4 px-2 w-full md:w-[172px] h-8 md:h-[28px] bg-gray-200 text-black text-xs md:text-sm font-medium rounded-full flex items-center justify-center">
                 Message Seller
               </button>
-              <div className="mt-4 md:mt-[47px]">
+              <div className="mt-4 md:-scroll-mt-3.5">
                 <h2 className="text-sm font-semibold md:text-base">Available Times</h2>
                 <ul className="mt-2 text-xs list-none md:text-sm">
                   {availableTimes.map((time, index) => (
@@ -138,6 +158,7 @@ const PropertyDetails = () => {
           </div>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };

@@ -12,4 +12,3 @@ const Heart = ({ color = 'text-pinkHeartColor', size = 20, className }) => (
 );
 
 export default Heart;
-
