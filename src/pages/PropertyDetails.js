@@ -122,17 +122,6 @@ const PropertyDetails = () => {
                 {listingDetails.description}
               </p>
             </div>
-            {listingDetails.location && (
-              <div className="flex-1 mt-4 md:mt-0 md:ml-4">
-                <img
-                  src={process.env.PUBLIC_URL + "/PropertyDetails/map.png"}
-                  // src={`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(listingDetails.location)}&zoom=14&size=300x200&key=YOUR_GOOGLE_MAPS_API_KEY`}
-                  alt="Map of location"
-                  className="w-full h-auto rounded-md"
-                />
-                <p className="mt-2 text-sm text-gray-700 md:text-base">{listingDetails.location}</p>
-              </div>
-            )}
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
