@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import Heart from '../components/Heart';
 import Icon from '../components/ThreeDots';
 import BackButton from '../components/BackButton';
-import Modal from '../components/DetailsModel'; 
+import DetailsModal from '../components/DetailsModel';
+import SlideshowModal from '../components/SlideshowModal';
 
 const PropertyDetails = () => {
   const [isHearted, setIsHearted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const availableTimes = [
     { day: 'Sunday', time: '10:30am - 3:00pm' },
@@ -47,8 +50,8 @@ const PropertyDetails = () => {
   };
 
   const handleImageClick = (index) => {
-    console.log(`Image ${index} clicked`);
-    // Here you can implement the logic to open the slideshow
+    setCurrentImageIndex(index);
+    setIsSlideshowOpen(true);
   };
 
   const toggleHeart = () => {
@@ -63,23 +66,27 @@ const PropertyDetails = () => {
     setIsModalOpen(false);
   };
 
+  const closeSlideshow = () => {
+    setIsSlideshowOpen(false);
+  };
+
   return (
-    <div className="w-full px-4 pb-4 font-red-hat-display">
+    <div className="w-full px-6 pb-4 font-red-hat-display">
       <div className="mt-2">
         <BackButton />
       </div>
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-2 md:space-x-[49px] pt-8">
-        <div className="flex h-[524px] aspect-w-4 aspect-h-3 flex-1">
-          <div className="flex flex-col space-y-4">
+        <div className="flex h-[250px] sm:h-[400px] md:h-[524px] aspect-w-4 aspect-h-3 flex-initial">
+          <div className="flex flex-col h-full space-y-3p">
             {images.slice(0, 3).map((image, index) => (
-              <button key={index} onClick={() => handleImageClick(index)} className="flex-1 w-full rounded-md aspect-w-4 aspect-h-3">
-                <img src={image.src} alt={image.alt} className="object-cover w-full h-full rounded-2xl"/>
+              <button key={index} onClick={() => handleImageClick(index)} className="rounded-md aspect-w-4 aspect-h-3 h-[31.33333333333333%]">
+                <img src={image.src} alt={image.alt} className="w-full h-full rounded-2xl"/>
               </button>
             ))}
           </div>
-          <div className="relative flex-1 ml-3.5">
+          <div className="relative flex-1 ml-2 sm:ml-3 md:ml-4">
             <button onClick={() => handleImageClick(3)} className="w-full h-full rounded-2xl aspect-w-4 aspect-h-3">
-              <img src={images[3].src} alt={images[3].alt} className="object-cover w-full h-full rounded-2xl" />
+              <img src={images[3].src} alt={images[3].alt} className="flex-1 object-cover w-full h-full rounded-2xl" />
               <button
                 onClick={toggleHeart}
                 className="absolute flex items-center justify-center w-12 h-12 text-gray-400 bg-gray-200 rounded-full top-2 right-2"
@@ -115,17 +122,6 @@ const PropertyDetails = () => {
                 {listingDetails.description}
               </p>
             </div>
-            {listingDetails.location && (
-              <div className="flex-1 mt-4 md:mt-0 md:ml-4">
-                <img
-                  src={process.env.PUBLIC_URL + "/PropertyDetails/map.png"}
-                  // src={`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(listingDetails.location)}&zoom=14&size=300x200&key=YOUR_GOOGLE_MAPS_API_KEY`}
-                  alt="Map of location"
-                  className="w-full h-auto rounded-md"
-                />
-                <p className="mt-2 text-sm text-gray-700 md:text-base">{listingDetails.location}</p>
-              </div>
-            )}
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
@@ -158,7 +154,8 @@ const PropertyDetails = () => {
           </div>
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={closeModal} />
+      <DetailsModal isOpen={isModalOpen} onClose={closeModal} />
+      <SlideshowModal isOpen={isSlideshowOpen} onClose={closeSlideshow} images={images} currentIndex={currentImageIndex} />
     </div>
   );
 };
