@@ -2,7 +2,7 @@ import React from "react";
 
 const Header = () => {
   return (
-    <header className="relative w-full bg-white border-l-[10px] border-r-[10px] border-t-[10px] border-gray-300 px-4">
+    <header className="relative w-full bg-white border-l-[10px] border-r-[10px] border-t-[10px] border-borderGrey px-4">
       {/* Main header content */}
       <div className="flex items-center justify-between h-24 flex-wrap">
         <div className="text-2xl font-abril-fatface text-primary">

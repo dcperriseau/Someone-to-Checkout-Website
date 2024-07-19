@@ -13,7 +13,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
             <FooterColumn 
               title="Join our team" 
-              items={["Become a Viewer", "Create a profile", "Viewer's hub"]} 
+              items={["Become a Viewer", "Create a profile", "View Profile"]} 
             />
             <FooterColumn 
               title="Help" 
@@ -21,7 +21,7 @@ const Footer = () => {
             />
             <FooterColumn 
               title="Post your own listing" 
-              items={["Post a listing", "Your listings", "Boost your listing"]} 
+              items={["Post a listing", "Your listings"]} 
             />
             <FooterColumn 
               title="Follow us" 

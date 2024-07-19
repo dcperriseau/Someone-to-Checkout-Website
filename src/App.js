@@ -12,14 +12,13 @@ import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
 import ListersProfile from './pages/ListersProfile';
 
-
 function App() {
   return (
     <div className="relative w-full min-h-screen">
       {/* Grey borders matching footer color */}
-      <div className="absolute top-0 left-0 w-full h-[10px] bg-gray-100"></div>
-      <div className="absolute top-0 left-0 w-[10px] h-full bg-gray-100"></div>
-      <div className="absolute top-0 right-0 w-[10px] h-full bg-gray-100"></div>
+      <div className="absolute top-0 left-0 w-full h-[10px] bg-borderGrey"></div>
+      <div className="absolute top-0 left-0 w-[10px] h-full bg-borderGrey"></div>
+      <div className="absolute top-0 right-0 w-[10px] h-full bg-borderGrey"></div>
 
       <div className="relative App flex flex-col min-h-screen">
         <Router>
