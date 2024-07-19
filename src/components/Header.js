@@ -2,13 +2,13 @@ import React from "react";
 
 const Header = () => {
   return (
-    <header className="relative w-full bg-white px-4">
+    <header className="relative w-full bg-white border-l-[10px] border-r-[10px] border-t-[10px] border-gray-300 px-4">
       {/* Main header content */}
-      <div className="flex items-center justify-between h-24">
+      <div className="flex items-center justify-between h-24 flex-wrap">
         <div className="text-2xl font-abril-fatface text-primary">
           Someone to Check Out
         </div>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mt-2 sm:mt-0">
           <Button label="Log In" customStyle="border border-gray-900 bg-white text-gray-900" />
           <Button label="Sign Up" customStyle="bg-gray-900 text-white" />
         </div>
@@ -18,14 +18,14 @@ const Header = () => {
       <div className="border-t border-gray-300" />
 
       {/* Sub-header content */}
-      <div className="flex items-center justify-between mt-2">
-        <div className="flex space-x-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between mt-2 space-y-2 sm:space-y-0">
+        <div className="flex flex-wrap space-x-4 justify-center">
           <Text text="Properties" />
           <Text text="About" />
           <Text text="Contact Us" />
           <Text text="Request Viewing" />
         </div>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 justify-center mt-2 sm:mt-0">
           <Button label="Post Listing" customStyle="border border-teal-400 bg-teal-100 text-gray-900" />
           <Icon />
         </div>

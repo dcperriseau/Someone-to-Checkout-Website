@@ -14,10 +14,10 @@ const AboutUsPage = () => {
           <div className="text-textSecondary text-16px font-red-hat-display leading-22px mb-4">
             ABOUT US
           </div>
-          <div className="text-[#212121] text-24px font-red-hat-display font-bold leading-31px mb-4">
+          <div className="text-[#212121] text-24px font-red-hat-display font-extrabold leading-31px mb-4">
             Find your dream property without the hassle. Let us verify the properties in person, ensuring what you see online matches reality.
           </div>
-          <div className="text-textSecondary text-18px font-red-hat-display leading-23px mb-4">
+          <div className="text-black text-18px font-red-hat-display leading-23px mb-4">
             At 'Someone to Check Out,' we believe finding your dream property should be a stress-free and exciting journey. Our innovative platform allows you to browse and select properties that pique your interest, while our trusted gig workers visit these locations to verify their authenticity. Say goodbye to misleading photos and potential scams—our dedicated team ensures that what you see online is exactly what you'll find in person. With 'Someone to Check Out,' you can move forward with confidence, knowing your future place has been thoroughly vetted for you.
           </div>
           <div className="flex justify-center md:justify-start mt-4">

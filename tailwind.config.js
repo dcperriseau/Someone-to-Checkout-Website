@@ -23,6 +23,7 @@ module.exports = {
         webTitleFontColor: '#2d6064', //Dark blue/indago website header font color
         bubbleIconColor: '#ebf9fa', //light blue color for bubble icon 
         black: '#212121',
+      
 
       },
       fontFamily: {
@@ -41,6 +42,9 @@ module.exports = {
       },
       boxShadow: {
         'custom-light' : '0px 2px 8px rgba(0,0,0,0.12)', //custom shadowing for picture 
+      },
+      fontWeight : {
+        extrabold: '800',
       },
     },
   },

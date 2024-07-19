@@ -10,15 +10,34 @@ const DescriptionText = ({ text = 'Describe your property' }) => <div className=
 const OfferText = ({ text = 'Tell buyers and renters what your place has to offer' }) => <div className="text-[#212121] text-xl font-bold leading-9 font-red-hat-display text-center mt-10">{text}</div>;
 
 // Custom Card Components
-const Card = ({ children, className = '' }) => <div className={`relative bg-white rounded-[24px] border border-[#e8e8e8] box-border mt-6 ${className}`}>{children}</div>;
-const FeatureCard = ({ icon: IconComponent, text }) => (
-  <div className="relative bg-white rounded-[15px] border border-[#bababa] box-border w-[266px] h-[165px] m-2 flex flex-col justify-between p-4">
-    <IconComponent className="text-4xl text-gray-500" />
-    <div className="text-lg font-red-hat-display">{text}</div>
+const Card = ({ children, className = '' }) => (
+  <div className={`relative bg-white rounded-[24px] border border-[#e8e8e8] box-border mt-6 flex flex-col items-center p-4 w-[351px] h-[238px] ${className}`}>
+    {children}
   </div>
 );
-const Image = ({ image }) => <div className="w-[200px] h-[150px] rounded-[12px] bg-cover bg-center mx-auto mt-6" style={{ backgroundImage: `url(${image})` }} />;
-const Button = ({ label }) => <button className="cursor-pointer w-[105px] h-[38px] px-2 border border-[#212121] box-border rounded-full bg-white text-[#212121] text-sm font-medium leading-5 font-roboto mt-4 mx-auto block">{label}</button>;
+
+const FeatureCard = ({ icon: IconComponent, text, selected, onClick }) => (
+  <div
+    className={`relative bg-white rounded-[15px] border ${selected ? 'border-blue-500' : 'border-[#bababa]'} box-border w-[266px] h-[165px] m-2 flex flex-col justify-between p-4 cursor-pointer`}
+    onClick={onClick}
+  >
+    <IconComponent className={`text-4xl ${selected ? 'text-blue-500' : 'text-gray-500'}`} />
+    <div className={`text-lg font-red-hat-display ${selected ? 'text-blue-500' : ''}`}>{text}</div>
+  </div>
+);
+
+const Image = ({ image }) => (
+  <div
+    className="w-[200px] h-[150px] rounded-[12px] bg-cover bg-center mx-auto mt-6"
+    style={{ backgroundImage: `url(${image})` }}
+  />
+);
+
+const Button = ({ label }) => (
+  <button className="cursor-pointer w-[105px] h-[38px] px-2 border border-[#212121] box-border rounded-full bg-white text-[#212121] text-sm font-medium leading-5 font-roboto mt-4 mx-auto block">
+    {label}
+  </button>
+);
 
 // Input Components
 const InputText = ({ text }) => <div className="text-[#212121] text-xl font-bold leading-9 font-red-hat-display text-center mt-6">{text}</div>;
@@ -33,8 +52,10 @@ const IconUploadComponent = ({ className = '' }) => (
     <path d="M480 416v16c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V176c0-26.51 21.49-48 48-48h16v208c0 44.112 35.888 80 80 80h336zm96-80V80c0-26.51-21.49-48-48-48H144c-26.51 0-48 21.49-48 48v256c0 26.51 21.49 48 48 48h384c26.51 0 48-21.49 48-48zM256 128c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-96 144l55.515-55.515c4.686-4.686 12.284-4.686 16.971 0L272 256l135.515-135.515c4.686-4.686 12.284-4.686 16.971 0L512 208v112H160v-48z"></path>
   </svg>
 );
-const PlusIconComponent = () => <svg className="text-[#076ae7] fill-current w-[32px] h-[38px]" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>;
-const MinusIconComponent = () => <svg className="text-[#076ae7] fill-current w-[32px] h-[32px]" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M19 13H5v-2h14v2z" /></svg>;
+
+const PlusIconComponent = () => <svg className="text-[#bababa] fill-current w-[32px] h-[38px]" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" /></svg>;
+const MinusIconComponent = () => <svg className="text-[#bababa] fill-current w-[32px] h-[32px]" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" /><path d="M19 13H5v-2h14v2z" /></svg>;
+
 const UploadCardText = ({ text }) => <div className="text-[#212121] text-base font-medium leading-6 font-red-hat-display text-center mt-4">{text}</div>;
 const DragDropText = ({ text }) => <div className="text-[#737373] text-sm font-red-hat-display leading-4 text-center mt-2">{text}</div>;
 const SmallerCard = ({ children }) => <div className="w-[160px] h-[123px] bg-[#f9f9f9] rounded-[16px] m-1 flex justify-center items-center">{children}</div>;
@@ -49,6 +70,7 @@ const InfoText = ({ text }) => {
     </div>
   );
 };
+
 const AddressCard = ({ text, placeholder }) => <div className="relative bg-white rounded-[26px] shadow-md w-full h-[77px] mt-6 shadow-[0px_2px_8px_rgba(0,0,0,0.16)] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200"><input className="w-full h-full p-4 bg-transparent rounded-[26px] outline-none text-[#030303] text-base font-red-hat-display leading-5" placeholder={placeholder} /></div>;
 const InteractiveMapBox = ({ position }) => <div className={`absolute ${position} w-[80px] h-[110px] bg-white rounded-[8px] border border-[#bababa] shadow-[0px_2px_8px_rgba(0,0,0,0.16)] flex flex-col justify-between items-center p-2`}><PlusIconComponent /><MinusIconComponent /></div>;
 const DescriptionInput = () => <textarea className="w-full h-[150px] p-4 border border-[#e8e8e8] rounded-[16px] bg-white mt-2 resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" placeholder="Enter property description here..." />;
@@ -96,6 +118,8 @@ const PostButton = () => {
 };
 
 const ListingPage = () => {
+  const [selectedFeatures, setSelectedFeatures] = useState([]);
+
   const items = [
     {
       label: 'Apartment',
@@ -126,6 +150,16 @@ const ListingPage = () => {
   const daysOfWeek = [
     "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
   ];
+
+  const toggleFeature = (text) => {
+    setSelectedFeatures((prevSelectedFeatures) => {
+      if (prevSelectedFeatures.includes(text)) {
+        return prevSelectedFeatures.filter((feature) => feature !== text);
+      } else {
+        return [...prevSelectedFeatures, text];
+      }
+    });
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4 sm:px-10">
@@ -163,16 +197,14 @@ const ListingPage = () => {
       </div>
       <UploadPhotosText />
       <PhotoDescriptionText />
-      <Card className="w-full sm:w-[727px] h-[1003px] flex flex-col items-center">
-        <div className="flex flex-col items-center mt-6">
-          <Card className="w-full sm:w-[694px] h-[372px] bg-[#f9f9f9] flex flex-col justify-center items-center">
-            <div className="w-[100px] h-[100px] bg-[#e8e8e8] rounded-full flex justify-center items-center">
-              <IconUploadComponent className="w-[43px] h-[43px] text-[#47cad2]" />
-            </div>
-            <UploadCardText text="Upload images" />
-            <DragDropText text="or use Drag & Drop" />
-          </Card>
-        </div>
+      <div className="w-full sm:w-[727px] flex flex-col items-center">
+        <Card className="w-full sm:w-[694px] h-[372px] bg-[#f9f9f9] flex flex-col justify-center items-center">
+          <div className="w-[100px] h-[100px] bg-[#e8e8e8] rounded-full flex justify-center items-center">
+            <IconUploadComponent className="w-[43px] h-[43px] text-[#47cad2]" />
+          </div>
+          <UploadCardText text="Upload images" />
+          <DragDropText text="or use Drag & Drop" />
+        </Card>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6">
           {smallerCards.map((_, index) => (
             <SmallerCard key={index}>
@@ -180,8 +212,10 @@ const ListingPage = () => {
             </SmallerCard>
           ))}
         </div>
+      </div>
+      <div className="mt-6">
         <InfoText text="Someone to Checkout listings are public and can be seen by anyone on or off our website. Items like animals, drugs, weapons, scams, and other items that infringe intellectual property aren't allowed on Someone to Checkout. See our Commerce Policy." />
-      </Card>
+      </div>
       <HorizontalDivider />
       <div className="self-start mb-4">
         <Step3Text />
@@ -207,9 +241,15 @@ const ListingPage = () => {
         <DescriptionInput />
       </div>
       <OfferText text="Tell buyers and renters what your place has to offer" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-6">
         {features.map((feature, index) => (
-          <FeatureCard key={index} text={feature.text} icon={feature.icon} />
+          <FeatureCard
+            key={index}
+            text={feature.text}
+            icon={feature.icon}
+            selected={selectedFeatures.includes(feature.text)}
+            onClick={() => toggleFeature(feature.text)}
+          />
         ))}
       </div>
       <div className="self-start mt-10 w-full">
@@ -224,9 +264,9 @@ const ListingPage = () => {
         {daysOfWeek.map((day, index) => (
           <div key={index} className="flex flex-col sm:flex-row sm:space-x-4 items-center w-full sm:w-1/2 mb-2">
             <label className="text-[#212121] text-base font-red-hat-display sm:w-1/4">{day}</label>
-            <input type="time" className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
+            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
             <span className="mx-2 text-[#212121] text-base font-red-hat-display">to</span>
-            <input type="time" className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
+            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
           </div>
         ))}
       </div>
