@@ -10,6 +10,7 @@ import ContactUs from './pages/Contact Page/ContactPage';
 import ListingPage from './pages/ListingPage';
 import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
+import ListersProfile from './pages/ListersProfile';
 
 
 function App() {
@@ -25,7 +26,7 @@ function App() {
           <Header />
           <div className="flex-grow">
             <Routes>
-              <Route path="/" element={<SignInPage />} />
+              <Route path="/" element={<ListersProfile />} />
               <Route path="/postlistings" element={<PostListings />} />
               <Route path="/suggestlisting" element={<SuggestListing />} />
               <Route path="/shoppingbasket" element={<ShoppingBasket />} />
