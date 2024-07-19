@@ -228,13 +228,14 @@ const ListingPage = () => {
           <AddressCard text="State/Territory" placeholder="Enter state/territory" />
           <AddressCard text="Zipcode" placeholder="Enter zipcode" />
         </div>
-        <div className="flex flex-col items-center w-full sm:w-1/2 mt-6 sm:mt-0 relative">
+        {/* Removed the map and text below */}
+        {/* <div className="flex flex-col items-center w-full sm:w-1/2 mt-6 sm:mt-0 relative">
           <img src="/MapPhoto.png" alt="Map" className="rounded-[26px] w-full h-auto" />
           <InteractiveMapBox position="top-2 left-2" />
           <div className="text-[#737373] text-base font-red-hat-display mt-4 text-left w-full">
             We'll only share your approximate location
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="self-start mt-10 w-full">
         <DescriptionText />
