@@ -86,7 +86,4 @@ userController.deleteUser = async (req, res, next) => {
   }
 };
 
-userController.loginUser = async (req, res) => {
-};
-
 module.exports = userController;

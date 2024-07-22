@@ -21,7 +21,7 @@ const SignInPage = () => {
   const submitLogin = async (email, password) => {
     try {
       const idToken = await loginUser(email, password);
-      console.log('ID Token:', idToken); // Log the ID token
+      console.log('ID Token:', idToken);
       const response = await fetch('/api/user/login', {
         method: 'POST',
         headers: {
@@ -44,7 +44,7 @@ const SignInPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null);
     await submitLogin(email, password);
   };
 
@@ -93,47 +93,3 @@ const SignInPage = () => {
 };
 
 export default SignInPage;
-
-
-
-
-// import React from 'react';
-
-// const SignInPage = () => {
-//   return (
-//     <div className="flex flex-col min-h-screen md:flex-row">
-//       {/* Left Side */}
-//       <div className="flex flex-col items-center justify-center w-full py-8 bg-white shadow-md md:w-1/2 md:py-0 md:px-10">
-//         <div className="w-full max-w-md px-4 space-y-6 md:px-0">
-//           <div className="text-4xl text-gray-900 font-abril-fatface">Login</div>
-//           <div className="space-y-2">
-//             <div className="text-lg font-bold text-gray-900">EMAIL</div>
-//             <input
-//               className="w-full h-12 px-4 text-gray-500 placeholder-gray-500 bg-gray-100 border border-gray-300 rounded-full shadow-sm"
-//               placeholder="Username or Email"
-//             />
-//           </div>
-//           <div className="space-y-2">
-//             <div className="text-lg font-bold text-gray-900">PASSWORD</div>
-//             <input
-//               className="w-full h-12 px-4 text-gray-500 placeholder-gray-500 bg-gray-100 border border-gray-300 rounded-full shadow-sm"
-//               placeholder="Password"
-//             />
-//           </div>
-//           <button className="w-full h-12 font-medium text-white bg-gray-900 rounded-full">Login</button>
-//         </div>
-//       </div>
-
-//       {/* Right Side */}
-//       <div className="flex flex-col items-center justify-center w-full py-8 bg-teal-400 md:w-1/2 md:py-0 md:px-10">
-//         <div className="px-4 space-y-6 text-center text-white md:px-0">
-//           <div className="text-2xl leading-tight md:text-4xl font-abril-fatface">Welcome to Someone To Check Out</div>
-//           <div className="text-base md:text-lg">Don't have an account with us?</div>
-//           <button className="w-48 h-12 mt-4 text-white border border-white rounded-full">Sign up</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SignInPage;
