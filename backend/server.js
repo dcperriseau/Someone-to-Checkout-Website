@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
+
 // stripe secret test key
 const stripe = require('stripe')('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
 
@@ -12,10 +13,15 @@ app.use(express.json());
 const userRoute = require('./routes/userRoute');
 const stripeRoute = require('./routes/stripeRoute');
 
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Import routes
+const userRoute = require('./routes/userRoute');
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, '../public')));
@@ -23,6 +29,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // User routes
 app.use('/api/user', userRoute);
 app.use('/api/stripe', stripeRoute); // Corrected this line
+
 
 // serve the React app for any unknown routes
 app.get('*', (req, res) => {

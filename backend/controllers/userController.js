@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 
 const userController = {};
 
+// Create user
 userController.createUser = async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
   
@@ -38,10 +39,35 @@ userController.createUser = async (req, res, next) => {
   }
 };
 
+// Login user
 userController.loginUser = async (req, res) => {
-  // Implement the login logic here
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({ message: 'Missing ID token' });
+  }
+
+  try {
+    // Verify the ID token
+    console.log('i am here in the log in function!!!')
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+
+    // Fetch additional user information from Firestore
+    const userDoc = await db.collection('users').doc(uid).get();
+    if (!userDoc.exists) {
+      return res.status(404).json({ message: 'User not found in Firestore' });
+    }
+
+    const userData = userDoc.data();
+    res.status(200).json({ message: 'Login successful', user: userData });
+  } catch (error) {
+    console.error('Error verifying ID token:', error);
+    res.status(401).json({ message: 'Unauthorized', error: error.message });
+  }
 };
 
+// Delete user
 userController.deleteUser = async (req, res, next) => {
   const { uid } = req.params;
   console.log('req params', req.params);
@@ -59,6 +85,5 @@ userController.deleteUser = async (req, res, next) => {
     res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 };
-
 
 module.exports = userController;
