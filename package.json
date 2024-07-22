@@ -53,6 +53,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "autoprefixer": "^10.4.19",
+    "concurrently": "^8.2.2",
     "postcss": "^8.4.39",
     "prettier": "^3.3.3",
     "tailwind": "^4.0.0"
