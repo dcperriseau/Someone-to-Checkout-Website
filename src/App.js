@@ -12,6 +12,11 @@ import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
 import PersonalProfile from './pages/PersonalProfile';
 import PropertyDetails from './pages/PropertyDetails';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+// Load your publishable key from the Stripe dashboard
+const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
 
 function App() {
   return (
@@ -25,18 +30,20 @@ function App() {
         <Router>
           <Header />
           <div className="flex-grow">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/postlistings" element={<PostListings />} />
-              <Route path="/suggestlisting" element={<SuggestListing />} />
-              <Route path="/shoppingbasket" element={<ShoppingBasket />} />
-              <Route path="/contactus" element={<ContactUs />} />
-              <Route path="/listingpage" element={<ListingPage />} />
-              <Route path="/aboutus" element={<AboutUsPage />} />
-              <Route path ="/personalprofile" element={<PersonalProfile />} />
-              <Route path ="/propertydetails" element={<PropertyDetails />} />
-              <Route path="/signin" element={<SignInPage />} />
-            </Routes>
+            <Elements stripe={stripePromise}>
+              <Routes>
+                <Route path="/" element={<ShoppingBasket />} />
+                <Route path="/postlistings" element={<PostListings />} />
+                <Route path="/suggestlisting" element={<SuggestListing />} />
+                <Route path="/shoppingbasket" element={<ShoppingBasket />} />
+                <Route path="/contactus" element={<ContactUs />} />
+                <Route path="/listingpage" element={<ListingPage />} />
+                <Route path="/aboutus" element={<AboutUsPage />} />
+                <Route path ="/personalprofile" element={<PersonalProfile />} />
+                <Route path ="/propertydetails" element={<PropertyDetails />} />
+                <Route path="/signin" element={<SignInPage />} />
+              </Routes>
+            </Elements>
           </div>
           <Footer />
         </Router>
