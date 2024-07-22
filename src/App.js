@@ -10,7 +10,8 @@ import ContactUs from './pages/Contact Page/ContactPage';
 import ListingPage from './pages/ListingPage';
 import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
-import ListersProfile from './pages/ListersProfile';
+import PersonalProfile from './pages/PersonalProfile';
+import PropertyDetails from './pages/PropertyDetails';
 
 function App() {
   return (
@@ -20,18 +21,21 @@ function App() {
       <div className="absolute top-0 left-0 w-[10px] h-full bg-borderGrey"></div>
       <div className="absolute top-0 right-0 w-[10px] h-full bg-borderGrey"></div>
 
-      <div className="relative App flex flex-col min-h-screen">
+      <div className="relative flex flex-col min-h-screen App">
         <Router>
           <Header />
           <div className="flex-grow">
             <Routes>
-              <Route path="/" element={<ListersProfile />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/postlistings" element={<PostListings />} />
               <Route path="/suggestlisting" element={<SuggestListing />} />
               <Route path="/shoppingbasket" element={<ShoppingBasket />} />
               <Route path="/contactus" element={<ContactUs />} />
               <Route path="/listingpage" element={<ListingPage />} />
               <Route path="/aboutus" element={<AboutUsPage />} />
+              <Route path ="/personalprofile" element={<PersonalProfile />} />
+              <Route path ="/propertydetails" element={<PropertyDetails />} />
+              <Route path="/signin" element={<SignInPage />} />
             </Routes>
           </div>
           <Footer />
