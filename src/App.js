@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -19,20 +19,21 @@ import { Elements } from '@stripe/react-stripe-js';
 const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
 
 function App() {
+  const [selectedListing, setSelectedListing] = useState(null);
+
   return (
     <div className="relative w-full min-h-screen">
       {/* Grey borders matching footer color */}
       <div className="absolute top-0 left-0 w-full h-[10px] bg-borderGrey"></div>
       <div className="absolute top-0 left-0 w-[10px] h-full bg-borderGrey"></div>
       <div className="absolute top-0 right-0 w-[10px] h-full bg-borderGrey"></div>
-
       <div className="relative flex flex-col min-h-screen App">
         <Router>
           <Header />
           <div className="flex-grow">
             <Elements stripe={stripePromise}>
               <Routes>
-                <Route path="/" element={<ShoppingBasket />} />
+                <Route path="/" element={<HomePage setSelectedListing={setSelectedListing}/>} />
                 <Route path="/postlistings" element={<PostListings />} />
                 <Route path="/suggestlisting" element={<SuggestListing />} />
                 <Route path="/shoppingbasket" element={<ShoppingBasket />} />
@@ -40,7 +41,7 @@ function App() {
                 <Route path="/listingpage" element={<ListingPage />} />
                 <Route path="/aboutus" element={<AboutUsPage />} />
                 <Route path ="/personalprofile" element={<PersonalProfile />} />
-                <Route path ="/propertydetails" element={<PropertyDetails />} />
+                <Route path ="/propertydetails" element={<PropertyDetails selectedListing={selectedListing} />} />
                 <Route path="/signin" element={<SignInPage />} />
               </Routes>
             </Elements>
