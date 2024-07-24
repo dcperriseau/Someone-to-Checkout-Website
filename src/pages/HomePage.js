@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirebaseApp } from '../firebaseConfig'; // Adjust the import based on your project structure
 
-const HomePage = () => {
+const HomePage = ({ setSelectedListing }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [saved, setSaved] = useState(new Array(9).fill(false));
   const [message, setMessage] = useState('');
+  const [listings, setListings] = useState([]);
+
+  const navigate = useNavigate();
 
   const toggleSaved = (index) => {
     const newSaved = [...saved];
@@ -13,25 +19,38 @@ const HomePage = () => {
     setTimeout(() => setMessage(''), 2000);
   };
 
-  const images = [
-    'propertyimage1.jpeg',
-    'propertyimage2.jpeg',
-    'propertyimage3.jpeg',
-    'propertyimage4.jpeg',
-    'propertyimage5.jpeg',
-    'propertyimage6.jpeg',
-    'propertyimage7.jpeg',
-    'propertyimage8.jpeg',
-    'propertyimage9.jpeg',
-  ];
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const db = getFirestore(getFirebaseApp());
+        const listingsCollection = collection(db, 'property_listings');
+        const listingsSnapshot = await getDocs(listingsCollection);
+        const listingsList = listingsSnapshot.docs.map(doc => doc.data());
+        setListings(listingsList);
+      } catch (error) {
+        console.error('Error fetching listings:', error);
+      }
+    };
+
+    fetchListings();
+  }, []);
+
+  const handleImageClick = (listing, index) => {
+    const currentListing = {
+      ...listing,
+      saved: saved[index],
+    };
+    setSelectedListing(currentListing);
+    navigate('/propertydetails');
+  };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center">
+    <div className="relative flex flex-col items-center min-h-screen">
       <div className="absolute top-[15px] left-[10px] sm:left-[49px]" style={{ width: 'calc(100% - 20px)', maxWidth: '1430px' }}>
         <img src="/homePhoto.jpeg" alt="Background" className="w-full h-[200px] sm:h-[450px] object-cover opacity-15 mx-auto" />
       </div>
 
-      <div className="relative w-full flex flex-col items-center bg-transparent">
+      <div className="relative flex flex-col items-center w-full bg-transparent">
         <div className="absolute top-[65px] w-full flex justify-center px-4 sm:px-0">
           <div className="flex flex-col items-center justify-center w-full max-w-xl h-[100px] bg-[#030303] rounded-[26px]">
             <div className="text-[#ffffff] text-xl sm:text-40px font-red-hat-display leading-10 sm:leading-52px text-center">
@@ -59,34 +78,34 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="w-full mt-10 px-4 sm:px-0">
-        <div className="w-full border-t border-gray-300 my-4"></div>
+      <div className="w-full px-4 mt-10 sm:px-0">
+        <div className="w-full my-4 border-t border-gray-300"></div>
         <div className="flex flex-col items-center sm:hidden">
           <button onClick={() => setShowFilters(!showFilters)} className="w-full sm:w-auto px-4 py-2 bg-[#47cad2] text-white font-red-hat-display font-medium text-lg rounded-full">
             {showFilters ? 'Close Filters' : 'Filters'}
           </button>
         </div>
         {showFilters && (
-          <div className="flex flex-col items-center space-y-4 mt-4 sm:hidden">
-            <div className="w-full flex flex-col items-center bg-white p-4 rounded-full shadow-md">
+          <div className="flex flex-col items-center mt-4 space-y-4 sm:hidden">
+            <div className="flex flex-col items-center w-full p-4 bg-white rounded-full shadow-md">
               <span className="font-bold">Where</span>
-              <input className="outline-none text-gray-500" type="text" placeholder="Search cities" />
+              <input className="text-gray-500 outline-none" type="text" placeholder="Search cities" />
             </div>
-            <div className="w-full flex flex-col items-center bg-white p-4 rounded-full shadow-md">
+            <div className="flex flex-col items-center w-full p-4 bg-white rounded-full shadow-md">
               <span className="font-bold">Bedroom</span>
-              <input className="outline-none text-gray-500" type="text" placeholder="Add how many bedrooms" />
+              <input className="text-gray-500 outline-none" type="text" placeholder="Add how many bedrooms" />
             </div>
-            <div className="w-full flex flex-col items-center bg-white p-4 rounded-full shadow-md">
+            <div className="flex flex-col items-center w-full p-4 bg-white rounded-full shadow-md">
               <span className="font-bold">Bathrooms</span>
-              <input className="outline-none text-gray-500" type="text" placeholder="Add how many bathrooms" />
+              <input className="text-gray-500 outline-none" type="text" placeholder="Add how many bathrooms" />
             </div>
-            <div className="w-full flex flex-col items-center bg-white p-4 rounded-full shadow-md">
+            <div className="flex flex-col items-center w-full p-4 bg-white rounded-full shadow-md">
               <span className="font-bold">Home Type</span>
-              <input className="outline-none text-gray-500" type="text" placeholder="Specify type" />
+              <input className="text-gray-500 outline-none" type="text" placeholder="Specify type" />
             </div>
-            <div className="w-full flex flex-col items-center bg-white p-4 rounded-full shadow-md">
+            <div className="flex flex-col items-center w-full p-4 bg-white rounded-full shadow-md">
               <span className="font-bold">Price</span>
-              <input className="outline-none text-gray-500" type="text" placeholder="Add range" />
+              <input className="text-gray-500 outline-none" type="text" placeholder="Add range" />
             </div>
             <button className="w-full sm:w-auto px-4 py-2 bg-[#47cad2] text-white font-red-hat-display font-medium text-lg rounded-full mt-4">
               Apply
@@ -98,29 +117,29 @@ const HomePage = () => {
       <div className="hidden sm:flex items-center justify-between w-[1113px] h-[93px] p-4 bg-white rounded-full shadow-lg mt-10">
         <div className="flex flex-col items-center">
           <span className="font-bold">Where</span>
-          <input className="outline-none text-gray-500 text-center" type="text" placeholder="Search cities" />
+          <input className="text-center text-gray-500 outline-none" type="text" placeholder="Search cities" />
         </div>
-        <div className="border-r border-gray-300 h-full"></div>
+        <div className="h-full border-r border-gray-300"></div>
         <div className="flex flex-col items-center">
           <span className="font-bold">Bedroom</span>
-          <input className="outline-none text-gray-500 text-center" type="text" placeholder="Add bedrooms" />
+          <input className="text-center text-gray-500 outline-none" type="text" placeholder="Add bedrooms" />
         </div>
-        <div className="border-r border-gray-300 h-full"></div>
+        <div className="h-full border-r border-gray-300"></div>
         <div className="flex flex-col items-center">
           <span className="font-bold">Bathrooms</span>
-          <input className="outline-none text-gray-500 text-center" type="text" placeholder="Add bathrooms" />
+          <input className="text-center text-gray-500 outline-none" type="text" placeholder="Add bathrooms" />
         </div>
-        <div className="border-r border-gray-300 h-full"></div>
+        <div className="h-full border-r border-gray-300"></div>
         <div className="flex flex-col items-center">
           <span className="font-bold">Home Type</span>
-          <input className="outline-none text-gray-500 text-center" type="text" placeholder="Specify type" />
+          <input className="text-center text-gray-500 outline-none" type="text" placeholder="Specify type" />
         </div>
-        <div className="border-r border-gray-300 h-full"></div>
+        <div className="h-full border-r border-gray-300"></div>
         <div className="flex flex-col items-center">
           <span className="font-bold">Price</span>
-          <input className="outline-none text-gray-500 text-center" type="text" placeholder="Add range" />
+          <input className="text-center text-gray-500 outline-none" type="text" placeholder="Add range" />
         </div>
-        <div className="flex justify-center items-center ml-4">
+        <div className="flex items-center justify-center ml-4">
           <svg className="text-[#47cad2] fill-current w-8 h-8" viewBox="0 0 24 24">
             <path d="M0 0h24v24H0z" fill="none"></path>
             <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
@@ -128,18 +147,18 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="w-full mt-10 px-4 sm:px-0">
-        <div className="w-full border-t border-gray-300 my-4"></div>
+      <div className="w-full px-4 mt-10 sm:px-0">
+        <div className="w-full my-4 border-t border-gray-300"></div>
         {message && (
-          <div className="fixed top-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white px-4 py-2 rounded-full z-50">
+          <div className="fixed z-50 px-4 py-2 text-white transform -translate-x-1/2 bg-gray-700 rounded-full top-10 left-1/2">
             {message}
           </div>
         )}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-10">
-          {images.map((image, index) => (
+        <div className="grid grid-cols-2 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-4 sm:px-6 lg:px-10">
+          {listings.map((listing, index) => (
             <div key={index} className="flex flex-col items-center">
-              <div className="relative bg-cover bg-center h-48 w-full rounded-md" style={{ backgroundImage: `url(${image})` }}>
-                <div className="absolute top-2 right-2 cursor-pointer" onClick={() => toggleSaved(index)}>
+              <div className="relative w-full h-48 bg-center bg-cover rounded-md" style={{ backgroundImage: `url(${listing.main_image_url})` }} onClick={() => handleImageClick(listing)}>
+                <div className="absolute cursor-pointer top-2 right-2" onClick={() => toggleSaved(index)}>
                   <svg
                     className={`w-8 h-8 ${saved[index] ? 'text-pink-500' : 'text-gray-700'}`}
                     viewBox="0 0 24 24"
@@ -149,16 +168,16 @@ const HomePage = () => {
                   </svg>
                 </div>
               </div>
-              <div className="mt-2 w-full flex justify-between items-center">
+              <div className="flex items-center justify-between w-full mt-2">
                 <div>
                   <div className="text-[#030303] text-16px font-red-hat-display leading-21px text-left">
-                    Title
+                    {listing.title}
                   </div>
                   <div className="text-[#737373] text-16px font-red-hat-display leading-21px text-left">
-                    City
+                    {listing.location.city}
                   </div>
                   <div className="text-[#212121] text-21px font-red-hat-display font-bold leading-27px text-left">
-                    Price
+                    ${listing.price}
                   </div>
                 </div>
                 <div className="cursor-pointer" onClick={() => toggleSaved(index)}>

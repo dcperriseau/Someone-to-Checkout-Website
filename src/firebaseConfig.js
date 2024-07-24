@@ -1,7 +1,7 @@
-const { initializeApp } = require('firebase/app');
-const { getFirestore } = require('firebase/firestore');
-const { getAuth, setPersistence, browserLocalPersistence } = require('firebase/auth');
-const { getStorage } = require('firebase/storage');
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,6 +21,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const getFirebaseApp = () => app;
 
 setPersistence(auth, browserLocalPersistence)
   .then(() => {
@@ -30,4 +31,4 @@ setPersistence(auth, browserLocalPersistence)
     console.error('Error setting persistence:', error);
   });
 
-module.exports = { auth, db, storage };
+export { auth, db, storage, getFirebaseApp };
