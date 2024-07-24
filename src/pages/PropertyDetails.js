@@ -14,6 +14,7 @@ const PropertyDetails = ({ selectedListing }) => {
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [email, setEmail] = useState('');
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     const fetchEmail = async () => {
@@ -95,6 +96,12 @@ const PropertyDetails = ({ selectedListing }) => {
     });
   };
 
+  const toggleDescription = () => {
+    setIsDescriptionExpanded(!isDescriptionExpanded);
+  };
+
+  const descriptionPreviewLength = 300; // Characters to show in the preview
+
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
       <div className="mt-2">
@@ -143,9 +150,17 @@ const PropertyDetails = ({ selectedListing }) => {
                   <p className="text-xs text-gray-500 md:text-sm">Updated on: {new Date(last_updated).toLocaleDateString()}</p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-gray-700 md:text-base">
-                {description}
-              </p>
+              <div className="mt-4 text-sm text-gray-700 md:text-base">
+                {isDescriptionExpanded ? description : `${description.slice(0, descriptionPreviewLength)}...`}
+                {description.length > descriptionPreviewLength && (
+                  <button
+                    onClick={toggleDescription}
+                    className="text-blue-500 ml-2"
+                  >
+                    {isDescriptionExpanded ? 'See less' : 'See more'}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
