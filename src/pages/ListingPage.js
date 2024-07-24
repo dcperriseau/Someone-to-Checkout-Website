@@ -60,7 +60,7 @@ const UploadCardText = ({ text }) => <div className="text-[#212121] text-base fo
 const DragDropText = ({ text }) => <div className="text-[#737373] text-sm font-red-hat-display leading-4 text-center mt-2">{text}</div>;
 const SmallerCard = ({ children }) => <div className="w-[160px] h-[123px] bg-[#f9f9f9] rounded-[16px] m-1 flex justify-center items-center">{children}</div>;
 const InfoText = ({ text }) => {
-  const [before, after] = text.split('Commerce Policy.');
+  const [before] = text.split('Commerce Policy.');
   return (
     <div className="text-[#737373] text-base font-semibold leading-6 font-red-hat-display text-left mt-8 px-4">
       {before}
@@ -167,7 +167,7 @@ const ListingPage = () => {
         <Step1Text />
       </div>
       <PropertyTypeText />
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 gap-6 mt-6 sm:grid-cols-3">
         {items.map((item, index) => (
           <Card key={index}>
             <Image image={item.image} />
@@ -176,7 +176,7 @@ const ListingPage = () => {
         ))}
       </div>
       <InputText text="Enter the number of bedrooms and bathrooms" />
-      <div className="flex flex-col sm:flex-row sm:space-x-6 mt-6">
+      <div className="flex flex-col mt-6 sm:flex-row sm:space-x-6">
         <div className="flex flex-col items-center">
           <InputLabel text="Bedrooms" />
           <InputStepper value={0} />
@@ -205,7 +205,7 @@ const ListingPage = () => {
           <UploadCardText text="Upload images" />
           <DragDropText text="or use Drag & Drop" />
         </Card>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-6">
+        <div className="grid grid-cols-2 gap-2 mt-6 sm:grid-cols-4">
           {smallerCards.map((_, index) => (
             <SmallerCard key={index}>
               <PlusIconComponent className="w-[40px] h-[40px] text-[#bababa]" />
@@ -221,15 +221,15 @@ const ListingPage = () => {
         <Step3Text />
       </div>
       <AddressText />
-      <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full">
-        <div className="flex flex-col gap-4 self-start w-full sm:w-1/2 relative">
+      <div className="flex flex-col w-full gap-4 mt-6 sm:flex-row">
+        <div className="relative flex flex-col self-start w-full gap-4 sm:w-1/2">
           <AddressCard text="Street address" placeholder="Enter street address" />
           <AddressCard text="City/Town" placeholder="Enter city/town" />
           <AddressCard text="State/Territory" placeholder="Enter state/territory" />
           <AddressCard text="Zipcode" placeholder="Enter zipcode" />
         </div>
         {/* Removed the map and text below */}
-        {/* <div className="flex flex-col items-center w-full sm:w-1/2 mt-6 sm:mt-0 relative">
+        {/* <div className="relative flex flex-col items-center w-full mt-6 sm:w-1/2 sm:mt-0">
           <img src="/MapPhoto.png" alt="Map" className="rounded-[26px] w-full h-auto" />
           <InteractiveMapBox position="top-2 left-2" />
           <div className="text-[#737373] text-base font-red-hat-display mt-4 text-left w-full">
@@ -237,12 +237,12 @@ const ListingPage = () => {
           </div>
         </div> */}
       </div>
-      <div className="self-start mt-10 w-full">
+      <div className="self-start w-full mt-10">
         <DescriptionText />
         <DescriptionInput />
       </div>
       <OfferText text="Tell buyers and renters what your place has to offer" />
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-2 gap-6 mt-6 sm:grid-cols-4">
         {features.map((feature, index) => (
           <FeatureCard
             key={index}
@@ -253,7 +253,7 @@ const ListingPage = () => {
           />
         ))}
       </div>
-      <div className="self-start mt-10 w-full">
+      <div className="self-start w-full mt-10">
         <div className="text-[#212121] text-xl font-bold leading-9 font-red-hat-display">
           Available Viewing Times
         </div>
@@ -261,9 +261,9 @@ const ListingPage = () => {
           Please input the times you or someone would be available to show the property to a Viewer
         </div>
       </div>
-      <div className="flex flex-col items-center mt-6 w-full">
+      <div className="flex flex-col items-center w-full mt-6">
         {daysOfWeek.map((day, index) => (
-          <div key={index} className="flex flex-col sm:flex-row sm:space-x-4 items-center w-full sm:w-1/2 mb-2">
+          <div key={index} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
             <label className="text-[#212121] text-base font-red-hat-display sm:w-1/4">{day}</label>
             <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
             <span className="mx-2 text-[#212121] text-base font-red-hat-display">to</span>

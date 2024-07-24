@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import { getFirebaseApp } from '../firebaseConfig'; // Adjust the import based on your project structure
 
 const HomePage = ({ setSelectedListing }) => {
   const [showFilters, setShowFilters] = useState(false);
@@ -22,11 +20,12 @@ const HomePage = ({ setSelectedListing }) => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const db = getFirestore(getFirebaseApp());
-        const listingsCollection = collection(db, 'property_listings');
-        const listingsSnapshot = await getDocs(listingsCollection);
-        const listingsList = listingsSnapshot.docs.map(doc => doc.data());
-        setListings(listingsList);
+        const response = await fetch('/api/listings/getlistings');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setListings(data.listings);
       } catch (error) {
         console.error('Error fetching listings:', error);
       }

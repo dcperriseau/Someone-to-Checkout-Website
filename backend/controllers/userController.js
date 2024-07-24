@@ -33,9 +33,9 @@ userController.createUser = async (req, res, next) => {
     res.locals = { uid: userRecord.uid, email, firstName, lastName };
 
     return next();
-  } catch (error) {
-    console.error(error); // Log the error for debugging
-    next({ log: 'Error in createUser middleware', message: { err: error.message } });
+  } catch (err) {
+    console.error(err); // Log the error for debugging
+    next({ log: 'Error in createUser middleware', message: { err: err.message } });
   }
 };
 
@@ -61,9 +61,9 @@ userController.loginUser = async (req, res) => {
 
     const userData = userDoc.data();
     res.status(200).json({ message: 'Login successful', user: userData });
-  } catch (error) {
-    console.error('Error verifying ID token:', error);
-    res.status(401).json({ message: 'Unauthorized', error: error.message });
+  } catch (err) {
+    console.error('Error verifying ID token:', err);
+    res.status(401).json({ message: 'Unauthorized', error: err.message });
   }
 };
 
@@ -80,9 +80,9 @@ userController.deleteUser = async (req, res, next) => {
 
     console.log(`Successfully deleted user with UID: ${uid}`);
     return next();
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ message: 'Error deleting user', error: error.message });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ message: 'Error deleting user', error: err.message });
   }
 };
 

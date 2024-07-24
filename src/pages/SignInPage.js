@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import { useAuth } from '../context/AuthContext'; // Adjust the path as necessary
+import { useNavigate } from 'react-router-dom';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const { setIdToken, redirectPath } = useAuth(); // Correctly access setIdToken from AuthContext
+  const navigate = useNavigate();
 
   const loginUser = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await userCredential.user.getIdToken();
+      setIdToken(idToken); // Use setIdToken from AuthContext
       return idToken;
     } catch (error) {
       console.error('Error logging in:', error);
@@ -36,6 +41,7 @@ const SignInPage = () => {
 
       const data = await response.json();
       console.log('Login successful:', data);
+      navigate(redirectPath); // Redirect back to the previous page
     } catch (error) {
       console.error('Error submitting login:', error);
       setError(error.message);
