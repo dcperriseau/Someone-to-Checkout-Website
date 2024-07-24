@@ -15,9 +15,8 @@ listingsController.getListings = async (req, res, next) => {
     return next();
   } catch (err) {
     console.error('Error in get listings middleware', err);
-    res.status(401).json({ message: 'Error in get listings middleware:', error: err.message });
+    next({ message: 'Error in get listings middleware:', error: err.message });
   }
 };
-
 
 module.exports = listingsController;

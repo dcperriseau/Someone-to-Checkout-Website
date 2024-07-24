@@ -1,16 +1,30 @@
-import React from "react";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import useAuth for authentication state
+import { useBasket } from '../context/BasketContext'; // Import useBasket for basket count
+import LogoutButton from './LogoutButton'; // Import LogoutButton component
 
 const Header = () => {
+  const navigate = useNavigate();
+  const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const { basketCount } = useBasket(); // Access the basketCount from BasketContext
+
   return (
     <header className="relative w-full bg-white border-l-[10px] border-r-[10px] border-t-[10px] border-borderGrey px-4">
       {/* Main header content */}
-      <div className="flex items-center justify-between h-24 flex-wrap">
+      <div className="flex flex-wrap items-center justify-between h-24">
         <div className="text-2xl font-abril-fatface text-primary">
           Someone to Check Out
         </div>
-        <div className="flex space-x-4 mt-2 sm:mt-0">
-          <Button label="Log In" customStyle="border border-gray-900 bg-white text-gray-900" />
-          <Button label="Sign Up" customStyle="bg-gray-900 text-white" />
+        <div className="flex mt-2 space-x-4 sm:mt-0">
+          {idToken ? (
+            <LogoutButton />
+          ) : (
+            <>
+              <Button label="Log In" customStyle="border border-gray-900 bg-white text-gray-900" onClick={() => navigate('/signin')} />
+              <Button label="Sign Up" customStyle="bg-gray-900 text-white" onClick={() => navigate('/signin')} />
+            </>
+          )}
         </div>
       </div>
 
@@ -18,16 +32,24 @@ const Header = () => {
       <div className="border-t border-gray-300" />
 
       {/* Sub-header content */}
-      <div className="flex flex-col sm:flex-row items-center justify-between mt-2 space-y-2 sm:space-y-0">
-        <div className="flex flex-wrap space-x-4 justify-center">
+      <div className="flex flex-col items-center justify-between mt-2 space-y-2 sm:flex-row sm:space-y-0">
+        <div className="flex flex-wrap justify-center space-x-4">
           <Text text="Properties" />
           <Text text="About" />
           <Text text="Contact Us" />
           <Text text="Request Viewing" />
         </div>
-        <div className="flex space-x-4 justify-center mt-2 sm:mt-0">
+        <div className="relative flex justify-center mt-2 space-x-4 sm:mt-0">
           <Button label="Post Listing" customStyle="border border-teal-400 bg-teal-100 text-gray-900" />
-          <Icon />
+          <div className="relative">
+            <Icon />
+            {basketCount > 0 && (
+              <span className="absolute top-1 left-0 transform -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
+                {basketCount}
+              </span>
+            )}
+          </div>
+
         </div>
       </div>
 
@@ -43,14 +65,17 @@ const Text = ({ text }) => (
   </div>
 );
 
-const Button = ({ label, customStyle }) => (
-  <button className={`cursor-pointer px-2 py-1 rounded-full text-sm font-red-hat-display font-medium ${customStyle}`}>
+const Button = ({ label, customStyle, onClick }) => (
+  <button
+    className={`cursor-pointer px-2 py-1 rounded-full text-sm font-red-hat-display font-medium ${customStyle}`}
+    onClick={onClick}
+  >
     {label}
   </button>
 );
 
 const Icon = () => (
-  <svg className="text-gray-900 fill-current w-6 h-6" viewBox="0 0 576 512">
+  <svg className="w-6 h-6 text-gray-900 fill-current" viewBox="0 0 576 512">
     <path d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"></path>
   </svg>
 );

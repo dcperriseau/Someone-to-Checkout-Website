@@ -1,14 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
 import Heart from '../components/Heart';
 import Icon from '../components/ThreeDots';
 import BackButton from '../components/BackButton';
 import SlideshowModal from '../components/SlideshowModal';
 import DetailsModal from '../components/DetailsModel';
+
 const PropertyDetails = ({ selectedListing }) => {
   const [isHearted, setIsHearted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleSendToCheckout = async () => {
+    if (!idToken) {
+      console.error('User is not authenticated');
+      localStorage.setItem('selectedListing', JSON.stringify(selectedListing)); // Save the selected listing
+      localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
+      navigate('/signin'); // Redirect to sign-in page if not authenticated
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/cart/postToCart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          propertyListing: selectedListing,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send listing to cart');
+      }
+
+      const result = await response.json();
+      console.log('Listing added to cart:', result);
+      console.log('idToken:', idToken);
+
+      // Fetch the updated basket count
+      fetchBasketCount();
+    } catch (error) {
+      console.error('Error adding listing to cart:', error);
+      localStorage.setItem('selectedListing', JSON.stringify(selectedListing)); // Save the selected listing
+      localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
+      navigate('/signin'); // Redirect to sign-in page if the operation fails
+    }
+  };
+
+  const fetchBasketCount = async () => {
+    try {
+      const response = await fetch('/api/cart/getCart', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch basket count');
+      }
+
+      const data = await response.json();
+      console.log('Basket count response data:', data); // Log the data for debugging
+
+      if (data.items && Array.isArray(data.items)) {
+        setBasketCount(data.items.length); // Assuming the API returns an array of items
+      } else {
+        console.warn('Basket count data is not in expected format', data);
+        setBasketCount(0); // Set to 0 if items array is missing or not an array
+      }
+    } catch (error) {
+      console.error('Error fetching basket count:', error);
+      setBasketCount(0); // Set to 0 in case of error
+    }
+  };
 
   if (!selectedListing) {
     return <div>No listing selected</div>;
@@ -86,7 +161,7 @@ const PropertyDetails = ({ selectedListing }) => {
           <div className="flex flex-col h-full space-y-2">
             {image_urls.slice(0, 3).map((image, index) => (
               <button key={index} onClick={() => handleImageClick(index)} className="rounded-md h-[calc(33.3333%-8px)]">
-                <img src={image} alt={`Image ${index + 1}`} className="object-cover w-full h-full rounded-2xl" />
+                <img src={image} alt={`${index + 1}`} className="object-cover w-full h-full rounded-2xl" />
               </button>
             ))}
           </div>
@@ -140,7 +215,10 @@ const PropertyDetails = ({ selectedListing }) => {
                   {renderAvailableTimes()}
                 </ul>
               </div>
-              <button className="py-2 px-2 mt-4 md:mt-[27px] w-full md:w-[292px] h-12 md:h-[48px] bg-[#212121] text-white text-base md:text-lg font-medium rounded-full">
+              <button 
+                onClick={handleSendToCheckout} 
+                className="py-2 px-2 mt-4 md:mt-[27px] w-full md:w-[292px] h-12 md:h-[48px] bg-[#212121] text-white text-base md:text-lg font-medium rounded-full"
+              >
                 Send Someone to Check out
               </button>
             </div>
