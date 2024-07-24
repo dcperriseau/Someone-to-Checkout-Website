@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Heart from '../components/Heart';
 import Icon from '../components/ThreeDots';
 import BackButton from '../components/BackButton';
 import SlideshowModal from '../components/SlideshowModal';
 import DetailsModal from '../components/DetailsModel';
+import EmailModal from '../components/EmailModal';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+
 const PropertyDetails = ({ selectedListing }) => {
   const [isHearted, setIsHearted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      if (selectedListing && selectedListing.userId) {
+        const userDoc = await getDoc(doc(db, 'users', selectedListing.userId));
+        if (userDoc.exists()) {
+          setEmail(userDoc.data().email || 'No email available');
+        } else {
+          setEmail('No email available');
+        }
+      }
+    };
+    fetchEmail();
+  }, [selectedListing]);
 
   if (!selectedListing) {
     return <div>No listing selected</div>;
@@ -131,7 +150,7 @@ const PropertyDetails = ({ selectedListing }) => {
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
-              <button className="mb-4 px-2 w-full md:w-[172px] h-8 md:h-[28px] bg-gray-200 text-black text-xs md:text-sm font-medium rounded-full flex items-center justify-center">
+              <button className="mb-4 px-2 w-full md:w-[172px] h-8 md:h-[28px] bg-gray-200 text-black text-xs md:text-sm font-medium rounded-full flex items-center justify-center" onClick={openModal}>
                 Message Seller
               </button>
               <div className="mt-4 md:-scroll-mt-3.5">
@@ -169,6 +188,7 @@ const PropertyDetails = ({ selectedListing }) => {
       </div>
       <DetailsModal isOpen={isModalOpen} onClose={closeModal} />
       <SlideshowModal isOpen={isSlideshowOpen} onClose={closeSlideshow} images={image_urls} currentIndex={currentImageIndex} />
+      <EmailModal isOpen={isModalOpen} onClose={closeModal} email={email} />
     </div>
   );
 };
