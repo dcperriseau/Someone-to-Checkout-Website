@@ -2,17 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+
 import Heart from '../components/Heart';
 import Icon from '../components/ThreeDots';
 import BackButton from '../components/BackButton';
 import SlideshowModal from '../components/SlideshowModal';
 import DetailsModal from '../components/DetailsModel';
+import EmailModal from '../components/EmailModal';
 
 const PropertyDetails = ({ selectedListing }) => {
   const [isHearted, setIsHearted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const { idToken } = useAuth(); // Access the idToken from AuthContext
   const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
   const navigate = useNavigate(); // Initialize useNavigate
@@ -85,6 +90,23 @@ const PropertyDetails = ({ selectedListing }) => {
     }
   };
 
+  const [email, setEmail] = useState('');
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      if (selectedListing && selectedListing.userId) {
+        const userDoc = await getDoc(doc(db, 'users', selectedListing.userId));
+        if (userDoc.exists()) {
+          setEmail(userDoc.data().email || 'No email available');
+        } else {
+          setEmail('No email available');
+        }
+      }
+    };
+    fetchEmail();
+  }, [selectedListing]);
+
   if (!selectedListing) {
     return <div>No listing selected</div>;
   }
@@ -151,6 +173,12 @@ const PropertyDetails = ({ selectedListing }) => {
     });
   };
 
+  const toggleDescription = () => {
+    setIsDescriptionExpanded(!isDescriptionExpanded);
+  };
+
+  const descriptionPreviewLength = 300; // Characters to show in the preview
+
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
       <div className="mt-2">
@@ -199,14 +227,22 @@ const PropertyDetails = ({ selectedListing }) => {
                   <p className="text-xs text-gray-500 md:text-sm">Updated on: {new Date(last_updated).toLocaleDateString()}</p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-gray-700 md:text-base">
-                {description}
-              </p>
+              <div className="mt-4 text-sm text-gray-700 md:text-base">
+                {isDescriptionExpanded ? description : `${description.slice(0, descriptionPreviewLength)}...`}
+                {description.length > descriptionPreviewLength && (
+                  <button
+                    onClick={toggleDescription}
+                    className="text-blue-500 ml-2"
+                  >
+                    {isDescriptionExpanded ? 'See less' : 'See more'}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
-              <button className="mb-4 px-2 w-full md:w-[172px] h-8 md:h-[28px] bg-gray-200 text-black text-xs md:text-sm font-medium rounded-full flex items-center justify-center">
+              <button className="mb-4 px-2 w-full md:w-[172px] h-8 md:h-[28px] bg-gray-200 text-black text-xs md:text-sm font-medium rounded-full flex items-center justify-center" onClick={openModal}>
                 Message Seller
               </button>
               <div className="mt-4 md:-scroll-mt-3.5">
@@ -247,6 +283,7 @@ const PropertyDetails = ({ selectedListing }) => {
       </div>
       <DetailsModal isOpen={isModalOpen} onClose={closeModal} />
       <SlideshowModal isOpen={isSlideshowOpen} onClose={closeSlideshow} images={image_urls} currentIndex={currentImageIndex} />
+      <EmailModal isOpen={isModalOpen} onClose={closeModal} email={email} />
     </div>
   );
 };
