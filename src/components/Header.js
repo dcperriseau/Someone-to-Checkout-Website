@@ -13,7 +13,10 @@ const Header = () => {
     <header className="relative w-full bg-white border-l-[10px] border-r-[10px] border-t-[10px] border-borderGrey px-4">
       {/* Main header content */}
       <div className="flex flex-wrap items-center justify-between h-24">
-        <div className="text-2xl font-abril-fatface text-primary">
+        <div
+          className="text-2xl cursor-pointer font-abril-fatface text-primary"
+          onClick={() => navigate('/')}
+        >
           Someone to Check Out
         </div>
         <div className="flex mt-2 space-x-4 sm:mt-0">
@@ -33,15 +36,15 @@ const Header = () => {
 
       {/* Sub-header content */}
       <div className="flex flex-col items-center justify-between mt-2 space-y-2 sm:flex-row sm:space-y-0">
-        <div className="flex flex-wrap justify-center space-x-4">
-          <Text text="Properties" />
-          <Text text="About" />
-          <Text text="Contact Us" />
-          <Text text="Request Viewing" />
+        <div className="flex flex-wrap justify-center space-x-4 text-red-hat-display">
+          <button onClick={() => navigate('/')} className="text-black">Properties</button>
+          <button onClick={() => navigate('/aboutus')} className="text-black">About</button>
+          <button onClick={() => navigate('/contactus')} className="text-black">Contact Us</button>
+          <button onClick={() => navigate('/suggestlisting')} className="text-black">Request Viewing</button>
         </div>
         <div className="relative flex justify-center mt-2 space-x-4 sm:mt-0">
-          <Button label="Post Listing" customStyle="border border-teal-400 bg-teal-100 text-gray-900" />
-          <div className="relative">
+          <Button label="Post Listing" customStyle="border border-teal-400 bg-teal-100 text-gray-900" onClick={() => navigate('/postlistings')} />
+          <div className="relative cursor-pointer" onClick={() => navigate('/shoppingbasket')}>
             <Icon />
             {basketCount > 0 && (
               <span className="absolute top-1 left-0 transform -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">
@@ -49,7 +52,6 @@ const Header = () => {
               </span>
             )}
           </div>
-
         </div>
       </div>
 

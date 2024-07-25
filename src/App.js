@@ -6,7 +6,7 @@ import PostListings from './pages/PostListings';
 import SuggestListing from './pages/SuggestListing';
 import ShoppingBasket from './pages/ShoppingBasket';
 import AboutUsPage from './pages/AboutUsPage';
-import ContactUs from './pages/Contact Page/ContactPage';
+import ContactUs from './pages/ContactPage';
 import ListingPage from './pages/ListingPage';
 import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
