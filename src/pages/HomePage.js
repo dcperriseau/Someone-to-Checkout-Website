@@ -156,7 +156,11 @@ const HomePage = ({ setSelectedListing }) => {
         <div className="grid grid-cols-2 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-4 sm:px-6 lg:px-10">
           {listings.map((listing, index) => (
             <div key={index} className="flex flex-col items-center">
-              <div className="relative w-full h-48 bg-center bg-cover rounded-md" style={{ backgroundImage: `url(${listing.main_image_url})` }} onClick={() => handleImageClick(listing)}>
+              <div
+                className="relative w-full h-48 bg-center bg-cover rounded-md"
+                style={{ backgroundImage: `url(${listing.main_image_url || (listing.image_urls.length > 0 ? listing.image_urls[0] : '/defaultImage.jpg')})` }}
+                onClick={() => handleImageClick(listing, index)}
+              >
                 <div className="absolute cursor-pointer top-2 right-2" onClick={() => toggleSaved(index)}>
                   <svg
                     className={`w-8 h-8 ${saved[index] ? 'text-pink-500' : 'text-gray-700'}`}

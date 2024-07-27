@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebaseConfig';
 
 // Custom Text Components
 const Step1Text = ({ text = 'Step 1' }) => <div className="text-[#212121] text-2xl font-bold leading-9 font-red-hat-display">{text}</div>;
@@ -87,11 +90,20 @@ const AddressCard = ({ placeholder, value, name, onChange }) => (
   </div>
 );
 
-
 const DescriptionInput = ({ value, onChange }) => (
   <textarea 
     className="w-full h-[150px] p-4 border border-[#e8e8e8] rounded-[16px] bg-white mt-2 resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
     placeholder="Enter property description here..."
+    value={value}
+    onChange={onChange}
+  />
+);
+
+// Title Input Component
+const TitleInput = ({ value, onChange }) => (
+  <input 
+    className="w-full h-[40px] p-4 border border-[#e8e8e8] rounded-[16px] bg-white mt-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+    placeholder="Enter title here..."
     value={value}
     onChange={onChange}
   />
@@ -141,22 +153,36 @@ const PostButton = ({ onClick }) => {
 
 const ListingPage = () => {
   const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const navigate = useNavigate();
+  const today = new Date().toISOString(); // Get today's date in ISO format
   const [listing, setListing] = useState({
     type: '',
-    bedrooms: 0,
-    bathrooms: 0,
+    bedroom_count: 0,
+    bathroom_count: 0,
     price: 0,
-    photos: [],
+    image_urls: [],
     location: {
-      address: '',
+      street_address: '',
       city: '',
-      state: '',
-      zipCode: '',
+      state_name: '',
+      zip_code: '',
     },
+    title: '',
     description: '',
     features: [],
-    availability: {}
+    available_times: {
+      sunday: "none",
+      monday: "none",
+      tuesday: "none",
+      wednesday: "none",
+      thursday: "none",
+      friday: "none",
+      saturday: "none"
+    },
+    date_created: today, // Default to today's date
+    last_updated: today // Default to today's date
   });
+  
 
   const items = [
     {
@@ -191,7 +217,44 @@ const ListingPage = () => {
 
   const submitListing = async () => {
     try {
-      console.log('idtoken', idToken)
+      if (!idToken) {
+        navigate('/signin');
+        return;
+      }
+      
+      const isValidAvailability = Object.values(listing.available_times).some(dayTimes => {
+        if (dayTimes === "none") {
+          return false;
+        }
+        return dayTimes.some(slot => slot.start && slot.end);
+      });
+      
+      const isValidFeatures = listing.features.length > 0;
+  
+      console.log("Type:", listing.type);
+      console.log("Bedrooms:", listing.bedroom_count);
+      console.log("Bathrooms:", listing.bathroom_count);
+      console.log("Price:", listing.price);
+      console.log("Street Address:", listing.location.street_address);
+      console.log("City:", listing.location.city);
+      console.log("State:", listing.location.state_name);
+      console.log("Zip Code:", listing.location.zip_code);
+      console.log("Title:", listing.title);
+      console.log("Description:", listing.description);
+      console.log("Photos count:", listing.image_urls.length);
+      console.log("Valid Availability:", isValidAvailability);
+      console.log("Valid Features:", isValidFeatures);
+      console.log("Available Times:", listing.available_times);
+  
+      const isListingValid = listing.type && listing.bedroom_count > 0 && listing.bathroom_count > 0 && listing.price > 0 &&
+        listing.location.street_address && listing.location.city && listing.location.state_name && listing.location.zip_code &&
+        listing.title && listing.description && listing.image_urls.length > 0 && isValidAvailability && isValidFeatures;
+  
+      if (!isListingValid) {
+        alert('Please fill out all fields before submitting. Ensure at least one viewing time and one feature are selected.');
+        return;
+      }
+  
       const response = await fetch('/api/listings/postlisting', {
         method: 'POST',
         headers: {
@@ -248,17 +311,17 @@ const ListingPage = () => {
     }));
   };
 
-  const handleBedroomsChange = (e) => {
+  const handleBedroomCountChange = (e) => {
     setListing((prevListing) => ({
       ...prevListing,
-      bedrooms: e.target.value
+      bedroom_count: e.target.value
     }));
   };
 
-  const handleBathroomsChange = (e) => {
+  const handleBathroomCountChange = (e) => {
     setListing((prevListing) => ({
       ...prevListing,
-      bathrooms: e.target.value
+      bathroom_count: e.target.value
     }));
   };
 
@@ -269,38 +332,76 @@ const ListingPage = () => {
     }));
   };
 
+  const handleTitleChange = (e) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      title: e.target.value
+    }));
+  };
+
   const handleDescriptionChange = (e) => {
     setListing((prevListing) => ({
       ...prevListing,
       description: e.target.value
     }));
   };
+// Function to convert time to 12-hour format with AM/PM
+const convertTo12HourFormat = (time) => {
+  let [hour, minute] = time.split(':');
+  hour = parseInt(hour);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour}:${minute} ${period}`;
+};
 
-  const handleAvailabilityChange = (day, timeType, value) => {
-    setListing((prevListing) => ({
+const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
+  const formattedTime = convertTo12HourFormat(value);
+  const lowerCaseDay = day.toLowerCase();
+  setListing((prevListing) => {
+    const dayTimes = prevListing.available_times[lowerCaseDay];
+    const updatedTimes = Array.isArray(dayTimes) ? [...dayTimes] : [];
+    
+    if (!updatedTimes[index]) {
+      updatedTimes[index] = {};
+    }
+    updatedTimes[index][timeType] = formattedTime;
+
+    return {
       ...prevListing,
-      availability: {
-        ...prevListing.availability,
-        [day]: {
-          ...prevListing.availability[day],
-          [timeType]: value
-        }
+      available_times: {
+        ...prevListing.available_times,
+        [lowerCaseDay]: updatedTimes
       }
-    }));
-  };
+    };
+  });
+  console.log(`Availability updated: ${lowerCaseDay} ${timeType} = ${formattedTime}`);
+  console.log('Updated available_times:', listing.available_times);
+};
 
   const handlePostListing = () => {
     console.log('Posting listing:', listing);
     submitListing();
   };
 
-  const handlePhotoUpload = (event) => {
+  const handlePhotoUpload = async (event) => {
     const files = Array.from(event.target.files);
-    const photos = files.map(file => URL.createObjectURL(file));
-    setListing((prevListing) => ({
-      ...prevListing,
-      photos: [...prevListing.photos, ...photos]
-    }));
+    const uploadPromises = files.map(async (file) => {
+      const storageRef = ref(storage, `images/${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
+    });
+
+    try {
+      const photoURLs = await Promise.all(uploadPromises);
+      setListing((prevListing) => ({
+        ...prevListing,
+        image_urls: [...prevListing.image_urls, ...photoURLs]
+      }));
+      console.log("Uploaded photos:", photoURLs);
+    } catch (error) {
+      console.error("Error uploading photos:", error);
+    }
   };
 
   const handlePropertyTypeClick = (type) => {
@@ -332,11 +433,11 @@ const ListingPage = () => {
       <div className="flex flex-col mt-6 sm:flex-row sm:space-x-6">
         <div className="flex flex-col items-center">
           <InputLabel text="Bedrooms" />
-          <InputStepper value={listing.bedrooms} onChange={handleBedroomsChange} />
+          <InputStepper value={listing.bedroom_count} onChange={handleBedroomCountChange} />
         </div>
         <div className="flex flex-col items-center mt-4 sm:mt-0">
           <InputLabel text="Bathrooms" />
-          <InputStepper value={listing.bathrooms} onChange={handleBathroomsChange} />
+          <InputStepper value={listing.bathroom_count} onChange={handleBathroomCountChange} />
         </div>
       </div>
       <InputText text="Enter the price of your property" />
@@ -351,21 +452,26 @@ const ListingPage = () => {
       <UploadPhotosText />
       <PhotoDescriptionText />
       <div className="w-full sm:w-[727px] flex flex-col items-center">
-        <Card className="w-full sm:w-[694px] h-[372px] bg-[#f9f9f9] flex flex-col justify-center items-center">
+        <Card className="w-full sm:w-[694px] h-[372px] bg-[#f9f9f9] flex flex-col justify-center items-center relative">
           <div className="w-[100px] h-[100px] bg-[#e8e8e8] rounded-full flex justify-center items-center">
             <IconUploadComponent className="w-[43px] h-[43px] text-[#47cad2]" />
           </div>
           <UploadCardText text="Upload images" />
           <DragDropText text="or use Drag & Drop" />
-          <input type="file" multiple onChange={handlePhotoUpload} className="mt-4" />
+          <input 
+            type="file" 
+            multiple 
+            onChange={handlePhotoUpload} 
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+          />
         </Card>
         <div className="grid grid-cols-2 gap-2 mt-6 sm:grid-cols-4">
-          {listing.photos.map((photo, index) => (
+          {listing.image_urls.map((photo, index) => (
             <SmallerCard key={index}>
               <img src={photo} alt={`Property ${index}`} className="w-full h-full object-cover rounded-[16px]" />
             </SmallerCard>
           ))}
-          {smallerCards.slice(listing.photos.length).map((_, index) => (
+          {smallerCards.slice(listing.image_urls.length).map((_, index) => (
             <SmallerCard key={index}>
               <PlusIconComponent className="w-[40px] h-[40px] text-[#bababa]" />
             </SmallerCard>
@@ -382,11 +488,15 @@ const ListingPage = () => {
       <AddressText />
       <div className="flex flex-col w-full gap-4 mt-6 sm:flex-row">
         <div className="relative flex flex-col self-start w-full gap-4 sm:w-1/2">
-          <AddressCard text="Street address" placeholder="Enter street address" value={listing.location.address} name="address" onChange={handleLocationChange} />
+          <AddressCard text="Street address" placeholder="Enter street address" value={listing.location.street_address} name="street_address" onChange={handleLocationChange} />
           <AddressCard text="City/Town" placeholder="Enter city/town" value={listing.location.city} name="city" onChange={handleLocationChange} />
-          <AddressCard text="State/Territory" placeholder="Enter state/territory" value={listing.location.state} name="state" onChange={handleLocationChange} />
-          <AddressCard text="Zipcode" placeholder="Enter zipcode" value={listing.location.zipCode} name="zipCode" onChange={handleLocationChange} />
+          <AddressCard text="State/Territory" placeholder="Enter state/territory" value={listing.location.state_name} name="state_name" onChange={handleLocationChange} />
+          <AddressCard text="Zipcode" placeholder="Enter zipcode" value={listing.location.zip_code} name="zip_code" onChange={handleLocationChange} />
         </div>
+      </div>
+      <div className="self-start w-full mt-10">
+        <InputText text="Enter the title of your property" />
+        <TitleInput value={listing.title} onChange={handleTitleChange} />
       </div>
       <div className="self-start w-full mt-10">
         <DescriptionText />
@@ -416,9 +526,9 @@ const ListingPage = () => {
         {daysOfWeek.map((day, index) => (
           <div key={index} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
             <label className="text-[#212121] text-base font-red-hat-display sm:w-1/4">{day}</label>
-            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailabilityChange(day, 'start', e.target.value)} />
+            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailableTimesChange(day, 'start', e.target.value)} />
             <span className="mx-2 text-[#212121] text-base font-red-hat-display">to</span>
-            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailabilityChange(day, 'end', e.target.value)} />
+            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailableTimesChange(day, 'end', e.target.value)} />
           </div>
         ))}
       </div>

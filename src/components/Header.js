@@ -9,6 +9,14 @@ const Header = () => {
   const { idToken } = useAuth(); // Access the idToken from AuthContext
   const { basketCount } = useBasket(); // Access the basketCount from BasketContext
 
+  const handleCartClick = () => {
+    if (idToken) {
+      navigate('/shoppingbasket');
+    } else {
+      navigate('/signin');
+    }
+  };
+
   return (
     <header className="relative w-full bg-white border-l-[10px] border-r-[10px] border-t-[10px] border-borderGrey px-4">
       {/* Main header content */}
@@ -44,7 +52,7 @@ const Header = () => {
         </div>
         <div className="relative flex justify-center mt-2 space-x-4 sm:mt-0">
           <Button label="Post Listing" customStyle="border border-teal-400 bg-teal-100 text-gray-900" onClick={() => navigate('/postlistings')} />
-          <div className="relative cursor-pointer" onClick={() => navigate('/shoppingbasket')}>
+          <div className="relative cursor-pointer" onClick={handleCartClick}>
             <Icon />
             {basketCount > 0 && (
               <span className="absolute top-1 left-0 transform -translate-x-1/2 -translate-y-1/2 px-1.5 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">

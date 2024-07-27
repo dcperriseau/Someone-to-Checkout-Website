@@ -12,6 +12,8 @@ import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
 import PersonalProfile from './pages/PersonalProfile';
 import PropertyDetails from './pages/PropertyDetails';
+import ListersProfile from './pages/ListersProfile';
+import Success from './pages/Success';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { AuthProvider } from './context/AuthContext';
@@ -35,7 +37,7 @@ function App() {
             <Router>
               <Header />
               <div className="flex-grow">
-                <Elements stripe={stripePromise}>
+              <Elements stripe={stripePromise}>
                   <Routes>
                     <Route path="/" element={<HomePage setSelectedListing={setSelectedListing}/>} />
                     <Route path="/postlistings" element={<PostListings />} />
@@ -44,9 +46,11 @@ function App() {
                     <Route path="/contactus" element={<ContactUs />} />
                     <Route path="/listingpage" element={<ListingPage />} />
                     <Route path="/aboutus" element={<AboutUsPage />} />
-                    <Route path ="/personalprofile" element={<PersonalProfile />} />
+                    <Route path="/personalprofile" element={<PersonalProfile setSelectedListing={setSelectedListing} />} />
+                    <Route path="/listersprofile" element={<ListersProfile />} />
                     <Route path ="/propertydetails" element={<PropertyDetails selectedListing={selectedListing} />} />
                     <Route path="/signin" element={<SignInPage />} />
+                    <Route path="/success" element={<Success />} />
                   </Routes>
                 </Elements>
               </div>

@@ -1,44 +1,81 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Heart from '../components/Heart';
+import { useAuth } from '../context/AuthContext'; // Assuming you have an AuthContext to get the user token
 
-const PersonalProfile = () => {
-  const savedListings = [
-    {
-      title: 'Private Room For Rent',
-      hearts: 15,
-      location: 'Larchmont',
-      price: '$1,100',
-      image: process.env.PUBLIC_URL + "/personalProfile/listimage.png"
-    },
-    {
-      title: 'Title',
-      hearts: 130,
-      location: 'location',
-      price: '$Price',
-      image: process.env.PUBLIC_URL + "/personalProfile/listimage1.png"
-    },
-    {
-      title: 'Title',
-      hearts: 3,
-      location: 'location',
-      price: '$Price',
-      image: process.env.PUBLIC_URL + "/personalProfile/listimage2.png"
-    },
-    {
-      title: 'Title',
-      hearts: 19,
-      location: 'location',
-      price: '$Price',
-      image: process.env.PUBLIC_URL + "/personalProfile/listimage3.png"
-    },
-    {
-      title: 'Title',
-      hearts: 83,
-      location: 'location',
-      price: '$Price',
-      image: process.env.PUBLIC_URL + "/personalProfile/listimage4.png"
+const PersonalProfile = ({ setSelectedListing }) => {
+  const [savedListings, setSavedListings] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [user, setUser] = useState({ firstName: '', lastName: '' });
+  const { idToken } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/user/profile', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+  
+    const fetchListings = async () => {
+      try {
+        const response = await fetch('/api/listings/getuserlistings', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+        const data = await response.json();
+        setSavedListings(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching user listings:', error);
+        setSavedListings([]);
+      }
+    };
+  
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('/api/orders/getorder', {
+          headers: {
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
+        const data = await response.json();
+        setOrders(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching user orders:', error);
+        setOrders([]);
+      }
+    };
+  
+    if (idToken) {
+      fetchUserProfile();
+      fetchListings();
+      fetchOrders();
     }
-  ];
+  }, [idToken]);
+  
+  const getListingImage = (listing) => {
+    if (listing.main_image_url) {
+      return listing.main_image_url;
+    } else if (listing.image_urls && listing.image_urls.length > 0) {
+      return listing.image_urls[0];
+    } else {
+      return process.env.PUBLIC_URL + "/placeholder-image.png"; // Fallback placeholder image
+    }
+  };
+
+  const handleListingClick = (listing) => {
+    setSelectedListing(listing);
+    navigate('/propertydetails');
+  };
 
   return (
     <div className="w-full overflow-hidden font-red-hat-display">
@@ -48,12 +85,14 @@ const PersonalProfile = () => {
           <div className="relative w-32 h-32 md:w-40 md:h-40">
             <img
               src={process.env.PUBLIC_URL + "/personalProfile/propic1.png"}
-              alt="Dominique Perriseau"
+              alt={`${user.firstName} ${user.lastName}`}
               className="object-cover w-full h-full rounded-full"
             />
           </div>
           <div className="flex flex-col items-start w-full mt-4 md:mt-0 md:ml-8 md:w-auto">
-            <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>Dominique Perriseau</h1>
+            <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>
+              {user.firstName} {user.lastName}
+            </h1>
             <p className="text-xl md:text-2xl text-textTeritary" style={{ fontSize: '16px' }}>Los Angeles, CA</p>
           </div>
         </div>
@@ -63,31 +102,46 @@ const PersonalProfile = () => {
         </div>
       </div>
       <div className="w-full px-5 py-5 md:px-10">
-  <h2 className="mb-5 text-2xl font-semibold text-textTeritary">Saved Listings</h2>
-  <div className="flex flex-wrap justify-start -mx-2">
-    {savedListings.map((item, index) => (
-      <div key={index} className="w-1/2 px-2 mb-5 md:w-1/3 lg:w-1/5">
-        <button className="w-full focus:outline-none">
-          <img src={item.image} alt={item.title} className="object-cover w-full h-48 mb-2 rounded-md md:h-64" />
-        </button>
-        <div className="flex items-center justify-between mb-1">
-          <p className="text-lg font-thin text-textPrimary">{item.title}</p>
-          <span className="flex items-center space-x-2 text-textPrimary">
-              {item.hearts}
-              <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
-            </span>
+        <h2 className="mb-5 text-2xl font-semibold text-textTeritary">Your Listings</h2>
+        <div className="flex flex-wrap justify-start -mx-2">
+          {savedListings.map((item, index) => (
+            <div key={index} className="w-1/2 px-2 mb-5 md:w-1/3 lg:w-1/5">
+              <button className="w-full focus:outline-none" onClick={() => handleListingClick(item)}>
+                <img src={getListingImage(item)} alt={item.title} className="object-cover w-full h-48 mb-2 rounded-md md:h-64" />
+              </button>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-lg font-thin text-textPrimary">{item.title}</p>
+                <span className="flex items-center space-x-2 text-textPrimary">
+                  {item.hearts}
+                  <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
+                </span>
+              </div>
+              <p className="mb-1 font-thin text-textSecondary">
+                {item.location.street_address}, {item.location.city}, {item.location.state_name}, {item.location.zip_code}
+              </p>
+              <p className="mb-1 text-xl font-bold text-textTeritary">{item.price}</p>
+            </div>
+          ))}
+          {[...Array(5 - savedListings.length)].map((_, index) => (
+            <div key={`placeholder-${index}`} className="invisible w-1/2 px-2 mb-5 md:w-1/3 lg:w-1/5">
+              Placeholder
+            </div>
+          ))}
         </div>
-        <p className="mb-1 font-thin text-textSecondary">{item.location}</p>
-        <p className="mb-1 text-xl font-bold text-textTeritary">{item.price}</p>
+        <h2 className="mt-10 mb-5 text-2xl font-semibold text-textTeritary">Orders</h2>
+        <div className="flex flex-wrap justify-start -mx-2">
+          {orders.map((order, index) => (
+            <div key={index} className="w-full px-2 mb-5 md:w-1/2 lg:w-1/3">
+              <div className="p-4 border rounded-md">
+                <h3 className="mb-2 text-lg font-bold">Order ID: {order.id}</h3>
+                <p className="mb-1">Total: {order.total}</p>
+                <p className="mb-1">Date: {new Date(order.date).toLocaleDateString()}</p>
+                {/* Add other order details as needed */}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-    {[...Array(5 - savedListings.length)].map((_, index) => (
-      <div key={`placeholder-${index}`} className="invisible w-1/2 px-2 mb-5 md:w-1/3 lg:w-1/5">
-        Placeholder
-      </div>
-    ))}
-  </div>
-</div>
     </div>
   );
 };

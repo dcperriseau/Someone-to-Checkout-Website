@@ -17,6 +17,7 @@ const PropertyDetails = ({ selectedListing }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedTime, setSelectedTime] = useState(null); // State for selected available time
 
   const { idToken } = useAuth(); // Access the idToken from AuthContext
   const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
@@ -30,8 +31,38 @@ const PropertyDetails = ({ selectedListing }) => {
       navigate('/signin'); // Redirect to sign-in page if not authenticated
       return;
     }
+    console.log('Selected time:', selectedTime);
+    if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
+      alert('Please select a valid available time before proceeding.');
+      return;
+    }
 
     try {
+      // Check if the listing is already in the user's basket
+      const basketResponse = await fetch('/api/cart/getCart', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
+      if (!basketResponse.ok) {
+        throw new Error('Failed to fetch basket items');
+      }
+
+      const basketData = await basketResponse.json();
+      console.log('Basket Data:', basketData); // Log the basket data to understand its structure
+
+      const isItemInBasket = basketData.items.some(
+        item => item.propertyListing && item.propertyListing.id === selectedListing.id
+      );
+      console.log('Is item in basket:', isItemInBasket);
+      if (isItemInBasket) {
+        alert('This item is already in your basket.');
+        return;
+      }
+
       const response = await fetch('/api/cart/postToCart', {
         method: 'POST',
         headers: {
@@ -39,7 +70,10 @@ const PropertyDetails = ({ selectedListing }) => {
           Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
-          propertyListing: selectedListing,
+          propertyListing: {
+            ...selectedListing,
+            selectedTime,
+          },
         }),
       });
 
@@ -50,6 +84,10 @@ const PropertyDetails = ({ selectedListing }) => {
       const result = await response.json();
       console.log('Listing added to cart:', result);
       console.log('idToken:', idToken);
+      if (result.message === 'Item already in cart') {
+        alert('This item is already in your basket.');
+        return;
+      }
 
       // Fetch the updated basket count
       fetchBasketCount();
@@ -91,20 +129,25 @@ const PropertyDetails = ({ selectedListing }) => {
   };
 
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState(''); // State for full name
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
-    const fetchEmail = async () => {
+    const fetchUserDetails = async () => {
       if (selectedListing && selectedListing.userId) {
         const userDoc = await getDoc(doc(db, 'users', selectedListing.userId));
         if (userDoc.exists()) {
-          setEmail(userDoc.data().email || 'No email available');
+          const userData = userDoc.data();
+          setEmail(userData.email || 'No email available');
+          const name = userData.username || `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
+          setFullName(name || 'No name available');
         } else {
           setEmail('No email available');
+          setFullName('No name available');
         }
       }
     };
-    fetchEmail();
+    fetchUserDetails();
   }, [selectedListing]);
 
   if (!selectedListing) {
@@ -116,12 +159,11 @@ const PropertyDetails = ({ selectedListing }) => {
     price,
     description,
     main_image_url,
-    image_urls,
-    location,
+    image_urls = [], // Ensure image_urls is defined
+    location = {}, // Ensure location is defined
     bathroom_count,
     bedroom_count,
-    available_times,
-    username,
+    available_times = {}, // Ensure available_times is defined
     date_created,
     last_updated,
   } = selectedListing;
@@ -149,10 +191,19 @@ const PropertyDetails = ({ selectedListing }) => {
 
   const renderAvailableTimes = () => {
     return Object.entries(available_times).map(([day, time]) => {
-      if (typeof time === 'string') {
+      if (typeof time === 'string' && time.trim()) {
         return (
           <li key={day} className="text-xs md:text-sm">
-            {day.charAt(0).toUpperCase() + day.slice(1)}: {time}
+            <label>
+              <input
+                type="radio"
+                name="availableTime"
+                value={`${day}: ${time}`}
+                checked={selectedTime === `${day}: ${time}`}
+                onChange={() => setSelectedTime(`${day}: ${time}`)}
+              />
+              {day.charAt(0).toUpperCase() + day.slice(1)}: {time}
+            </label>
           </li>
         );
       } else if (Array.isArray(time)) {
@@ -161,9 +212,20 @@ const PropertyDetails = ({ selectedListing }) => {
             {day.charAt(0).toUpperCase() + day.slice(1)}:
             <ul>
               {time.map((slot, index) => (
-                <li key={index}>
-                  {slot.start} - {slot.end}
-                </li>
+                slot.start.trim() && slot.end.trim() && (
+                  <li key={index}>
+                    <label>
+                      <input
+                        type="radio"
+                        name="availableTime"
+                        value={`${day}: ${slot.start} - ${slot.end}`}
+                        checked={selectedTime === `${day}: ${slot.start} - ${slot.end}`}
+                        onChange={() => setSelectedTime(`${day}: ${slot.start} - ${slot.end}`)}
+                      />
+                      {slot.start} - {slot.end}
+                    </label>
+                  </li>
+                )
               ))}
             </ul>
           </li>
@@ -178,7 +240,10 @@ const PropertyDetails = ({ selectedListing }) => {
   };
 
   const descriptionPreviewLength = 300; // Characters to show in the preview
-
+  // If there is no main_image_url, use the first image from image_urls array as the main image
+  const displayedMainImage = main_image_url || (image_urls.length > 0 ? image_urls[0] : '');
+  const remainingImages = main_image_url ? image_urls : image_urls.slice(1);
+  console.log(displayedMainImage);
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
       <div className="mt-2">
@@ -187,15 +252,15 @@ const PropertyDetails = ({ selectedListing }) => {
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-2 md:space-x-[20px] pt-8">
         <div className="flex h-[250px] sm:h-[300px] md:h-[400px] flex-initial">
           <div className="flex flex-col h-full space-y-2">
-            {image_urls.slice(0, 3).map((image, index) => (
-              <button key={index} onClick={() => handleImageClick(index)} className="rounded-md h-[calc(33.3333%-8px)]">
-                <img src={image} alt={`${index + 1}`} className="object-cover w-full h-full rounded-2xl" />
+            {remainingImages.slice(0, 3).map((image, index) => (
+              <button key={index} onClick={() => handleImageClick(index + 1)} className="rounded-md h-[calc(33.3333%-8px)]">
+                <img src={image} alt={`${index + 2}`} className="object-cover w-full h-full rounded-2xl" />
               </button>
             ))}
           </div>
           <div className="relative flex-1 ml-2 sm:ml-3 md:ml-4">
-            <button onClick={() => handleImageClick(3)} className="w-full h-full rounded-2xl">
-              <img src={main_image_url} alt="Main property" className="flex-1 object-cover w-full h-full rounded-2xl" />
+            <button onClick={() => handleImageClick(0)} className="w-full h-full rounded-2xl">
+              <img src={displayedMainImage} alt="Main property" className="flex-1 object-cover w-full h-full rounded-2xl" />
               <button
                 onClick={toggleHeart}
                 className="absolute flex items-center justify-center w-12 h-12 text-gray-400 bg-gray-200 rounded-full top-2 right-2"
@@ -220,9 +285,9 @@ const PropertyDetails = ({ selectedListing }) => {
           <div className="flex flex-col mt-4 md:flex-row">
             <div className="flex flex-col flex-1">
               <div className="flex items-center">
-                <img src={main_image_url} alt={username} className="w-8 h-8 rounded-full md:w-10 md:h-10" />
+                <img src={displayedMainImage} alt={fullName} className="w-8 h-8 rounded-full md:w-10 md:h-10" />
                 <div className="ml-2">
-                  <p className="font-semibold">{username}</p>
+                  <p className="font-semibold">{fullName}</p>
                   <p className="text-xs text-gray-500 md:text-sm">Listed on: {new Date(date_created).toLocaleDateString()}</p>
                   <p className="text-xs text-gray-500 md:text-sm">Updated on: {new Date(last_updated).toLocaleDateString()}</p>
                 </div>
@@ -232,7 +297,7 @@ const PropertyDetails = ({ selectedListing }) => {
                 {description.length > descriptionPreviewLength && (
                   <button
                     onClick={toggleDescription}
-                    className="text-blue-500 ml-2"
+                    className="ml-2 text-blue-500"
                   >
                     {isDescriptionExpanded ? 'See less' : 'See more'}
                   </button>
@@ -268,13 +333,7 @@ const PropertyDetails = ({ selectedListing }) => {
                   <span>Bathrooms: {bathroom_count}</span>
                 </li>
                 <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
-                  <span>Address: {location.street_address}, {location.city}, {location.state_code} {location.zip_code}</span>
-                </li>
-                <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
-                  <span>Latitude: {location.latitude}</span>
-                </li>
-                <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
-                  <span>Longitude: {location.longitude}</span>
+                  <span>Address: {location.address}, {location.city}, {location.state} {location.zipCode}</span>
                 </li>
               </ul>
             </div>

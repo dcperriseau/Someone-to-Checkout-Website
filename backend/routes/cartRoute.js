@@ -17,4 +17,8 @@ router.delete('/deletefromcart', authController.verifyToken, cartController.dele
   res.status(200).json({ message: 'Listing successfully deleted from cart', shoppingCart: res.locals.shoppingCart });
 })
 
+router.delete('/deleteAllFromCart', authController.verifyToken, cartController.deleteAllFromCart, (req, res) => {
+  res.status(200).json({ message: 'All listings successfully deleted from cart', shoppingCart: res.locals.shoppingCart });
+});
+
 module.exports = router;

@@ -41,7 +41,7 @@ const SignInPage = () => {
 
       const data = await response.json();
       console.log('Login successful:', data);
-      navigate(redirectPath); // Redirect back to the previous page
+      navigate(redirectPath || '/'); // Redirect back to the previous page or home
     } catch (error) {
       console.error('Error submitting login:', error);
       setError(error.message);

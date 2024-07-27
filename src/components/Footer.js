@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+  const navigate = useNavigate();
+  
   return (
     <footer className="w-full bg-gray-100 py-12">
       <div className="container mx-auto px-4">
