@@ -10,6 +10,7 @@ import ContactUs from './pages/ContactPage';
 import ListingPage from './pages/ListingPage';
 import HomePage from './pages/HomePage';
 import SignInPage from './pages/SignInPage';
+import SignUpPage from './pages/SignUpPage';
 import PersonalProfile from './pages/PersonalProfile';
 import PropertyDetails from './pages/PropertyDetails';
 import ListersProfile from './pages/ListersProfile';
@@ -37,7 +38,7 @@ function App() {
             <Router>
               <Header />
               <div className="flex-grow">
-              <Elements stripe={stripePromise}>
+                <Elements stripe={stripePromise}>
                   <Routes>
                     <Route path="/" element={<HomePage setSelectedListing={setSelectedListing}/>} />
                     <Route path="/postlistings" element={<PostListings />} />
@@ -48,8 +49,9 @@ function App() {
                     <Route path="/aboutus" element={<AboutUsPage />} />
                     <Route path="/personalprofile" element={<PersonalProfile setSelectedListing={setSelectedListing} />} />
                     <Route path="/listersprofile" element={<ListersProfile />} />
-                    <Route path ="/propertydetails" element={<PropertyDetails selectedListing={selectedListing} />} />
+                    <Route path="/propertydetails" element={<PropertyDetails selectedListing={selectedListing} />} />
                     <Route path="/signin" element={<SignInPage />} />
+                    <Route path="/signup" element={<SignUpPage />} /> 
                     <Route path="/success" element={<Success />} />
                   </Routes>
                 </Elements>

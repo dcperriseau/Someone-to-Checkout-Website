@@ -221,14 +221,14 @@ const ListingPage = () => {
         navigate('/signin');
         return;
       }
-      
+  
       const isValidAvailability = Object.values(listing.available_times).some(dayTimes => {
         if (dayTimes === "none") {
           return false;
         }
         return dayTimes.some(slot => slot.start && slot.end);
       });
-      
+  
       const isValidFeatures = listing.features.length > 0;
   
       console.log("Type:", listing.type);
@@ -274,14 +274,15 @@ const ListingPage = () => {
   
       const result = await response.json();
       console.log('Listing posted:', result);
-  
-      // Fetch the updated listings or perform any other necessary actions
-      // fetchListings();
+      
+      // Redirect to home page after successful listing
+      navigate('/');
     } catch (error) {
       console.error('Error posting listing:', error);
       // Handle error scenarios, possibly retry or show error messages
     }
   };
+  
   
   const toggleFeature = (text) => {
     setListing((prevListing) => ({

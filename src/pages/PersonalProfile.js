@@ -14,12 +14,14 @@ const PersonalProfile = ({ setSelectedListing }) => {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch('/api/user/profile', {
+          method: 'GET',
           headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${idToken}`
-          }
+          },
         });
         const data = await response.json();
-        setUser(data);
+        setUser(data.user);
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
@@ -80,20 +82,22 @@ const PersonalProfile = ({ setSelectedListing }) => {
   return (
     <div className="w-full overflow-hidden font-red-hat-display">
       <div className="relative w-full p-3 md:ml-4">
-        <button className="absolute z-10 p-2 font-light text-gray-500 top-5 left-5">&lt;&nbsp;&nbsp;Back</button>
+        <button className="absolute z-10 p-2 font-light text-gray-500 top-5 left-5" onClick={() => navigate('/')}>
+          &lt;&nbsp;&nbsp;Back
+        </button>
         <div className="flex flex-col items-start mt-12 md:flex-row md:justify-start">
           <div className="relative w-32 h-32 md:w-40 md:h-40">
-            <img
+            {/* <img
               src={process.env.PUBLIC_URL + "/personalProfile/propic1.png"}
               alt={`${user.firstName} ${user.lastName}`}
               className="object-cover w-full h-full rounded-full"
-            />
+            /> */}
           </div>
           <div className="flex flex-col items-start w-full mt-4 md:mt-0 md:ml-8 md:w-auto">
             <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>
               {user.firstName} {user.lastName}
             </h1>
-            <p className="text-xl md:text-2xl text-textTeritary" style={{ fontSize: '16px' }}>Los Angeles, CA</p>
+            {/* <p className="text-xl md:text-2xl text-textTeritary" style={{ fontSize: '16px' }}>Los Angeles, CA</p> */}
           </div>
         </div>
         <div className="flex flex-col mt-4 space-y-2 md:flex-row md:space-y-0 md:ml-4 md:space-x-2">
@@ -111,15 +115,15 @@ const PersonalProfile = ({ setSelectedListing }) => {
               </button>
               <div className="flex items-center justify-between mb-1">
                 <p className="text-lg font-thin text-textPrimary">{item.title}</p>
-                <span className="flex items-center space-x-2 text-textPrimary">
+                {/* <span className="flex items-center space-x-2 text-textPrimary">
                   {item.hearts}
                   <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
-                </span>
+                </span> */}
               </div>
               <p className="mb-1 font-thin text-textSecondary">
                 {item.location.street_address}, {item.location.city}, {item.location.state_name}, {item.location.zip_code}
               </p>
-              <p className="mb-1 text-xl font-bold text-textTeritary">{item.price}</p>
+              <p className="mb-1 text-xl font-bold text-textTeritary">${item.price}</p>
             </div>
           ))}
           {[...Array(5 - savedListings.length)].map((_, index) => (

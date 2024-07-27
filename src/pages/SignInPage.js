@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-import { useAuth } from '../context/AuthContext'; // Adjust the path as necessary
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const { setIdToken, redirectPath } = useAuth(); // Correctly access setIdToken from AuthContext
+  const { setIdToken, redirectPath } = useAuth();
   const navigate = useNavigate();
 
   const loginUser = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await userCredential.user.getIdToken();
-      setIdToken(idToken); // Use setIdToken from AuthContext
+      setIdToken(idToken); 
       return idToken;
     } catch (error) {
       console.error('Error logging in:', error);
@@ -56,7 +56,6 @@ const SignInPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen md:flex-row">
-      {/* Left Side */}
       <div className="flex flex-col items-center justify-center w-full py-8 bg-white shadow-md md:w-1/2 md:py-0 md:px-10">
         <form className="w-full max-w-md px-4 space-y-6 md:px-0" onSubmit={handleSubmit}>
           <div className="text-4xl text-gray-900 font-abril-fatface">Login</div>
@@ -85,13 +84,16 @@ const SignInPage = () => {
           </button>
         </form>
       </div>
-
-      {/* Right Side */}
       <div className="flex flex-col items-center justify-center w-full py-8 bg-teal-400 md:w-1/2 md:py-0 md:px-10">
         <div className="px-4 space-y-6 text-center text-white md:px-0">
           <div className="text-2xl leading-tight md:text-4xl font-abril-fatface">Welcome to Someone To Check Out</div>
           <div className="text-base md:text-lg">Don't have an account with us?</div>
-          <button className="w-48 h-12 mt-4 text-white border border-white rounded-full">Sign up</button>
+          <button
+            className="w-48 h-12 mt-4 text-white border border-white rounded-full"
+            onClick={() => navigate('/signup')}
+          >
+            Sign up
+          </button>
         </div>
       </div>
     </div>
