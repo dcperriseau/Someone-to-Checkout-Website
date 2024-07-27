@@ -11,13 +11,25 @@ const LogoutButton = () => {
     navigate('/');
   };
 
+  const handleProfileClick = () => {
+    navigate('/personalprofile');
+  };
+
   return (
-    <button
-      className="px-2 py-1 text-sm font-medium text-white bg-gray-900 rounded-full cursor-pointer font-red-hat-display"
-      onClick={handleLogout}
-    >
-      Log Out
-    </button>
+    <div className="flex space-x-4">
+      <button
+        className="px-2 py-1 text-sm font-medium text-white bg-blue-600 rounded-full cursor-pointer font-red-hat-display"
+        onClick={handleProfileClick}
+      >
+        Profile
+      </button>
+      <button
+        className="px-2 py-1 text-sm font-medium text-white bg-gray-900 rounded-full cursor-pointer font-red-hat-display"
+        onClick={handleLogout}
+      >
+        Log Out
+      </button>
+    </div>
   );
 };
 

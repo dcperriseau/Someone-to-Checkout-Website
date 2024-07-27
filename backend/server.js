@@ -11,6 +11,7 @@ const userRoute = require('./routes/userRoute');
 const stripeRoute = require('./routes/stripeRoute');
 const listingsRoute = require('./routes/listingsRoute');
 const cartRoute = require('./routes/cartRoute');
+const orderRoute = require('./routes/orderRoute');
 
 // Middleware
 app.use(cors());
@@ -26,6 +27,7 @@ app.use('/api/user', userRoute);
 app.use('/api/stripe', stripeRoute);
 app.use('/api/listings', listingsRoute);
 app.use('/api/cart', cartRoute); 
+app.use('/api/orders', orderRoute);
 
 // serve the React app for any unknown routes
 app.get('*', (req, res) => {

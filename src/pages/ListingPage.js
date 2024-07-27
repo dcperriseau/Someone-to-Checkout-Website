@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebaseConfig';
 
 // Custom Text Components
 const Step1Text = ({ text = 'Step 1' }) => <div className="text-[#212121] text-2xl font-bold leading-9 font-red-hat-display">{text}</div>;
@@ -33,8 +37,11 @@ const Image = ({ image }) => (
   />
 );
 
-const Button = ({ label }) => (
-  <button className="cursor-pointer w-[105px] h-[38px] px-2 border border-[#212121] box-border rounded-full bg-white text-[#212121] text-sm font-medium leading-5 font-roboto mt-4 mx-auto block">
+const Button = ({ label, onClick, selected }) => (
+  <button
+    className={`cursor-pointer w-[105px] h-[38px] px-2 border ${selected ? 'bg-[#47cad2] text-white' : 'border-[#212121] bg-white text-[#212121]'} box-border rounded-full text-sm font-medium leading-5 font-roboto mt-4 mx-auto block`}
+    onClick={onClick}
+  >
     {label}
   </button>
 );
@@ -42,8 +49,8 @@ const Button = ({ label }) => (
 // Input Components
 const InputText = ({ text }) => <div className="text-[#212121] text-xl font-bold leading-9 font-red-hat-display text-center mt-6">{text}</div>;
 const InputLabel = ({ text }) => <div className="text-[#030303] text-base font-roboto leading-6">{text}</div>;
-const InputStepper = ({ value }) => <input type="number" className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#94a3b8] text-sm font-roboto leading-[40px] outline-none" placeholder={value?.toString() ?? '0'} />;
-const InputField = ({ placeholder }) => <input type="text" className="w-full sm:w-[200px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2" placeholder={placeholder} />;
+const InputStepper = ({ value, onChange }) => <input type="number" className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#94a3b8] text-sm font-roboto leading-[40px] outline-none" value={value} onChange={onChange} />;
+const InputField = ({ value, onChange, placeholder }) => <input type="text" className="w-full sm:w-[200px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2" placeholder={placeholder} value={value} onChange={onChange} />;
 const HorizontalDivider = () => <div className="w-full h-[2px] bg-[#e8e8e8] mt-10" />;
 const UploadPhotosText = ({ text = 'Upload Property Photos' }) => <div className="text-[#212121] text-lg font-bold leading-7 font-red-hat-display mt-6">{text}</div>;
 const PhotoDescriptionText = ({ text = "Photos of your listing should be well lit, clear, and highlight your property's features" }) => <div className="text-[#212121] text-lg font-bold leading-7 font-red-hat-display text-center mt-4">{text}</div>;
@@ -71,9 +78,36 @@ const InfoText = ({ text }) => {
   );
 };
 
-const AddressCard = ({ text, placeholder }) => <div className="relative bg-white rounded-[26px] shadow-md w-full h-[77px] mt-6 shadow-[0px_2px_8px_rgba(0,0,0,0.16)] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200"><input className="w-full h-full p-4 bg-transparent rounded-[26px] outline-none text-[#030303] text-base font-red-hat-display leading-5" placeholder={placeholder} /></div>;
-const InteractiveMapBox = ({ position }) => <div className={`absolute ${position} w-[80px] h-[110px] bg-white rounded-[8px] border border-[#bababa] shadow-[0px_2px_8px_rgba(0,0,0,0.16)] flex flex-col justify-between items-center p-2`}><PlusIconComponent /><MinusIconComponent /></div>;
-const DescriptionInput = () => <textarea className="w-full h-[150px] p-4 border border-[#e8e8e8] rounded-[16px] bg-white mt-2 resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" placeholder="Enter property description here..." />;
+const AddressCard = ({ placeholder, value, name, onChange }) => (
+  <div className="relative bg-white rounded-[26px] shadow-md w-full h-[77px] mt-6 shadow-[0px_2px_8px_rgba(0,0,0,0.16)] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200">
+    <input 
+      className="w-full h-full p-4 bg-transparent rounded-[26px] outline-none text-[#030303] text-base font-red-hat-display leading-5" 
+      placeholder={placeholder} 
+      value={value}
+      name={name}
+      onChange={onChange}
+    />
+  </div>
+);
+
+const DescriptionInput = ({ value, onChange }) => (
+  <textarea 
+    className="w-full h-[150px] p-4 border border-[#e8e8e8] rounded-[16px] bg-white mt-2 resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+    placeholder="Enter property description here..."
+    value={value}
+    onChange={onChange}
+  />
+);
+
+// Title Input Component
+const TitleInput = ({ value, onChange }) => (
+  <input 
+    className="w-full h-[40px] p-4 border border-[#e8e8e8] rounded-[16px] bg-white mt-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+    placeholder="Enter title here..."
+    value={value}
+    onChange={onChange}
+  />
+);
 
 // Custom Icons
 const WashingMachineIcon = () => <svg className="text-[#030303] fill-current w-[62px] h-[61px]" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"></path><path d="M9.17 16.83a4.008 4.008 0 0 0 5.66 0 4.008 4.008 0 0 0 0-5.66l-5.66 5.66zM18 2.01 6 2c-1.11 0-2 .89-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V4c0-1.11-.89-1.99-2-1.99zM10 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM7 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm5 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>;
@@ -85,7 +119,7 @@ const HotTubIcon = () => <svg className="text-[#030303] fill-current w-[71px] h-
 const FirePitIcon = () => <svg className="text-[#030303] fill-current w-[64px] h-[55px]" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"></path><path d="M2 2v20h20V2H2zm9.86 14.96c.76-.24 1.4-1.04 1.53-1.63.13-.56-.1-1.05-.2-1.6-.08-.46-.07-.85.08-1.28.54 1.21 2.15 1.64 1.98 3.18-.19 1.7-2.11 2.38-3.39 1.33zM20 20h-2v-2h-2.02A4.98 4.98 0 0 0 17 15c0-1.89-1.09-2.85-1.85-3.37C12.2 9.61 13 7 13 7c-6.73 3.57-6.02 7.47-6 8 .03.96.49 2.07 1.23 3H6v2H4V4h16v16z"></path></svg>;
 const GymIcon = () => <svg className="text-[#030303] fill-current w-[73px] h-[52px]" viewBox="0 0 640 512"><path d="M104 96h-48C42.75 96 32 106.8 32 120V224C14.33 224 0 238.3 0 256c0 17.67 14.33 32 31.1 32L32 392C32 405.3 42.75 416 56 416h48C117.3 416 128 405.3 128 392v-272C128 106.8 117.3 96 104 96zM456 32h-48C394.8 32 384 42.75 384 56V224H256V56C256 42.75 245.3 32 232 32h-48C170.8 32 160 42.75 160 56v400C160 469.3 170.8 480 184 480h48C245.3 480 256 469.3 256 456V288h128v168c0 13.25 10.75 24 24 24h48c13.25 0 24-10.75 24-24V56C480 42.75 469.3 32 456 32zM608 224V120C608 106.8 597.3 96 584 96h-48C522.8 96 512 106.8 512 120v272c0 13.25 10.75 24 24 24h48c13.25 0 24-10.75 24-24V288c17.67 0 32-14.33 32-32C640 238.3 625.7 224 608 224z"></path></svg>;
 
-const PostButton = () => {
+const PostButton = ({ onClick }) => {
   const styles = {
     Button: {
       cursor: 'pointer',
@@ -111,14 +145,44 @@ const PostButton = () => {
   };
 
   return (
-    <button style={styles.Button}>
+    <button style={styles.Button} onClick={onClick}>
       {defaultProps.label}
     </button>
   );
 };
 
 const ListingPage = () => {
-  const [selectedFeatures, setSelectedFeatures] = useState([]);
+  const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const navigate = useNavigate();
+  const today = new Date().toISOString(); // Get today's date in ISO format
+  const [listing, setListing] = useState({
+    type: '',
+    bedroom_count: 0,
+    bathroom_count: 0,
+    price: 0,
+    image_urls: [],
+    location: {
+      street_address: '',
+      city: '',
+      state_name: '',
+      zip_code: '',
+    },
+    title: '',
+    description: '',
+    features: [],
+    available_times: {
+      sunday: "none",
+      monday: "none",
+      tuesday: "none",
+      wednesday: "none",
+      thursday: "none",
+      friday: "none",
+      saturday: "none"
+    },
+    date_created: today, // Default to today's date
+    last_updated: today // Default to today's date
+  });
+  
 
   const items = [
     {
@@ -151,14 +215,201 @@ const ListingPage = () => {
     "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
   ];
 
-  const toggleFeature = (text) => {
-    setSelectedFeatures((prevSelectedFeatures) => {
-      if (prevSelectedFeatures.includes(text)) {
-        return prevSelectedFeatures.filter((feature) => feature !== text);
-      } else {
-        return [...prevSelectedFeatures, text];
+  const submitListing = async () => {
+    try {
+      if (!idToken) {
+        navigate('/signin');
+        return;
       }
+  
+      const isValidAvailability = Object.values(listing.available_times).some(dayTimes => {
+        if (dayTimes === "none") {
+          return false;
+        }
+        return dayTimes.some(slot => slot.start && slot.end);
+      });
+  
+      const isValidFeatures = listing.features.length > 0;
+  
+      console.log("Type:", listing.type);
+      console.log("Bedrooms:", listing.bedroom_count);
+      console.log("Bathrooms:", listing.bathroom_count);
+      console.log("Price:", listing.price);
+      console.log("Street Address:", listing.location.street_address);
+      console.log("City:", listing.location.city);
+      console.log("State:", listing.location.state_name);
+      console.log("Zip Code:", listing.location.zip_code);
+      console.log("Title:", listing.title);
+      console.log("Description:", listing.description);
+      console.log("Photos count:", listing.image_urls.length);
+      console.log("Valid Availability:", isValidAvailability);
+      console.log("Valid Features:", isValidFeatures);
+      console.log("Available Times:", listing.available_times);
+  
+      const isListingValid = listing.type && listing.bedroom_count > 0 && listing.bathroom_count > 0 && listing.price > 0 &&
+        listing.location.street_address && listing.location.city && listing.location.state_name && listing.location.zip_code &&
+        listing.title && listing.description && listing.image_urls.length > 0 && isValidAvailability && isValidFeatures;
+  
+      if (!isListingValid) {
+        alert('Please fill out all fields before submitting. Ensure at least one viewing time and one feature are selected.');
+        return;
+      }
+  
+      const response = await fetch('/api/listings/postlisting', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          listing: {
+            ...listing,
+          },
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to post listing');
+      }
+  
+      const result = await response.json();
+      console.log('Listing posted:', result);
+      
+      // Redirect to home page after successful listing
+      navigate('/');
+    } catch (error) {
+      console.error('Error posting listing:', error);
+      // Handle error scenarios, possibly retry or show error messages
+    }
+  };
+  
+  
+  const toggleFeature = (text) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      features: prevListing.features.includes(text)
+        ? prevListing.features.filter((feature) => feature !== text)
+        : [...prevListing.features, text]
+    }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setListing((prevListing) => ({
+      ...prevListing,
+      [name]: value
+    }));
+  };
+
+  const handleLocationChange = (e) => {
+    const { name, value } = e.target;
+    setListing((prevListing) => ({
+      ...prevListing,
+      location: {
+        ...prevListing.location,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleBedroomCountChange = (e) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      bedroom_count: e.target.value
+    }));
+  };
+
+  const handleBathroomCountChange = (e) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      bathroom_count: e.target.value
+    }));
+  };
+
+  const handlePriceChange = (e) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      price: e.target.value
+    }));
+  };
+
+  const handleTitleChange = (e) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      title: e.target.value
+    }));
+  };
+
+  const handleDescriptionChange = (e) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      description: e.target.value
+    }));
+  };
+// Function to convert time to 12-hour format with AM/PM
+const convertTo12HourFormat = (time) => {
+  let [hour, minute] = time.split(':');
+  hour = parseInt(hour);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour}:${minute} ${period}`;
+};
+
+const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
+  const formattedTime = convertTo12HourFormat(value);
+  const lowerCaseDay = day.toLowerCase();
+  setListing((prevListing) => {
+    const dayTimes = prevListing.available_times[lowerCaseDay];
+    const updatedTimes = Array.isArray(dayTimes) ? [...dayTimes] : [];
+    
+    if (!updatedTimes[index]) {
+      updatedTimes[index] = {};
+    }
+    updatedTimes[index][timeType] = formattedTime;
+
+    return {
+      ...prevListing,
+      available_times: {
+        ...prevListing.available_times,
+        [lowerCaseDay]: updatedTimes
+      }
+    };
+  });
+  console.log(`Availability updated: ${lowerCaseDay} ${timeType} = ${formattedTime}`);
+  console.log('Updated available_times:', listing.available_times);
+};
+
+  const handlePostListing = () => {
+    console.log('Posting listing:', listing);
+    submitListing();
+  };
+
+  const handlePhotoUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    const uploadPromises = files.map(async (file) => {
+      const storageRef = ref(storage, `images/${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
     });
+
+    try {
+      const photoURLs = await Promise.all(uploadPromises);
+      setListing((prevListing) => ({
+        ...prevListing,
+        image_urls: [...prevListing.image_urls, ...photoURLs]
+      }));
+      console.log("Uploaded photos:", photoURLs);
+    } catch (error) {
+      console.error("Error uploading photos:", error);
+    }
+  };
+
+  const handlePropertyTypeClick = (type) => {
+    setListing((prevListing) => ({
+      ...prevListing,
+      type: prevListing.type === type ? '' : type
+    }));
   };
 
   return (
@@ -171,7 +422,11 @@ const ListingPage = () => {
         {items.map((item, index) => (
           <Card key={index}>
             <Image image={item.image} />
-            <Button label={item.label} />
+            <Button 
+              label={item.label} 
+              onClick={() => handlePropertyTypeClick(item.label)}
+              selected={listing.type === item.label}
+            />
           </Card>
         ))}
       </div>
@@ -179,17 +434,17 @@ const ListingPage = () => {
       <div className="flex flex-col mt-6 sm:flex-row sm:space-x-6">
         <div className="flex flex-col items-center">
           <InputLabel text="Bedrooms" />
-          <InputStepper value={0} />
+          <InputStepper value={listing.bedroom_count} onChange={handleBedroomCountChange} />
         </div>
         <div className="flex flex-col items-center mt-4 sm:mt-0">
           <InputLabel text="Bathrooms" />
-          <InputStepper value={0} />
+          <InputStepper value={listing.bathroom_count} onChange={handleBathroomCountChange} />
         </div>
       </div>
       <InputText text="Enter the price of your property" />
       <div className="flex flex-col items-center mt-4">
         <InputLabel text="Price per month" />
-        <InputField placeholder="$0.00" />
+        <InputField placeholder="$0.00" value={listing.price} onChange={handlePriceChange} />
       </div>
       <HorizontalDivider />
       <div className="self-start mb-4">
@@ -198,15 +453,26 @@ const ListingPage = () => {
       <UploadPhotosText />
       <PhotoDescriptionText />
       <div className="w-full sm:w-[727px] flex flex-col items-center">
-        <Card className="w-full sm:w-[694px] h-[372px] bg-[#f9f9f9] flex flex-col justify-center items-center">
+        <Card className="w-full sm:w-[694px] h-[372px] bg-[#f9f9f9] flex flex-col justify-center items-center relative">
           <div className="w-[100px] h-[100px] bg-[#e8e8e8] rounded-full flex justify-center items-center">
             <IconUploadComponent className="w-[43px] h-[43px] text-[#47cad2]" />
           </div>
           <UploadCardText text="Upload images" />
           <DragDropText text="or use Drag & Drop" />
+          <input 
+            type="file" 
+            multiple 
+            onChange={handlePhotoUpload} 
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+          />
         </Card>
         <div className="grid grid-cols-2 gap-2 mt-6 sm:grid-cols-4">
-          {smallerCards.map((_, index) => (
+          {listing.image_urls.map((photo, index) => (
+            <SmallerCard key={index}>
+              <img src={photo} alt={`Property ${index}`} className="w-full h-full object-cover rounded-[16px]" />
+            </SmallerCard>
+          ))}
+          {smallerCards.slice(listing.image_urls.length).map((_, index) => (
             <SmallerCard key={index}>
               <PlusIconComponent className="w-[40px] h-[40px] text-[#bababa]" />
             </SmallerCard>
@@ -223,23 +489,19 @@ const ListingPage = () => {
       <AddressText />
       <div className="flex flex-col w-full gap-4 mt-6 sm:flex-row">
         <div className="relative flex flex-col self-start w-full gap-4 sm:w-1/2">
-          <AddressCard text="Street address" placeholder="Enter street address" />
-          <AddressCard text="City/Town" placeholder="Enter city/town" />
-          <AddressCard text="State/Territory" placeholder="Enter state/territory" />
-          <AddressCard text="Zipcode" placeholder="Enter zipcode" />
+          <AddressCard text="Street address" placeholder="Enter street address" value={listing.location.street_address} name="street_address" onChange={handleLocationChange} />
+          <AddressCard text="City/Town" placeholder="Enter city/town" value={listing.location.city} name="city" onChange={handleLocationChange} />
+          <AddressCard text="State/Territory" placeholder="Enter state/territory" value={listing.location.state_name} name="state_name" onChange={handleLocationChange} />
+          <AddressCard text="Zipcode" placeholder="Enter zipcode" value={listing.location.zip_code} name="zip_code" onChange={handleLocationChange} />
         </div>
-        {/* Removed the map and text below */}
-        {/* <div className="relative flex flex-col items-center w-full mt-6 sm:w-1/2 sm:mt-0">
-          <img src="/MapPhoto.png" alt="Map" className="rounded-[26px] w-full h-auto" />
-          <InteractiveMapBox position="top-2 left-2" />
-          <div className="text-[#737373] text-base font-red-hat-display mt-4 text-left w-full">
-            We'll only share your approximate location
-          </div>
-        </div> */}
+      </div>
+      <div className="self-start w-full mt-10">
+        <InputText text="Enter the title of your property" />
+        <TitleInput value={listing.title} onChange={handleTitleChange} />
       </div>
       <div className="self-start w-full mt-10">
         <DescriptionText />
-        <DescriptionInput />
+        <DescriptionInput value={listing.description} onChange={handleDescriptionChange} />
       </div>
       <OfferText text="Tell buyers and renters what your place has to offer" />
       <div className="grid grid-cols-2 gap-6 mt-6 sm:grid-cols-4">
@@ -248,7 +510,7 @@ const ListingPage = () => {
             key={index}
             text={feature.text}
             icon={feature.icon}
-            selected={selectedFeatures.includes(feature.text)}
+            selected={listing.features.includes(feature.text)}
             onClick={() => toggleFeature(feature.text)}
           />
         ))}
@@ -265,13 +527,13 @@ const ListingPage = () => {
         {daysOfWeek.map((day, index) => (
           <div key={index} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
             <label className="text-[#212121] text-base font-red-hat-display sm:w-1/4">{day}</label>
-            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
+            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailableTimesChange(day, 'start', e.target.value)} />
             <span className="mx-2 text-[#212121] text-base font-red-hat-display">to</span>
-            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" />
+            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailableTimesChange(day, 'end', e.target.value)} />
           </div>
         ))}
       </div>
-      <PostButton />
+      <PostButton onClick={handlePostListing} />
     </div>
   );
 };

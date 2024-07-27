@@ -16,12 +16,9 @@ router.delete('/delete/:uid', userController.deleteUser, (req, res) => {
 })
 
 // Login route
-router.post('/login', userController.loginUser)
+router.post('/login', userController.loginUser);
 
-// Protected route
-router.get('/protected', authController.verifyToken, (req, res) => {
-  res.status(200).json({ message: 'You have access to this protected route', user: req.user });
-});
- 
+router.get('/profile', authController.verifyToken, userController.getUserProfile);
+
 
 module.exports = router;

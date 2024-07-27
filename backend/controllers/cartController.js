@@ -74,10 +74,9 @@ cartController.getCart = async (req, res) => {
   }
 };
 
-//delete users listing from cart
+// delete users listing from cart
 cartController.deleteFromCart = async (req, res, next) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
-
   if (!idToken) {
     return res.status(400).json({ message: 'Authorization token is required' });
   }
@@ -101,9 +100,11 @@ cartController.deleteFromCart = async (req, res, next) => {
     }
 
     let shoppingCart = userDoc.data().shoppingBasket || [];
-    shoppingCart = shoppingCart.filter(item => item.listingId !== listingId);
+    shoppingCart = shoppingCart.filter(item => item.id !== listingId);
+    console.log('Updated shopping cart:', shoppingCart); // Log updated cart
 
-    await userRef.set({ shoppingBasket: shoppingCart }, { merge: true });
+    await userRef.update({ shoppingBasket: shoppingCart }, { merge: true });
+    console.log('Item deleted from cart successfully');
     res.locals.shoppingCart = shoppingCart;
     return next();
   } catch (err) {
@@ -111,5 +112,31 @@ cartController.deleteFromCart = async (req, res, next) => {
     next({ message: 'Error in delete from cart middleware:', error: err.message });
   }
 };
+
+cartController.deleteAllFromCart = async (req, res) => {
+  const idToken = req.headers.authorization?.split('Bearer ')[1];
+  console.log('in delete all from cart middleware');
+  if (!idToken) {
+    return res.status(400).json({ message: 'Authorization token is required' });
+  }
+
+  try {
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const purchaserUid = decodedToken.uid;
+
+    // Update the user's document to clear the shoppingBasket field
+    await db.collection('users').doc(purchaserUid).update({
+      shoppingBasket: []
+    });
+
+    res.status(200).json({ message: 'All items deleted from shoppingBasket' });
+  } catch (error) {
+    console.error('Error deleting items from shoppingBasket:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = cartController;
+
 
 module.exports = cartController;
