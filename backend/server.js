@@ -19,8 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, '../public')));
+// Serve static files from the "build" directory
+app.use(express.static(path.join(__dirname, '../build')));
 
 // User routes
 app.use('/api/user', userRoute);
@@ -29,12 +29,12 @@ app.use('/api/listings', listingsRoute);
 app.use('/api/cart', cartRoute); 
 app.use('/api/orders', orderRoute);
 
-// serve the React app for any unknown routes
+// Serve the React app for any unknown routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, '../build/index.html'));
 });
 
-// catch all
+// Catch all
 app.use((err, req, res, next) => {
   const defaultErr = {
     log: "Express error handler caught unknown middleware error",
@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
   return res.status(errorObj.status).json(errorObj.message);
 });
 
-// start the server
+// Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
