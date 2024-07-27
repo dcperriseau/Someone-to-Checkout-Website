@@ -20,5 +20,9 @@
       "src": "/(.*)",
       "dest": "/build/index.html"
     }
-  ]
+  ],
+    "rewrites": [{ 
+        "source": "/(.*)",
+        "destination": "/" }]
 }
+
