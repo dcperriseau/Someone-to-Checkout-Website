@@ -17,9 +17,8 @@
       "destination": "/backend/server.js"
     },
     {
-      "source": "/(?!api)(.*)",
+      "source": "/((?!api).*)",
       "destination": "/build/index.html"
     }
   ]
 }
-
