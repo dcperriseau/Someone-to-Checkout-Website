@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
 const SlideshowModal = ({ isOpen, onClose, images, currentIndex }) => {
   const [currentSlide, setCurrentSlide] = React.useState(currentIndex);
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentSlide(currentIndex);
+    }
+  }, [isOpen, currentIndex]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % images.length);
@@ -41,7 +47,7 @@ const SlideshowModal = ({ isOpen, onClose, images, currentIndex }) => {
             >
               <Dialog.Panel className="relative w-2/3 max-w-lg overflow-hidden bg-transparent shadow-xl rounded-2xl">
                 <div className="relative flex items-center justify-center">
-                  <img src={images[currentSlide].src} alt={images[currentSlide].alt} className="object-cover w-full h-full" />
+                  <img src={images[currentSlide]} alt={`Slide ${currentSlide}`} className="object-cover w-full h-full" />
                   <button
                     onClick={prevSlide}
                     className="absolute left-0 p-2 text-white bg-black bg-opacity-50 rounded-full hover:bg-opacity-75"

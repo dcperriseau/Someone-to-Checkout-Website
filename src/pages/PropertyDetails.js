@@ -18,15 +18,31 @@ const PropertyDetails = ({ selectedListing }) => {
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null); // State for selected available time
+  const [persistedListing, setPersistedListing] = useState(selectedListing);
 
   const { idToken } = useAuth(); // Access the idToken from AuthContext
   const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
   const navigate = useNavigate(); // Initialize useNavigate
 
+  useEffect(() => {
+    // Retrieve the persisted listing from local storage if it exists
+    const savedListing = JSON.parse(localStorage.getItem('selectedListing'));
+    if (savedListing) {
+      setPersistedListing(savedListing);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save the selected listing to local storage when it changes
+    if (persistedListing) {
+      localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
+    }
+  }, [persistedListing]);
+
   const handleSendToCheckout = async () => {
     if (!idToken) {
       console.error('User is not authenticated');
-      localStorage.setItem('selectedListing', JSON.stringify(selectedListing)); // Save the selected listing
+      localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
       localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
       navigate('/signin'); // Redirect to sign-in page if not authenticated
       return;
@@ -55,7 +71,7 @@ const PropertyDetails = ({ selectedListing }) => {
       console.log('Basket Data:', basketData); // Log the basket data to understand its structure
 
       const isItemInBasket = basketData.items.some(
-        item => item.propertyListing && item.propertyListing.id === selectedListing.id
+        item => item.propertyListing && item.propertyListing.id === persistedListing.id
       );
       console.log('Is item in basket:', isItemInBasket);
       if (isItemInBasket) {
@@ -71,7 +87,7 @@ const PropertyDetails = ({ selectedListing }) => {
         },
         body: JSON.stringify({
           propertyListing: {
-            ...selectedListing,
+            ...persistedListing,
             selectedTime,
           },
         }),
@@ -93,7 +109,7 @@ const PropertyDetails = ({ selectedListing }) => {
       fetchBasketCount();
     } catch (error) {
       console.error('Error adding listing to cart:', error);
-      localStorage.setItem('selectedListing', JSON.stringify(selectedListing)); // Save the selected listing
+      localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
       localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
       navigate('/signin'); // Redirect to sign-in page if the operation fails
     }
@@ -134,8 +150,8 @@ const PropertyDetails = ({ selectedListing }) => {
 
   useEffect(() => {
     const fetchUserDetails = async () => {
-      if (selectedListing && selectedListing.userId) {
-        const userDoc = await getDoc(doc(db, 'users', selectedListing.userId));
+      if (persistedListing && persistedListing.userId) {
+        const userDoc = await getDoc(doc(db, 'users', persistedListing.userId));
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setEmail(userData.email || 'No email available');
@@ -148,9 +164,9 @@ const PropertyDetails = ({ selectedListing }) => {
       }
     };
     fetchUserDetails();
-  }, [selectedListing]);
+  }, [persistedListing]);
 
-  if (!selectedListing) {
+  if (!persistedListing) {
     return <div>No listing selected</div>;
   }
 
@@ -166,7 +182,7 @@ const PropertyDetails = ({ selectedListing }) => {
     available_times = {}, // Ensure available_times is defined
     date_created,
     last_updated,
-  } = selectedListing;
+  } = persistedListing;
 
   const handleImageClick = (index) => {
     setCurrentImageIndex(index);

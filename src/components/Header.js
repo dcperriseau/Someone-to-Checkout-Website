@@ -33,7 +33,7 @@ const Header = () => {
           ) : (
             <>
               <Button label="Log In" customStyle="border border-gray-900 bg-white text-gray-900" onClick={() => navigate('/signin')} />
-              <Button label="Sign Up" customStyle="bg-gray-900 text-white" onClick={() => navigate('/signin')} />
+              <Button label="Sign Up" customStyle="bg-gray-900 text-white" onClick={() => navigate('/signup')} />
             </>
           )}
         </div>
