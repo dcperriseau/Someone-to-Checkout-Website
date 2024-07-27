@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +7,7 @@ const SignUpPage = () => {
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);  // New state for success message
   const navigate = useNavigate();
 
   const registerUser = async (email, password, firstName, lastName) => {
@@ -26,7 +26,7 @@ const SignUpPage = () => {
 
       const data = await response.json();
       console.log('Sign up successful:', data);
-      navigate('/signin'); // Redirect to sign-in page after successful sign-up
+      setSuccess(true);  // Set success message
     } catch (error) {
       console.error('Error signing up:', error);
       setError(error.message);
@@ -36,6 +36,7 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSuccess(false);  // Reset success message
     await registerUser(email, password, firstName, lastName);
   };
 
@@ -46,6 +47,7 @@ const SignUpPage = () => {
         <form className="w-full max-w-md px-4 space-y-6 md:px-0" onSubmit={handleSubmit}>
           <div className="text-4xl text-gray-900 font-abril-fatface">Sign Up</div>
           {error && <div className="text-red-500">{error}</div>}
+          {success && <div className="text-green-500">Sign up successful! Please check your email to verify your account.</div>}
           <div className="space-y-2">
             <div className="text-lg font-bold text-gray-900">EMAIL</div>
             <input

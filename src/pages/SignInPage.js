@@ -8,14 +8,19 @@ const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [verificationError, setVerificationError] = useState(null); // New state for verification error
   const { setIdToken, redirectPath } = useAuth();
   const navigate = useNavigate();
 
   const loginUser = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (!userCredential.user.emailVerified) {
+        setVerificationError('Email not verified. Please check your inbox.');
+        throw new Error('Email not verified');
+      }
       const idToken = await userCredential.user.getIdToken();
-      setIdToken(idToken); 
+      setIdToken(idToken);
       return idToken;
     } catch (error) {
       console.error('Error logging in:', error);
@@ -44,13 +49,16 @@ const SignInPage = () => {
       navigate(redirectPath || '/'); // Redirect back to the previous page or home
     } catch (error) {
       console.error('Error submitting login:', error);
-      setError(error.message);
+      if (error.message !== 'Email not verified') {
+        setError(error.message);
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setVerificationError(null); // Reset verification error
     await submitLogin(email, password);
   };
 
@@ -60,6 +68,7 @@ const SignInPage = () => {
         <form className="w-full max-w-md px-4 space-y-6 md:px-0" onSubmit={handleSubmit}>
           <div className="text-4xl text-gray-900 font-abril-fatface">Login</div>
           {error && <div className="text-red-500">{error}</div>}
+          {verificationError && <div className="text-red-500">{verificationError}</div>}
           <div className="space-y-2">
             <div className="text-lg font-bold text-gray-900">EMAIL</div>
             <input
