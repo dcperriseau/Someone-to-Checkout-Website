@@ -11,14 +11,15 @@
       "config": { "distDir": "build" }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/server.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
     },
     {
-      "source": "/((?!api).*)",
-      "destination": "/build/index.html"
+      "src": "/[^.]+",
+      "dest": "/build/index.html",
+      "status": 200
     }
   ]
 }
