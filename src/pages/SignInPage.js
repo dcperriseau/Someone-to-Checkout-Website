@@ -20,6 +20,7 @@ const SignInPage = () => {
         throw new Error('Email not verified');
       }
       const idToken = await userCredential.user.getIdToken();
+      console.log('Obtained ID Token:', idToken); // Log the ID token
       setIdToken(idToken);
       return idToken;
     } catch (error) {
@@ -37,11 +38,12 @@ const SignInPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ idToken }), // Send idToken in the request body
       });
       console.log('Response:', response);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorData = await response.json(); // Parse the error message from the response
+        throw new Error(errorData.message || 'Network response was not ok');
       }
 
       const data = await response.json();

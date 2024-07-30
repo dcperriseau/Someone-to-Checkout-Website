@@ -71,7 +71,7 @@ userController.createUser = async (req, res, next) => {
 
 // Login user
 userController.loginUser = async (req, res) => {
-  const { idToken } = req.body;
+  const { idToken } = req.body; // Get idToken from the request body
   console.log('in login middleware', req.body);
   if (!idToken) {
     return res.status(400).json({ message: 'Missing ID token' });
@@ -89,11 +89,11 @@ userController.loginUser = async (req, res) => {
     if (!decodedToken.email_verified) {
       return res.status(403).json({ message: 'Please verify your email before logging in.' });
     }
-    
+
     // Fetch additional user information from Firestore
     console.log('Fetching user document from Firestore for UID:', uid);
     const userDoc = await db.collection('users').doc(uid).get();
-    
+
     if (!userDoc.exists) {
       console.log('User not found in Firestore for UID:', uid);
       return res.status(404).json({ message: 'User not found in Firestore' });
@@ -102,7 +102,7 @@ userController.loginUser = async (req, res) => {
 
     const userData = userDoc.data();
     console.log('User Data:', userData);
-    
+
     console.log('Successfully logged in');
     res.status(200).json({ message: 'Login successful', user: userData });
   } catch (err) {

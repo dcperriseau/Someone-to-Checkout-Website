@@ -263,7 +263,7 @@ const PropertyDetails = ({ selectedListing }) => {
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
       <div className="mt-2">
-        <BackButton />
+        <BackButton onClick={() => navigate(-1)} />
       </div>
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-2 md:space-x-[20px] pt-8">
         <div className="flex h-[250px] sm:h-[300px] md:h-[400px] flex-initial">

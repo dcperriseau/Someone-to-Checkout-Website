@@ -39,7 +39,7 @@ const HomePage = ({ setSelectedListing }) => {
     localStorage.setItem('selectedListing', JSON.stringify(listing));
     navigate('/propertydetails');
   };
-
+  
   return (
     <div className="relative flex flex-col items-center min-h-screen">
       <div className="absolute top-[15px] left-[10px] sm:left-[49px]" style={{ width: 'calc(100% - 20px)', maxWidth: '1430px' }}>

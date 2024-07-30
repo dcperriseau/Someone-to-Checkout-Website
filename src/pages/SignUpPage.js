@@ -7,7 +7,7 @@ const SignUpPage = () => {
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);  // New state for success message
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const registerUser = async (email, password, firstName, lastName) => {
@@ -26,7 +26,7 @@ const SignUpPage = () => {
 
       const data = await response.json();
       console.log('Sign up successful:', data);
-      setSuccess(true);  // Set success message
+      setSuccess(true);
     } catch (error) {
       console.error('Error signing up:', error);
       setError(error.message);
@@ -36,13 +36,12 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setSuccess(false);  // Reset success message
+    setSuccess(false);
     await registerUser(email, password, firstName, lastName);
   };
 
   return (
     <div className="flex flex-col min-h-screen md:flex-row">
-      {/* Left Side */}
       <div className="flex flex-col items-center justify-center w-full py-8 bg-white shadow-md md:w-1/2 md:py-0 md:px-10">
         <form className="w-full max-w-md px-4 space-y-6 md:px-0" onSubmit={handleSubmit}>
           <div className="text-4xl text-gray-900 font-abril-fatface">Sign Up</div>
@@ -90,8 +89,6 @@ const SignUpPage = () => {
           </button>
         </form>
       </div>
-
-      {/* Right Side */}
       <div className="flex flex-col items-center justify-center w-full py-8 bg-teal-400 md:w-1/2 md:py-0 md:px-10">
         <div className="px-4 space-y-6 text-center text-white md:px-0">
           <div className="text-2xl leading-tight md:text-4xl font-abril-fatface">Welcome to Someone To Check Out</div>

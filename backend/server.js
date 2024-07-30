@@ -2,16 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-app.use(express.json());
-
-// Import routes
-const userRoute = require('./routes/userRoute');
-const stripeRoute = require('./routes/stripeRoute');
-const listingsRoute = require('./routes/listingsRoute');
-const cartRoute = require('./routes/cartRoute');
-const orderRoute = require('./routes/orderRoute');
 
 // Middleware
 app.use(cors());
@@ -21,6 +14,13 @@ app.use(express.json());
 
 // Serve static files from the "build" directory
 app.use(express.static(path.join(__dirname, '../build')));
+
+// Import routes
+const userRoute = require('./routes/userRoute');
+const stripeRoute = require('./routes/stripeRoute');
+const listingsRoute = require('./routes/listingsRoute');
+const cartRoute = require('./routes/cartRoute');
+const orderRoute = require('./routes/orderRoute');
 
 // User routes
 app.use('/api/user', userRoute);
@@ -34,7 +34,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
 });
 
-// Catch all
+// Error handling middleware
 app.use((err, req, res, next) => {
   const defaultErr = {
     log: "Express error handler caught unknown middleware error",

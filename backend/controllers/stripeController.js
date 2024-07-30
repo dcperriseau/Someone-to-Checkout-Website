@@ -27,7 +27,7 @@ stripeController.createCheckoutSession = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: 2000, // Set the price to $20.00 (2000 cents)
+        unit_amount: 3000, // Set the price to $30.00 (2000 cents)
       },
       quantity: 1,
     }));
