@@ -1,69 +1,93 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../firebaseConfig';
+
 import Heart from '../components/Heart';
-import { useAuth } from '../context/AuthContext'; // Assuming you have an AuthContext to get the user token
 
 const PersonalProfile = ({ setSelectedListing }) => {
   const [savedListings, setSavedListings] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [user, setUser] = useState({ firstName: '', lastName: '' });
-  const { idToken } = useAuth();
+  const [user, setUser] = useState({ firstName: '', lastName: '', profilePhoto: '' });
+  const { user: currentUser } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      if (!currentUser) return;
+
       try {
-        const response = await fetch('/api/user/profile', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
-          },
-        });
-        const data = await response.json();
-        setUser(data.user);
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          setUser(userDoc.data());
+        } else {
+          console.error('No such user document!');
+        }
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
     };
-  
+
     const fetchListings = async () => {
+      if (!currentUser) return;
+
       try {
-        const response = await fetch('/api/listings/getuserlistings', {
-          headers: {
-            'Authorization': `Bearer ${idToken}`
+        const listings = [];
+        const querySnapshot = await getDocs(collection(db, 'property_listings'));
+        querySnapshot.forEach((doc) => {
+          if (doc.data().userId === currentUser.uid) {
+            listings.push(doc.data());
           }
         });
-        const data = await response.json();
-        setSavedListings(Array.isArray(data) ? data : []);
+        setSavedListings(listings);
       } catch (error) {
         console.error('Error fetching user listings:', error);
-        setSavedListings([]);
       }
     };
-  
+
     const fetchOrders = async () => {
+      if (!currentUser) return;
+
       try {
-        const response = await fetch('/api/orders/getorder', {
-          headers: {
-            'Authorization': `Bearer ${idToken}`
+        const orders = [];
+        const querySnapshot = await getDocs(collection(db, 'orders'));
+        querySnapshot.forEach((doc) => {
+          if (doc.data().userId === currentUser.uid) {
+            orders.push(doc.data());
           }
         });
-        const data = await response.json();
-        setOrders(Array.isArray(data) ? data : []);
+        setOrders(orders);
       } catch (error) {
         console.error('Error fetching user orders:', error);
-        setOrders([]);
       }
     };
-  
-    if (idToken) {
+
+    if (currentUser) {
       fetchUserProfile();
       fetchListings();
       fetchOrders();
     }
-  }, [idToken]);
-  
+  }, [currentUser]);
+
+  const handleProfilePhotoUpload = async (e) => {
+    if (!currentUser) return;
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const storageRef = ref(storage, `profile_photos/${currentUser.uid}`);
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef);
+
+    await updateDoc(doc(db, 'users', currentUser.uid), {
+      profilePhoto: photoURL
+    });
+
+    setUser((prevUser) => ({ ...prevUser, profilePhoto: photoURL }));
+  };
+
   const getListingImage = (listing) => {
     if (listing.main_image_url) {
       return listing.main_image_url;
@@ -87,11 +111,23 @@ const PersonalProfile = ({ setSelectedListing }) => {
         </button>
         <div className="flex flex-col items-start mt-12 md:flex-row md:justify-start">
           <div className="relative w-32 h-32 md:w-40 md:h-40">
-            {/* <img
-              src={process.env.PUBLIC_URL + "/personalProfile/propic1.png"}
-              alt={`${user.firstName} ${user.lastName}`}
-              className="object-cover w-full h-full rounded-full"
-            /> */}
+            <label htmlFor="profile-photo-upload">
+              {user.profilePhoto ? (
+                <img
+                  src={user.profilePhoto}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  className="object-cover w-full h-full rounded-full cursor-pointer"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-300 rounded-full cursor-pointer"></div>
+              )}
+              <input
+                type="file"
+                id="profile-photo-upload"
+                className="hidden"
+                onChange={handleProfilePhotoUpload}
+              />
+            </label>
           </div>
           <div className="flex flex-col items-start w-full mt-4 md:mt-0 md:ml-8 md:w-auto">
             <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>
@@ -115,10 +151,9 @@ const PersonalProfile = ({ setSelectedListing }) => {
               </button>
               <div className="flex items-center justify-between mb-1">
                 <p className="text-lg font-thin text-textPrimary">{item.title}</p>
-                {/* <span className="flex items-center space-x-2 text-textPrimary">
-                  {item.hearts}
+                <span className="flex items-center space-x-2 text-textPrimary">
                   <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
-                </span> */}
+                </span>
               </div>
               <p className="mb-1 font-thin text-textSecondary">
                 {item.location.street_address}, {item.location.city}, {item.location.state_name}, {item.location.zip_code}

@@ -3,106 +3,93 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
 
-// Test Mode Publishable Key
 const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
 
 const ShoppingBasket = () => {
   const [items, setItems] = useState([]);
-  const { idToken } = useAuth();
+  const [showPopup, setShowPopup] = useState(false); // State for popup visibility
+  const { user } = useAuth();
+  const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBasketItems = async () => {
+      if (!user) {
+        return;
+      }
+
       try {
-        const response = await fetch('/api/cart/getCart', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${idToken}`,
-          },
+        const basketItems = [];
+        const querySnapshot = await getDocs(collection(db, 'user_baskets', user.uid, 'items'));
+        querySnapshot.forEach((doc) => {
+          basketItems.push({
+            id: doc.id,
+            ...doc.data(),
+          });
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch basket items');
-        }
-
-        const data = await response.json();
-        const formattedItems = data.items.map(item => ({
+        const formattedItems = basketItems.map(item => ({
           id: item.id,
-          name: item.title,
-          image: item.main_image_url,
-          address: `${item.location.street_address}, ${item.location.city}, ${item.location.state_code}`,
-          time: item.selectedTime,
-          price: 20
+          name: item.propertyListing.title,
+          image: item.propertyListing.main_image_url,
+          address: `${item.propertyListing.location.street_address}, ${item.propertyListing.location.city}, ${item.propertyListing.location.state_code}`,
+          time: item.propertyListing.selectedTime,
+          price: 30,
         }));
         setItems(formattedItems);
+        setBasketCount(formattedItems.length); // Update basket count
       } catch (error) {
         console.error('Error fetching basket items:', error);
       }
     };
 
-    if (idToken) {
-      fetchBasketItems();
-    }
-  }, [idToken]);
+    fetchBasketItems();
+  }, [user, setBasketCount]);
 
   const handleDelete = async (listingId) => {
-    if (!idToken) {
+    if (!user) {
       console.error('User is not authenticated');
       return;
     }
 
     try {
       console.log('Deleting item with ID:', listingId);
-      const response = await fetch('/api/cart/deletefromcart', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ listingId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete item from cart');
-      }
+      await deleteDoc(doc(db, 'user_baskets', user.uid, 'items', listingId));
 
       console.log('Item deleted successfully');
       const updatedItems = items.filter(item => item.id !== listingId);
       setItems(updatedItems);
+      setBasketCount(updatedItems.length); // Update basket count
+
+      // Show the popup for 3 seconds
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 3000);
     } catch (error) {
       console.error('Error deleting item from cart:', error);
     }
   };
 
   const handleCheckout = async () => {
-    if (!idToken) {
+    if (!user) {
       console.error('User is not authenticated');
       return;
     }
 
     const stripe = await stripePromise;
-    console.log('in the handle checkout front end');
 
-    const filteredItems = items.map(item => {
-      const newItem = { ...item };
-      if (newItem.sellerUid === undefined) {
-        delete newItem.sellerUid;
-      }
-      if (newItem.sellerEmail === undefined) {
-        delete newItem.sellerEmail;
-      }
-      return newItem;
-    });
-
-    const response = await fetch('/api/stripe/createcheckoutsession', {
+    const response = await fetch('http://localhost:3001/api/stripe/createcheckoutsession', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${idToken}`,
+        Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
       },
-      body: JSON.stringify({ items: filteredItems }),
+      body: JSON.stringify({ items }),
     });
 
     if (!response.ok) {
@@ -120,7 +107,6 @@ const ShoppingBasket = () => {
     if (result.error) {
       console.error(result.error.message);
     } else {
-      // If the checkout process succeeds, navigate to the success page
       navigate('/success');
     }
   };
@@ -132,8 +118,13 @@ const ShoppingBasket = () => {
   return (
     <Elements stripe={stripePromise}>
       <div className="flex flex-col min-h-screen mx-auto md:flex-row">
+        {showPopup && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded">
+            Property removed from basket
+          </div>
+        )}
         <div className="w-full md:w-[60%] p-4 md:p-10 md:pr-16">
-          <button className="flex items-center text-slate-400 mb-4 mt-[-25px]">
+          <button onClick={() => navigate(-1)} className="flex items-center text-slate-400 mb-4 mt-[-25px]">
             <span className="text-xl">&lt; </span> Back
           </button>
           <h1 className="mb-5 text-3xl font-bold">Items overview</h1>

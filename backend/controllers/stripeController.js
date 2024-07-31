@@ -1,4 +1,4 @@
-const stripe = require('stripe')('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
+const stripe = require('stripe')('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7'); //stripe secret key
 const { db, auth } = require('../adminConfig');
 
 const stripeController = {};
@@ -27,7 +27,7 @@ stripeController.createCheckoutSession = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: 3000, // Set the price to $30.00 (2000 cents)
+        unit_amount: 3000, // Set the price to $30.00 (3000 cents)
       },
       quantity: 1,
     }));

@@ -1,11 +1,16 @@
 const dotenv = require('dotenv');
-const admin = require('firebase-admin'); // Use firebase-admin for admin tasks
+const admin = require('firebase-admin');
 
 // Load environment variables from .env file
 dotenv.config();
 
-// Parse the JSON content from the environment variable
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+let serviceAccount;
+try {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+} catch (error) {
+  console.error('Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:', error);
+  throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY is not valid JSON');
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

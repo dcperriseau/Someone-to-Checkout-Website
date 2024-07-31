@@ -7,12 +7,12 @@ const userController = {};
 // Create user
 userController.createUser = async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
-  
+
   console.log('req.body', req.body);
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
-  
+
   try {
     // Create the user with Firebase Admin SDK
     const userRecord = await auth.createUser({
@@ -33,7 +33,7 @@ userController.createUser = async (req, res, next) => {
         pass: process.env.EMAIL_PASS, // Your Gmail password or app-specific password
       },
     });
-    console.log ('email and pass:', process.env.EMAIL_USER, process.env.EMAIL_PASS);
+    console.log('email and pass:', process.env.EMAIL_USER, process.env.EMAIL_PASS);
     // Email options
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -64,8 +64,13 @@ userController.createUser = async (req, res, next) => {
 
     res.status(200).json({ message: 'User created successfully, please verify your email.' });
   } catch (err) {
-    console.error(err); // Log the error for debugging
-    next({ log: 'Error in createUser middleware', message: { err: err.message } });
+    if (err.code === 'auth/email-already-exists') {
+      console.error('Email already exists:', err);
+      res.status(400).json({ message: 'Email already exists.' });
+    } else {
+      console.error(err); // Log the error for debugging
+      next({ log: 'Error in createUser middleware', message: { err: err.message } });
+    }
   }
 };
 
@@ -137,6 +142,7 @@ userController.getUserProfile = async (req, res) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('Missing or invalid Authorization header');
     return res.status(400).json({ message: 'Missing or invalid Authorization header' });
   }
 
@@ -159,7 +165,7 @@ userController.getUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found in Firestore' });
     }
 
-    console.log('User document:', userDoc);
+    console.log('User document exists:', userDoc.exists);
     const userData = userDoc.data();
     console.log('User Data:', userData);
 

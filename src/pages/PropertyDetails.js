@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 import Heart from '../components/Heart';
@@ -19,8 +19,9 @@ const PropertyDetails = ({ selectedListing }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null); // State for selected available time
   const [persistedListing, setPersistedListing] = useState(selectedListing);
+  const [showPopup, setShowPopup] = useState(false); // State for popup visibility
 
-  const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const { user, idToken } = useAuth(); // Access the user and idToken from AuthContext
   const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -40,13 +41,14 @@ const PropertyDetails = ({ selectedListing }) => {
   }, [persistedListing]);
 
   const handleSendToCheckout = async () => {
-    if (!idToken) {
+    if (!user) {
       console.error('User is not authenticated');
       localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
       localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
       navigate('/signin'); // Redirect to sign-in page if not authenticated
       return;
     }
+
     console.log('Selected time:', selectedTime);
     if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
       alert('Please select a valid available time before proceeding.');
@@ -55,58 +57,36 @@ const PropertyDetails = ({ selectedListing }) => {
 
     try {
       // Check if the listing is already in the user's basket
-      const basketResponse = await fetch('/api/cart/getCart', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      if (!basketResponse.ok) {
-        throw new Error('Failed to fetch basket items');
-      }
-
-      const basketData = await basketResponse.json();
-      console.log('Basket Data:', basketData); // Log the basket data to understand its structure
-
-      const isItemInBasket = basketData.items.some(
-        item => item.propertyListing && item.propertyListing.id === persistedListing.id
+      const basketQuery = query(
+        collection(db, 'user_baskets', user.uid, 'items'),
+        where('propertyListing.id', '==', persistedListing.id)
       );
-      console.log('Is item in basket:', isItemInBasket);
+
+      const basketSnapshot = await getDocs(basketQuery);
+      const isItemInBasket = !basketSnapshot.empty;
+
       if (isItemInBasket) {
         alert('This item is already in your basket.');
         return;
       }
 
-      const response = await fetch('/api/cart/postToCart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
+      // Add the listing to the user's basket
+      const newItemRef = doc(collection(db, 'user_baskets', user.uid, 'items'));
+      await setDoc(newItemRef, {
+        propertyListing: {
+          ...persistedListing,
+          selectedTime,
         },
-        body: JSON.stringify({
-          propertyListing: {
-            ...persistedListing,
-            selectedTime,
-          },
-        }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to send listing to cart');
-      }
-
-      const result = await response.json();
-      console.log('Listing added to cart:', result);
-      console.log('idToken:', idToken);
-      if (result.message === 'Item already in cart') {
-        alert('This item is already in your basket.');
-        return;
-      }
 
       // Fetch the updated basket count
       fetchBasketCount();
+
+      // Show the popup for 3 seconds
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 3000);
     } catch (error) {
       console.error('Error adding listing to cart:', error);
       localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
@@ -116,28 +96,14 @@ const PropertyDetails = ({ selectedListing }) => {
   };
 
   const fetchBasketCount = async () => {
+    if (!user) {
+      setBasketCount(0);
+      return;
+    }
+
     try {
-      const response = await fetch('/api/cart/getCart', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch basket count');
-      }
-
-      const data = await response.json();
-      console.log('Basket count response data:', data); // Log the data for debugging
-
-      if (data.items && Array.isArray(data.items)) {
-        setBasketCount(data.items.length); // Assuming the API returns an array of items
-      } else {
-        console.warn('Basket count data is not in expected format', data);
-        setBasketCount(0); // Set to 0 if items array is missing or not an array
-      }
+      const basketSnapshot = await getDocs(collection(db, 'user_baskets', user.uid, 'items'));
+      setBasketCount(basketSnapshot.size);
     } catch (error) {
       console.error('Error fetching basket count:', error);
       setBasketCount(0); // Set to 0 in case of error
@@ -262,6 +228,11 @@ const PropertyDetails = ({ selectedListing }) => {
   console.log(displayedMainImage);
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
+      {showPopup && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded">
+          Property added to cart
+        </div>
+      )}
       <div className="mt-2">
         <BackButton onClick={() => navigate(-1)} />
       </div>

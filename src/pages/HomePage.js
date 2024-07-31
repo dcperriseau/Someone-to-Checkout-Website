@@ -1,5 +1,8 @@
+// src/pages/HomePage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const HomePage = ({ setSelectedListing }) => {
   const [showFilters, setShowFilters] = useState(false);
@@ -20,12 +23,9 @@ const HomePage = ({ setSelectedListing }) => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await fetch('/api/listings/getlistings');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setListings(data.listings);
+        const querySnapshot = await getDocs(collection(db, 'property_listings'));
+        const fetchedListings = querySnapshot.docs.map(doc => doc.data());
+        setListings(fetchedListings);
       } catch (error) {
         console.error('Error fetching listings:', error);
       }
@@ -34,12 +34,12 @@ const HomePage = ({ setSelectedListing }) => {
     fetchListings();
   }, []);
 
-  const handleImageClick = (listing, index) => {
+  const handleImageClick = (listing) => {
     setSelectedListing(listing);
     localStorage.setItem('selectedListing', JSON.stringify(listing));
     navigate('/propertydetails');
   };
-  
+
   return (
     <div className="relative flex flex-col items-center min-h-screen">
       <div className="absolute top-[15px] left-[10px] sm:left-[49px]" style={{ width: 'calc(100% - 20px)', maxWidth: '1430px' }}>

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebaseConfig';
+import { db } from '../firebaseConfig';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 // Custom Text Components
 const Step1Text = ({ text = 'Step 1' }) => <div className="text-[#212121] text-2xl font-bold leading-9 font-red-hat-display">{text}</div>;
@@ -154,7 +155,6 @@ const PostButton = ({ onClick }) => {
 const ListingPage = () => {
   const { idToken } = useAuth(); // Access the idToken from AuthContext
   const navigate = useNavigate();
-  const today = new Date().toISOString(); // Get today's date in ISO format
   const [listing, setListing] = useState({
     type: '',
     bedroom_count: 0,
@@ -171,18 +171,17 @@ const ListingPage = () => {
     description: '',
     features: [],
     available_times: {
-      sunday: "none",
-      monday: "none",
-      tuesday: "none",
-      wednesday: "none",
-      thursday: "none",
-      friday: "none",
-      saturday: "none"
+      sunday: [],
+      monday: [],
+      tuesday: [],
+      wednesday: [],
+      thursday: [],
+      friday: [],
+      saturday: []
     },
-    date_created: today, // Default to today's date
-    last_updated: today // Default to today's date
+    date_created: serverTimestamp(), // Use Firestore server timestamp
+    last_updated: serverTimestamp() // Use Firestore server timestamp
   });
-  
 
   const items = [
     {
@@ -221,16 +220,16 @@ const ListingPage = () => {
         navigate('/signin');
         return;
       }
-  
+
       const isValidAvailability = Object.values(listing.available_times).some(dayTimes => {
-        if (dayTimes === "none") {
+        if (dayTimes.length === 0) {
           return false;
         }
         return dayTimes.some(slot => slot.start && slot.end);
       });
-  
+
       const isValidFeatures = listing.features.length > 0;
-  
+
       console.log("Type:", listing.type);
       console.log("Bedrooms:", listing.bedroom_count);
       console.log("Bathrooms:", listing.bathroom_count);
@@ -245,36 +244,21 @@ const ListingPage = () => {
       console.log("Valid Availability:", isValidAvailability);
       console.log("Valid Features:", isValidFeatures);
       console.log("Available Times:", listing.available_times);
-  
+
       const isListingValid = listing.type && listing.bedroom_count > 0 && listing.bathroom_count > 0 && listing.price > 0 &&
         listing.location.street_address && listing.location.city && listing.location.state_name && listing.location.zip_code &&
         listing.title && listing.description && listing.image_urls.length > 0 && isValidAvailability && isValidFeatures;
-  
+
       if (!isListingValid) {
         alert('Please fill out all fields before submitting. Ensure at least one viewing time and one feature are selected.');
         return;
       }
-  
-      const response = await fetch('/api/listings/postlisting', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({
-          listing: {
-            ...listing,
-          },
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to post listing');
-      }
-  
-      const result = await response.json();
-      console.log('Listing posted:', result);
-      
+
+      const newListingRef = doc(db, 'listings', `listing_${Date.now()}`);
+      await setDoc(newListingRef, listing);
+
+      console.log('Listing posted:', newListingRef.id);
+
       // Redirect to home page after successful listing
       navigate('/');
     } catch (error) {
@@ -282,8 +266,7 @@ const ListingPage = () => {
       // Handle error scenarios, possibly retry or show error messages
     }
   };
-  
-  
+
   const toggleFeature = (text) => {
     setListing((prevListing) => ({
       ...prevListing,
@@ -346,38 +329,39 @@ const ListingPage = () => {
       description: e.target.value
     }));
   };
-// Function to convert time to 12-hour format with AM/PM
-const convertTo12HourFormat = (time) => {
-  let [hour, minute] = time.split(':');
-  hour = parseInt(hour);
-  const period = hour >= 12 ? 'PM' : 'AM';
-  hour = hour % 12 || 12;
-  return `${hour}:${minute} ${period}`;
-};
 
-const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
-  const formattedTime = convertTo12HourFormat(value);
-  const lowerCaseDay = day.toLowerCase();
-  setListing((prevListing) => {
-    const dayTimes = prevListing.available_times[lowerCaseDay];
-    const updatedTimes = Array.isArray(dayTimes) ? [...dayTimes] : [];
-    
-    if (!updatedTimes[index]) {
-      updatedTimes[index] = {};
-    }
-    updatedTimes[index][timeType] = formattedTime;
+  // Function to convert time to 12-hour format with AM/PM
+  const convertTo12HourFormat = (time) => {
+    let [hour, minute] = time.split(':');
+    hour = parseInt(hour);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    return `${hour}:${minute} ${period}`;
+  };
 
-    return {
-      ...prevListing,
-      available_times: {
-        ...prevListing.available_times,
-        [lowerCaseDay]: updatedTimes
+  const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
+    const formattedTime = convertTo12HourFormat(value);
+    const lowerCaseDay = day.toLowerCase();
+    setListing((prevListing) => {
+      const dayTimes = prevListing.available_times[lowerCaseDay];
+      const updatedTimes = Array.isArray(dayTimes) ? [...dayTimes] : [];
+      
+      if (!updatedTimes[index]) {
+        updatedTimes[index] = {};
       }
-    };
-  });
-  console.log(`Availability updated: ${lowerCaseDay} ${timeType} = ${formattedTime}`);
-  console.log('Updated available_times:', listing.available_times);
-};
+      updatedTimes[index][timeType] = formattedTime;
+
+      return {
+        ...prevListing,
+        available_times: {
+          ...prevListing.available_times,
+          [lowerCaseDay]: updatedTimes
+        }
+      };
+    });
+    console.log(`Availability updated: ${lowerCaseDay} ${timeType} = ${formattedTime}`);
+    console.log('Updated available_times:', listing.available_times);
+  };
 
   const handlePostListing = () => {
     console.log('Posting listing:', listing);
@@ -386,6 +370,7 @@ const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
 
   const handlePhotoUpload = async (event) => {
     const files = Array.from(event.target.files);
+    const storage = getStorage(); // Initialize Firebase storage
     const uploadPromises = files.map(async (file) => {
       const storageRef = ref(storage, `images/${file.name}`);
       const snapshot = await uploadBytes(storageRef, file);

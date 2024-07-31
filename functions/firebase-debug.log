@@ -1,0 +1,101 @@
+[debug] [2024-07-30T04:02:46.401Z] ----------------------------------------------------------------------
+[debug] [2024-07-30T04:02:46.402Z] Command:       /opt/homebrew/Cellar/node/22.1.0/bin/node /opt/homebrew/bin/firebase functions:shell
+[debug] [2024-07-30T04:02:46.402Z] CLI Version:   13.14.2
+[debug] [2024-07-30T04:02:46.402Z] Platform:      darwin
+[debug] [2024-07-30T04:02:46.402Z] Node Version:  v22.1.0
+[debug] [2024-07-30T04:02:46.403Z] Time:          Mon Jul 29 2024 21:02:46 GMT-0700 (Pacific Daylight Time)
+[debug] [2024-07-30T04:02:46.403Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-07-30T04:02:46.435Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-07-30T04:02:46.436Z] > authorizing via signed-in user (perriseau.dominique@gmail.com)
+[debug] [2024-07-30T04:02:46.436Z] [iam] checking project sightonscene-a87ca for permissions ["firebase.projects.get"]
+[debug] [2024-07-30T04:02:46.436Z] > refreshing access token with scopes: []
+[debug] [2024-07-30T04:02:46.437Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-07-30T04:02:46.437Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-30T04:02:46.764Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-07-30T04:02:46.765Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-30T04:02:46.779Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/sightonscene-a87ca:testIamPermissions [none]
+[debug] [2024-07-30T04:02:46.779Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/sightonscene-a87ca:testIamPermissions x-goog-quota-user=projects/sightonscene-a87ca
+[debug] [2024-07-30T04:02:46.779Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sightonscene-a87ca:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2024-07-30T04:02:47.253Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/sightonscene-a87ca:testIamPermissions 200
+[debug] [2024-07-30T04:02:47.253Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/sightonscene-a87ca:testIamPermissions {"permissions":["firebase.projects.get"]}
+[warn] ⚠  functions: Functions Emulator unable to start on port 5000, starting on 5001 instead. {"metadata":{"emulator":{"name":"functions"},"message":"Functions Emulator unable to start on port 5000, starting on 5001 instead."}}
+[debug] [2024-07-30T04:02:47.380Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-07-30T04:02:47.381Z] defaultcredentials: writing to file /Users/dominiqueperriseau/.config/firebase/perriseau_dominique_gmail.com_application_default_credentials.json
+[debug] [2024-07-30T04:02:47.382Z] DEBUG: Setting GAC to /Users/dominiqueperriseau/.config/firebase/perriseau_dominique_gmail.com_application_default_credentials.json
+[debug] [2024-07-30T04:02:47.382Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/sightonscene-a87ca/adminSdkConfig [none]
+[debug] [2024-07-30T04:02:47.939Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/sightonscene-a87ca/adminSdkConfig 200
+[debug] [2024-07-30T04:02:47.939Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/sightonscene-a87ca/adminSdkConfig {"projectId":"sightonscene-a87ca","storageBucket":"sightonscene-a87ca.appspot.com","locationId":"us-central"}
+[debug] [2024-07-30T04:02:47.947Z] [functions] Watching "/Users/dominiqueperriseau/Desktop/someonetocheckout-website/functions" for Cloud Functions...
+[debug] [2024-07-30T04:02:47.949Z] Validating nodejs source
+[debug] [2024-07-30T04:02:48.519Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.3.0",
+    "firebase-functions": "^5.0.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2024-07-30T04:02:48.519Z] Building nodejs source
+[debug] [2024-07-30T04:02:48.520Z] Failed to find version of module node: reached end of search path /Users/dominiqueperriseau/Desktop/someonetocheckout-website/functions/node_modules
+[warn] ⚠  functions: Your requested "node" version "18" doesn't match your global version "22". Using node@22 from host. 
+[debug] [2024-07-30T04:02:48.521Z] Could not find functions.yaml. Must use http discovery
+[debug] [2024-07-30T04:02:48.527Z] Found firebase-functions binary at '/Users/dominiqueperriseau/Desktop/someonetocheckout-website/functions/node_modules/.bin/firebase-functions'
+[info] Serving at port 8848
+
+[debug] [2024-07-30T04:02:48.904Z] Got response from /__/functions.yaml {"endpoints":{"getListings":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"httpsTrigger":{},"entryPoint":"getListings"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[debug] [2024-07-30T04:02:53.925Z] [functions] Loaded functions definitions from source: getListings.
+[debug] [2024-07-30T04:02:53.926Z] [functions[us-central1-getListings]] http function initialized (http://127.0.0.1:5001/sightonscene-a87ca/us-central1/getListings).
+[info] i  functions: Loaded functions: getListings 
+[warn] ⚠  functions: The following emulators are not running, calls to these services will affect production: firestore, database, pubsub, storage, eventarc 
+[debug] [2024-07-30T17:29:04.714Z] ----------------------------------------------------------------------
+[debug] [2024-07-30T17:29:04.715Z] Command:       /opt/homebrew/Cellar/node/22.1.0/bin/node /opt/homebrew/bin/firebase functions:shell
+[debug] [2024-07-30T17:29:04.715Z] CLI Version:   13.14.2
+[debug] [2024-07-30T17:29:04.716Z] Platform:      darwin
+[debug] [2024-07-30T17:29:04.716Z] Node Version:  v22.1.0
+[debug] [2024-07-30T17:29:04.716Z] Time:          Tue Jul 30 2024 10:29:04 GMT-0700 (Pacific Daylight Time)
+[debug] [2024-07-30T17:29:04.716Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-07-30T17:29:04.717Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2024-07-30T17:29:04.762Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-07-30T17:29:04.762Z] > authorizing via signed-in user (perriseau.dominique@gmail.com)
+[debug] [2024-07-30T17:29:04.762Z] [iam] checking project sightonscene-a87ca for permissions ["firebase.projects.get"]
+[debug] [2024-07-30T17:29:04.763Z] > refreshing access token with scopes: []
+[debug] [2024-07-30T17:29:04.763Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-07-30T17:29:04.763Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-07-30T17:29:34.736Z] *** [apiv2] error from fetch(https://firebase-public.firebaseio.com/cli.json, {"headers":{},"method":"GET"}): FetchError: request to https://firebase-public.firebaseio.com/cli.json failed, reason: getaddrinfo ENOTFOUND firebase-public.firebaseio.com
+[warn] ⚠  Unable to fetch the CLI MOTD and remote config. This is not a fatal error, but may indicate an issue with your network connection. 
+[debug] [2024-07-30T17:29:34.739Z] Failed to fetch MOTD FirebaseError: Failed to make request to https://firebase-public.firebaseio.com/cli.json
+[debug] [2024-07-30T17:29:34.766Z] *** [apiv2] error from fetch(https://www.googleapis.com/oauth2/v3/token, {"headers":{},"method":"POST","body":{"_overheadLength":545,"_valueLength":212,"_valuesToMeasure":[],"writable":false,"readable":true,"dataSize":0,"maxDataSize":2097152,"pauseStreams":true,"_released":true,"_streams":[],"_currentStream":null,"_insideLoop":false,"_pendingNext":false,"_boundary":"--------------------------458992392812150183055147","_events":{},"_eventsCount":1}}): FetchError: request to https://www.googleapis.com/oauth2/v3/token failed, reason: getaddrinfo ENOTFOUND www.googleapis.com
+[debug] [2024-07-30T17:29:34.766Z] [iam] error while checking permissions, command may fail: FirebaseError: Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[warn] ⚠  functions: Functions Emulator unable to start on port 5000, starting on 5001 instead. {"metadata":{"emulator":{"name":"functions"},"message":"Functions Emulator unable to start on port 5000, starting on 5001 instead."}}
+[debug] [2024-07-30T17:29:34.878Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-07-30T17:29:34.881Z] defaultcredentials: writing to file /Users/dominiqueperriseau/.config/firebase/perriseau_dominique_gmail.com_application_default_credentials.json
+[debug] [2024-07-30T17:29:34.881Z] DEBUG: Setting GAC to /Users/dominiqueperriseau/.config/firebase/perriseau_dominique_gmail.com_application_default_credentials.json
+[debug] [2024-07-30T17:29:34.882Z] > refreshing access token with scopes: []
+[debug] [2024-07-30T17:29:34.882Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-07-30T17:29:34.882Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
