@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const stripeController = require('../controllers/stripeController');
+const stripeController = require('../controllers/stripeController'); // Adjust the path if necessary
 
-router.post('/createcheckoutsession', authController.verifyToken, stripeController.createCheckoutSession);
+router.post('/createcheckoutsession', stripeController.createCheckoutSession);
 
 module.exports = router;

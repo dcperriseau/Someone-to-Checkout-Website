@@ -275,8 +275,12 @@ const PropertyDetails = ({ selectedListing }) => {
                 <img src={displayedMainImage} alt={fullName} className="w-8 h-8 rounded-full md:w-10 md:h-10" />
                 <div className="ml-2">
                   <p className="font-semibold">{fullName}</p>
-                  <p className="text-xs text-gray-500 md:text-sm">Listed on: {new Date(date_created).toLocaleDateString()}</p>
-                  <p className="text-xs text-gray-500 md:text-sm">Updated on: {new Date(last_updated).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-500 md:text-sm">
+                    Listed on: {date_created && date_created.toDate ? date_created.toDate().toLocaleDateString() : 'Unknown'}
+                  </p>
+                  <p className="text-xs text-gray-500 md:text-sm">
+                    Updated on: {last_updated && last_updated.toDate ? last_updated.toDate().toLocaleDateString() : 'Unknown'}
+                  </p>
                 </div>
               </div>
               <div className="mt-4 text-sm text-gray-700 md:text-base">

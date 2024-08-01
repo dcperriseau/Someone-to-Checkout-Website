@@ -16,7 +16,7 @@ stripeController.createCheckoutSession = async (req, res) => {
     const purchaserUid = decodedToken.uid;
 
     const purchaserDoc = await db.collection('users').doc(purchaserUid).get();
-    if (!purchaserDoc.exists) {
+    if (!purchaserDoc.exists()) {
       return res.status(404).json({ message: 'Purchaser not found' });
     }
     const purchaserEmail = purchaserDoc.data().email;
@@ -27,7 +27,7 @@ stripeController.createCheckoutSession = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: 3000, // Set the price to $30.00 (3000 cents)
+        unit_amount: 3000, // Set the price to $30.00 (2000 cents)
       },
       quantity: 1,
     }));

@@ -220,16 +220,16 @@ const ListingPage = () => {
         navigate('/signin');
         return;
       }
-
+  
       const isValidAvailability = Object.values(listing.available_times).some(dayTimes => {
         if (dayTimes.length === 0) {
           return false;
         }
         return dayTimes.some(slot => slot.start && slot.end);
       });
-
+  
       const isValidFeatures = listing.features.length > 0;
-
+  
       console.log("Type:", listing.type);
       console.log("Bedrooms:", listing.bedroom_count);
       console.log("Bathrooms:", listing.bathroom_count);
@@ -244,21 +244,21 @@ const ListingPage = () => {
       console.log("Valid Availability:", isValidAvailability);
       console.log("Valid Features:", isValidFeatures);
       console.log("Available Times:", listing.available_times);
-
+  
       const isListingValid = listing.type && listing.bedroom_count > 0 && listing.bathroom_count > 0 && listing.price > 0 &&
         listing.location.street_address && listing.location.city && listing.location.state_name && listing.location.zip_code &&
         listing.title && listing.description && listing.image_urls.length > 0 && isValidAvailability && isValidFeatures;
-
+  
       if (!isListingValid) {
         alert('Please fill out all fields before submitting. Ensure at least one viewing time and one feature are selected.');
         return;
       }
-
-      const newListingRef = doc(db, 'listings', `listing_${Date.now()}`);
+  
+      const newListingRef = doc(db, 'property_listings', `listing_${Date.now()}`);
       await setDoc(newListingRef, listing);
-
+  
       console.log('Listing posted:', newListingRef.id);
-
+  
       // Redirect to home page after successful listing
       navigate('/');
     } catch (error) {

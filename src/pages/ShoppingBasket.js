@@ -80,34 +80,38 @@ const ShoppingBasket = () => {
       console.error('User is not authenticated');
       return;
     }
-
+  
     const stripe = await stripePromise;
-
-    const response = await fetch('http://localhost:3001/api/stripe/createcheckoutsession', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
-      },
-      body: JSON.stringify({ items }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('Failed to create checkout session:', error.error);
-      return;
-    }
-
-    const session = await response.json();
-
-    const result = await stripe.redirectToCheckout({
-      sessionId: session.sessionId,
-    });
-
-    if (result.error) {
-      console.error(result.error.message);
-    } else {
-      navigate('/success');
+  
+    try {
+      const response = await fetch('http://localhost:3001/api/stripe/createcheckoutsession', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+        },
+        body: JSON.stringify({ items }),
+      });
+  
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Failed to create checkout session:', error.error);
+        return;
+      }
+  
+      const session = await response.json();
+  
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.sessionId,
+      });
+  
+      if (result.error) {
+        console.error(result.error.message);
+      } else {
+        navigate('/success');
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
     }
   };
 

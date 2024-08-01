@@ -1,7 +1,7 @@
 // src/pages/HomePage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 const HomePage = ({ setSelectedListing }) => {
@@ -23,7 +23,8 @@ const HomePage = ({ setSelectedListing }) => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'property_listings'));
+        const q = query(collection(db, 'property_listings'), orderBy('date_created', 'desc'));
+        const querySnapshot = await getDocs(q);
         const fetchedListings = querySnapshot.docs.map(doc => doc.data());
         setListings(fetchedListings);
       } catch (error) {

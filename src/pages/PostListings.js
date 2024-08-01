@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 
 const PostListings = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get the current user
 
   const listings = [
     { heading: 'Tell us about your place', paragraph: "Share some basic info, like where it is and how many bedrooms and bathrooms it has." },
@@ -11,8 +13,13 @@ const PostListings = () => {
   ];
 
   const handleGetStartedClick = () => {
-    navigate('/listingpage');
+    if (!user) {
+      navigate('/signin'); // Redirect to sign-in page if not authenticated
+    } else {
+      navigate('/listingpage'); // Proceed to the listing page if authenticated
+    }
   };
+
   return (
     <div className="flex flex-col w-full md:flex-row">
       <div className="flex items-center justify-center w-full md:w-2/5">
