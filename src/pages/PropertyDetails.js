@@ -225,7 +225,7 @@ const PropertyDetails = ({ selectedListing }) => {
   // If there is no main_image_url, use the first image from image_urls array as the main image
   const displayedMainImage = main_image_url || (image_urls.length > 0 ? image_urls[0] : '');
   const remainingImages = main_image_url ? image_urls : image_urls.slice(1);
-  console.log(displayedMainImage);
+
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
       {showPopup && (
@@ -275,12 +275,8 @@ const PropertyDetails = ({ selectedListing }) => {
                 <img src={displayedMainImage} alt={fullName} className="w-8 h-8 rounded-full md:w-10 md:h-10" />
                 <div className="ml-2">
                   <p className="font-semibold">{fullName}</p>
-                  <p className="text-xs text-gray-500 md:text-sm">
-                    Listed on: {date_created && date_created.toDate ? date_created.toDate().toLocaleDateString() : 'Unknown'}
-                  </p>
-                  <p className="text-xs text-gray-500 md:text-sm">
-                    Updated on: {last_updated && last_updated.toDate ? last_updated.toDate().toLocaleDateString() : 'Unknown'}
-                  </p>
+                  <p className="text-xs text-gray-500 md:text-sm">Listed on: {date_created ? new Date(date_created).toLocaleDateString() : 'Date unknown'}</p>
+                  <p className="text-xs text-gray-500 md:text-sm">Updated on: {last_updated ? new Date(last_updated).toLocaleDateString() : 'Date unknown'}</p>
                 </div>
               </div>
               <div className="mt-4 text-sm text-gray-700 md:text-base">

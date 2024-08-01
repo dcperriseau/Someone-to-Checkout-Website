@@ -1,4 +1,3 @@
-// src/pages/HomePage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
@@ -23,9 +22,15 @@ const HomePage = ({ setSelectedListing }) => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const q = query(collection(db, 'property_listings'), orderBy('date_created', 'desc'));
-        const querySnapshot = await getDocs(q);
-        const fetchedListings = querySnapshot.docs.map(doc => doc.data());
+        const querySnapshot = await getDocs(query(collection(db, 'property_listings'), orderBy('date_created', 'desc')));
+        const fetchedListings = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            ...data,
+            date_created: data.date_created?.toDate ? data.date_created.toDate() : data.date_created,
+            last_updated: data.last_updated?.toDate ? data.last_updated.toDate() : data.last_updated,
+          };
+        });
         setListings(fetchedListings);
       } catch (error) {
         console.error('Error fetching listings:', error);
