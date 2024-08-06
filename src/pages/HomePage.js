@@ -49,26 +49,24 @@ const HomePage = ({ setSelectedListing }) => {
   return (
     <div className="relative flex flex-col items-center min-h-screen">
       <div className="absolute top-[15px] left-[10px] sm:left-[49px]" style={{ width: 'calc(100% - 20px)', maxWidth: '1430px' }}>
-        <img src="/homePhoto.jpeg" alt="Background" className="w-full h-[200px] sm:h-[450px] object-cover opacity-15 mx-auto" />
+        <img src="/homePhoto.jpeg" alt="Background" className="w-full h-[200px] sm:h-[450px] object-cover opacity-85 mx-auto" />
       </div>
 
       <div className="relative flex flex-col items-center w-full bg-transparent">
         <div className="absolute top-[65px] w-full flex justify-center px-4 sm:px-0">
           <div className="flex flex-col items-center justify-center w-full max-w-xl h-[100px] bg-[#030303] rounded-[26px]">
-            <div className="text-[#ffffff] text-xl sm:text-40px font-red-hat-display leading-10 sm:leading-52px text-center">
-              Get a property checked out for you
-            </div>
+            
           </div>
         </div>
 
-        <div className="block sm:hidden mt-[220px] text-[#737373] text-base font-red-hat-display font-bold leading-6 text-center px-4">
+        <div className="block sm:hidden mt-[220px] text-[#212121] text-black font-red-hat-display font-bold leading-6 text-center px-4">
           We go and take photos, videos, and write a report of the properties you were interested in moving to
         </div>
 
         <div className="flex flex-col items-center justify-center sm:mt-[200px] space-y-10 sm:space-y-20 px-4">
           <div className="hidden sm:block text-[#737373] text-base sm:text-32px font-red-hat-display font-bold leading-6 sm:leading-42px text-center px-4">
-            We go and take photos, videos, and write a report of the properties you were <br className="hidden sm:block" />
-            interested in moving to
+          We visit properties and take photos, videos, and write a report of the  <br className="hidden sm:block" />
+          properties you are interested in moving to
           </div>
           <div className="flex flex-col sm:flex-row items-center mt-[50px] space-y-4 sm:space-y-0">
             <button className="cursor-pointer w-full sm:w-[428px] h-[62px] px-2 border-0 box-border rounded-full bg-[#000000] text-white text-lg font-red-hat-display font-medium leading-6 sm:mr-[150px]">

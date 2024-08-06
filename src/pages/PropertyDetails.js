@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
-import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
+import { useAuth } from '../context/AuthContext';
+import { useBasket } from '../context/BasketContext';
 import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -17,16 +17,18 @@ const PropertyDetails = ({ selectedListing }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedTime, setSelectedTime] = useState(null); // State for selected available time
+  const [selectedTime, setSelectedTime] = useState(null);
   const [persistedListing, setPersistedListing] = useState(selectedListing);
-  const [showPopup, setShowPopup] = useState(false); // State for popup visibility
+  const [showPopup, setShowPopup] = useState(false);
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
-  const { user, idToken } = useAuth(); // Access the user and idToken from AuthContext
-  const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
-  const navigate = useNavigate(); // Initialize useNavigate
+  const { user, idToken } = useAuth();
+  const { setBasketCount } = useBasket();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Retrieve the persisted listing from local storage if it exists
     const savedListing = JSON.parse(localStorage.getItem('selectedListing'));
     if (savedListing) {
       setPersistedListing(savedListing);
@@ -34,85 +36,10 @@ const PropertyDetails = ({ selectedListing }) => {
   }, []);
 
   useEffect(() => {
-    // Save the selected listing to local storage when it changes
     if (persistedListing) {
       localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
     }
   }, [persistedListing]);
-
-  const handleSendToCheckout = async () => {
-    if (!user) {
-      console.error('User is not authenticated');
-      localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
-      localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
-      navigate('/signin'); // Redirect to sign-in page if not authenticated
-      return;
-    }
-
-    console.log('Selected time:', selectedTime);
-    if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
-      alert('Please select a valid available time before proceeding.');
-      return;
-    }
-
-    try {
-      // Check if the listing is already in the user's basket
-      const basketQuery = query(
-        collection(db, 'user_baskets', user.uid, 'items'),
-        where('propertyListing.id', '==', persistedListing.id)
-      );
-
-      const basketSnapshot = await getDocs(basketQuery);
-      const isItemInBasket = !basketSnapshot.empty;
-
-      if (isItemInBasket) {
-        alert('This item is already in your basket.');
-        return;
-      }
-
-      // Add the listing to the user's basket
-      const newItemRef = doc(collection(db, 'user_baskets', user.uid, 'items'));
-      await setDoc(newItemRef, {
-        propertyListing: {
-          ...persistedListing,
-          selectedTime,
-        },
-      });
-
-      // Fetch the updated basket count
-      fetchBasketCount();
-
-      // Show the popup for 3 seconds
-      setShowPopup(true);
-      setTimeout(() => {
-        setShowPopup(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Error adding listing to cart:', error);
-      localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
-      localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
-      navigate('/signin'); // Redirect to sign-in page if the operation fails
-    }
-  };
-
-  const fetchBasketCount = async () => {
-    if (!user) {
-      setBasketCount(0);
-      return;
-    }
-
-    try {
-      const basketSnapshot = await getDocs(collection(db, 'user_baskets', user.uid, 'items'));
-      setBasketCount(basketSnapshot.size);
-    } catch (error) {
-      console.error('Error fetching basket count:', error);
-      setBasketCount(0); // Set to 0 in case of error
-    }
-  };
-
-  const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState(''); // State for full name
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -132,6 +59,78 @@ const PropertyDetails = ({ selectedListing }) => {
     fetchUserDetails();
   }, [persistedListing]);
 
+  const handleSendToCheckout = async () => {
+    try {
+      if (!persistedListing.title) {
+        throw new Error('Persisted listing title is not defined.');
+      }
+
+      // Check if user is logged in
+      if (!user) {
+        console.error('User is not authenticated');
+        localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
+        localStorage.setItem('previousPage', window.location.pathname);
+        navigate('/signin');
+        return;
+      }
+
+      console.log('Selected time:', selectedTime);
+      if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
+        alert('Please select a valid available time before proceeding.');
+        return;
+      }
+
+      // Check if the listing is already in the basket
+      const basketQuery = query(
+        collection(db, 'user_baskets', user.uid, 'items'),
+        where('propertyListing.title', '==', persistedListing.title)
+      );
+
+      const basketSnapshot = await getDocs(basketQuery);
+      const isItemInBasket = !basketSnapshot.empty;
+
+      if (isItemInBasket) {
+        alert('This item is already in your basket.');
+        return;
+      }
+
+      const newItemRef = doc(collection(db, 'user_baskets', user.uid, 'items'));
+      await setDoc(newItemRef, {
+        propertyListing: {
+          ...persistedListing,
+          selectedTime,
+        },
+      });
+
+      fetchBasketCount();
+
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Error adding listing to cart:', error);
+      localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
+      localStorage.setItem('previousPage', window.location.pathname);
+      navigate('/signin');
+    }
+  };
+
+  const fetchBasketCount = async () => {
+    if (!user) {
+      setBasketCount(0);
+      return;
+    }
+
+    try {
+      const basketSnapshot = await getDocs(collection(db, 'user_baskets', user.uid, 'items'));
+      setBasketCount(basketSnapshot.size);
+    } catch (error) {
+      console.error('Error fetching basket count:', error);
+      setBasketCount(0);
+    }
+  };
+
   if (!persistedListing) {
     return <div>No listing selected</div>;
   }
@@ -141,11 +140,11 @@ const PropertyDetails = ({ selectedListing }) => {
     price,
     description,
     main_image_url,
-    image_urls = [], // Ensure image_urls is defined
-    location = {}, // Ensure location is defined
+    image_urls = [],
+    location = {},
     bathroom_count,
     bedroom_count,
-    available_times = {}, // Ensure available_times is defined
+    available_times = {},
     date_created,
     last_updated,
   } = persistedListing;
@@ -221,8 +220,7 @@ const PropertyDetails = ({ selectedListing }) => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
-  const descriptionPreviewLength = 300; // Characters to show in the preview
-  // If there is no main_image_url, use the first image from image_urls array as the main image
+  const descriptionPreviewLength = 300;
   const displayedMainImage = main_image_url || (image_urls.length > 0 ? image_urls[0] : '');
   const remainingImages = main_image_url ? image_urls : image_urls.slice(1);
 
@@ -329,7 +327,7 @@ const PropertyDetails = ({ selectedListing }) => {
       </div>
       <DetailsModal isOpen={isModalOpen} onClose={closeModal} />
       <SlideshowModal isOpen={isSlideshowOpen} onClose={closeSlideshow} images={image_urls} currentIndex={currentImageIndex} />
-      <EmailModal isOpen={isModalOpen} onClose={closeModal} email={email} />
+      <EmailModal isOpen={isModalOpen} onClose={closeModal} email={email} fullName={fullName} />
     </div>
   );
 };

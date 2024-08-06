@@ -5,15 +5,15 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
+import { useBasket } from '../context/BasketContext';
 
 const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
 
 const ShoppingBasket = () => {
   const [items, setItems] = useState([]);
-  const [showPopup, setShowPopup] = useState(false); // State for popup visibility
+  const [showPopup, setShowPopup] = useState(false);
   const { user } = useAuth();
-  const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
+  const { setBasketCount } = useBasket();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,13 +35,13 @@ const ShoppingBasket = () => {
         const formattedItems = basketItems.map(item => ({
           id: item.id,
           name: item.propertyListing.title,
-          image: item.propertyListing.main_image_url,
-          address: `${item.propertyListing.location.street_address}, ${item.propertyListing.location.city}, ${item.propertyListing.location.state_code}`,
+          image: item.propertyListing.main_image_url || (item.propertyListing.image_urls && item.propertyListing.image_urls[0]) || '',
+          address: `${item.propertyListing.location.street_address}, ${item.propertyListing.location.city}, ${item.propertyListing.location.state_name}`,
           time: item.propertyListing.selectedTime,
           price: 30,
         }));
         setItems(formattedItems);
-        setBasketCount(formattedItems.length); // Update basket count
+        setBasketCount(formattedItems.length);
       } catch (error) {
         console.error('Error fetching basket items:', error);
       }
@@ -63,9 +63,8 @@ const ShoppingBasket = () => {
       console.log('Item deleted successfully');
       const updatedItems = items.filter(item => item.id !== listingId);
       setItems(updatedItems);
-      setBasketCount(updatedItems.length); // Update basket count
+      setBasketCount(updatedItems.length);
 
-      // Show the popup for 3 seconds
       setShowPopup(true);
       setTimeout(() => {
         setShowPopup(false);
@@ -115,6 +114,10 @@ const ShoppingBasket = () => {
     }
   };
 
+  const handleItemClick = (title) => {
+    navigate(`/property-details/${encodeURIComponent(title)}`);
+  };
+
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.price, 0);
   };
@@ -135,7 +138,11 @@ const ShoppingBasket = () => {
 
           <div className="space-y-4">
             {items.map((item, index) => (
-              <div key={index} className="flex justify-between items-center p-2 md:p-4 border border-gray-200 rounded-[25px] shadow-sm h-full">
+              <div 
+                key={index} 
+                className="flex justify-between items-center p-2 md:p-4 border border-gray-200 rounded-[25px] shadow-sm h-full cursor-pointer"
+                onClick={() => handleItemClick(item.name)}
+              >
                 <div className="flex items-start min-h-[7rem]">
                   <img src={item.image} alt={item.name} className="mr-3 md:mr-4 w-[148px] h-[112px] rounded-2xl" />
                   <div>
