@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
-import { useBasket } from '../context/BasketContext'; // Import the useBasket hook
-import { doc, getDoc } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
+import { useBasket } from '../context/BasketContext';
+import { doc, getDoc, collection, query, where, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 import Heart from '../components/Heart';
@@ -17,15 +17,18 @@ const PropertyDetails = ({ selectedListing }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedTime, setSelectedTime] = useState(null); // State for selected available time
+  const [selectedTime, setSelectedTime] = useState(null);
   const [persistedListing, setPersistedListing] = useState(selectedListing);
+  const [showPopup, setShowPopup] = useState(false);
+  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
-  const { idToken } = useAuth(); // Access the idToken from AuthContext
-  const { setBasketCount } = useBasket(); // Access the setBasketCount from BasketContext
-  const navigate = useNavigate(); // Initialize useNavigate
+  const { user, idToken } = useAuth();
+  const { setBasketCount } = useBasket();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Retrieve the persisted listing from local storage if it exists
     const savedListing = JSON.parse(localStorage.getItem('selectedListing'));
     if (savedListing) {
       setPersistedListing(savedListing);
@@ -33,120 +36,10 @@ const PropertyDetails = ({ selectedListing }) => {
   }, []);
 
   useEffect(() => {
-    // Save the selected listing to local storage when it changes
     if (persistedListing) {
       localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
     }
   }, [persistedListing]);
-
-  const handleSendToCheckout = async () => {
-    if (!idToken) {
-      console.error('User is not authenticated');
-      localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
-      localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
-      navigate('/signin'); // Redirect to sign-in page if not authenticated
-      return;
-    }
-    console.log('Selected time:', selectedTime);
-    if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
-      alert('Please select a valid available time before proceeding.');
-      return;
-    }
-
-    try {
-      // Check if the listing is already in the user's basket
-      const basketResponse = await fetch('/api/cart/getCart', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      if (!basketResponse.ok) {
-        throw new Error('Failed to fetch basket items');
-      }
-
-      const basketData = await basketResponse.json();
-      console.log('Basket Data:', basketData); // Log the basket data to understand its structure
-
-      const isItemInBasket = basketData.items.some(
-        item => item.propertyListing && item.propertyListing.id === persistedListing.id
-      );
-      console.log('Is item in basket:', isItemInBasket);
-      if (isItemInBasket) {
-        alert('This item is already in your basket.');
-        return;
-      }
-
-      const response = await fetch('/api/cart/postToCart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({
-          propertyListing: {
-            ...persistedListing,
-            selectedTime,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send listing to cart');
-      }
-
-      const result = await response.json();
-      console.log('Listing added to cart:', result);
-      console.log('idToken:', idToken);
-      if (result.message === 'Item already in cart') {
-        alert('This item is already in your basket.');
-        return;
-      }
-
-      // Fetch the updated basket count
-      fetchBasketCount();
-    } catch (error) {
-      console.error('Error adding listing to cart:', error);
-      localStorage.setItem('selectedListing', JSON.stringify(persistedListing)); // Save the selected listing
-      localStorage.setItem('previousPage', window.location.pathname); // Save current page URL
-      navigate('/signin'); // Redirect to sign-in page if the operation fails
-    }
-  };
-
-  const fetchBasketCount = async () => {
-    try {
-      const response = await fetch('/api/cart/getCart', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch basket count');
-      }
-
-      const data = await response.json();
-      console.log('Basket count response data:', data); // Log the data for debugging
-
-      if (data.items && Array.isArray(data.items)) {
-        setBasketCount(data.items.length); // Assuming the API returns an array of items
-      } else {
-        console.warn('Basket count data is not in expected format', data);
-        setBasketCount(0); // Set to 0 if items array is missing or not an array
-      }
-    } catch (error) {
-      console.error('Error fetching basket count:', error);
-      setBasketCount(0); // Set to 0 in case of error
-    }
-  };
-
-  const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState(''); // State for full name
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -166,6 +59,75 @@ const PropertyDetails = ({ selectedListing }) => {
     fetchUserDetails();
   }, [persistedListing]);
 
+  const handleSendToCheckout = async () => {
+    try {
+      if (!persistedListing.title) {
+        throw new Error('Persisted listing title is not defined.');
+      }
+
+      if (!user) {
+        console.error('User is not authenticated');
+        localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
+        localStorage.setItem('previousPage', window.location.pathname);
+        navigate('/signin');
+        return;
+      }
+
+      if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
+        alert('Please select a valid available time before proceeding.');
+        return;
+      }
+
+      const basketQuery = query(
+        collection(db, 'user_baskets', user.uid, 'items'),
+        where('propertyListing.title', '==', persistedListing.title)
+      );
+
+      const basketSnapshot = await getDocs(basketQuery);
+      const isItemInBasket = !basketSnapshot.empty;
+
+      if (isItemInBasket) {
+        alert('This item is already in your basket.');
+        return;
+      }
+
+      const newItemRef = doc(collection(db, 'user_baskets', user.uid, 'items'));
+      await setDoc(newItemRef, {
+        propertyListing: {
+          ...persistedListing,
+          selectedTime,
+        },
+      });
+
+      fetchBasketCount();
+
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Error adding listing to cart:', error);
+      localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
+      localStorage.setItem('previousPage', window.location.pathname);
+      navigate('/signin');
+    }
+  };
+
+  const fetchBasketCount = async () => {
+    if (!user) {
+      setBasketCount(0);
+      return;
+    }
+
+    try {
+      const basketSnapshot = await getDocs(collection(db, 'user_baskets', user.uid, 'items'));
+      setBasketCount(basketSnapshot.size);
+    } catch (error) {
+      console.error('Error fetching basket count:', error);
+      setBasketCount(0);
+    }
+  };
+
   if (!persistedListing) {
     return <div>No listing selected</div>;
   }
@@ -175,11 +137,11 @@ const PropertyDetails = ({ selectedListing }) => {
     price,
     description,
     main_image_url,
-    image_urls = [], // Ensure image_urls is defined
-    location = {}, // Ensure location is defined
+    image_urls = [],
+    location = {},
     bathroom_count,
     bedroom_count,
-    available_times = {}, // Ensure available_times is defined
+    available_times = {},
     date_created,
     last_updated,
   } = persistedListing;
@@ -255,13 +217,17 @@ const PropertyDetails = ({ selectedListing }) => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
-  const descriptionPreviewLength = 300; // Characters to show in the preview
-  // If there is no main_image_url, use the first image from image_urls array as the main image
+  const descriptionPreviewLength = 300;
   const displayedMainImage = main_image_url || (image_urls.length > 0 ? image_urls[0] : '');
   const remainingImages = main_image_url ? image_urls : image_urls.slice(1);
-  console.log(displayedMainImage);
+
   return (
     <div className="w-full px-6 pb-4 font-red-hat-display">
+      {showPopup && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded">
+          Property added to cart
+        </div>
+      )}
       <div className="mt-2">
         <BackButton onClick={() => navigate(-1)} />
       </div>
@@ -304,8 +270,8 @@ const PropertyDetails = ({ selectedListing }) => {
                 <img src={displayedMainImage} alt={fullName} className="w-8 h-8 rounded-full md:w-10 md:h-10" />
                 <div className="ml-2">
                   <p className="font-semibold">{fullName}</p>
-                  <p className="text-xs text-gray-500 md:text-sm">Listed on: {new Date(date_created).toLocaleDateString()}</p>
-                  <p className="text-xs text-gray-500 md:text-sm">Updated on: {new Date(last_updated).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-500 md:text-sm">Listed on: {date_created ? new Date(date_created).toLocaleDateString() : 'Date unknown'}</p>
+                  <p className="text-xs text-gray-500 md:text-sm">Updated on: {last_updated ? new Date(last_updated).toLocaleDateString() : 'Date unknown'}</p>
                 </div>
               </div>
               <div className="mt-4 text-sm text-gray-700 md:text-base">
@@ -358,7 +324,7 @@ const PropertyDetails = ({ selectedListing }) => {
       </div>
       <DetailsModal isOpen={isModalOpen} onClose={closeModal} />
       <SlideshowModal isOpen={isSlideshowOpen} onClose={closeSlideshow} images={image_urls} currentIndex={currentImageIndex} />
-      <EmailModal isOpen={isModalOpen} onClose={closeModal} email={email} />
+      <EmailModal isOpen={isModalOpen} onClose={closeModal} email={email} fullName={fullName} />
     </div>
   );
 };
