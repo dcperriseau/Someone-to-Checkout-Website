@@ -1,5 +1,6 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); 
-const { db, auth } = require('../../src/firebaseConfig');
+require('dotenv').config(); // Load environment variables at the top
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Access Stripe secret key via environment variable
+const { auth, db } = require('../src/firebaseConfig'); // Import the initialized Firebase services
 
 const stripeController = {};
 

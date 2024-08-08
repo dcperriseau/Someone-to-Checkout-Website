@@ -1,17 +1,15 @@
-const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const path = require('path');
-const fs = require('fs');
+require('dotenv').config();
 
-const serviceAccountKeyPath = functions.config().custom.service_account_key_path;
-const serviceAccount = JSON.parse(fs.readFileSync(path.resolve(__dirname, serviceAccountKeyPath), 'utf8'));
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://sightonscene-a87ca.firebaseio.com" 
+  databaseURL: 'https://sightonscene-a87ca.firebaseio.com',
 });
 
 const db = admin.firestore();
 const auth = admin.auth();
+const storage = admin.storage();
 
-module.exports = { admin, db, auth };
+module.exports = { auth, db, storage, admin };

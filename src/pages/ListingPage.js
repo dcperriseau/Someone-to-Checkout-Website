@@ -336,22 +336,20 @@ const ListingPage = () => {
   };
 
   // Available Times 
-  const handleAvailableTimesChange = (day, timeType, value) => {
-    console.log(`handleAvailableTimesChange called for ${day} ${timeType} with value ${value}`);
-    const lowerCaseDay = day.toLowerCase();
+  const handleAvailableTimesChange = (day, index, timeType, value) => {
     setListing((prevListing) => {
-      const dayTimes = prevListing.available_times[lowerCaseDay];
-      const updatedTimes = dayTimes.map(time => ({ ...time, [timeType]: value }));
+      const updatedTimes = [...prevListing.available_times[day.toLowerCase()]];
+      updatedTimes[index] = { ...updatedTimes[index], [timeType]: value };
+      
       return {
         ...prevListing,
         available_times: {
           ...prevListing.available_times,
-          [lowerCaseDay]: updatedTimes
+          [day.toLowerCase()]: updatedTimes
         }
       };
     });
-    console.log(`Availability updated: ${lowerCaseDay} ${timeType} = ${value}`);
-    console.log('Updated available_times:', listing.available_times);
+    console.log(`Availability updated: ${day} ${timeType} = ${value}`);
   };
 
   const handlePostListing = () => {
@@ -517,32 +515,36 @@ const ListingPage = () => {
         </div>
       </div>
       <div className="flex flex-col items-center w-full mt-6">
-        {daysOfWeek.map((day, index) => (
-          <div key={index} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
-            <label className="text-[#212121] text-base font-red-hat-display">{day}</label>
-            <div className="flex flex-col sm:flex-row sm:space-x-2">
-              <input 
-                type="time" 
-                name={`${day.toLowerCase()}_start`}
-                className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0"
-                placeholder="Start time"
-                step="1800"
-                value={listing.available_times[day.toLowerCase()][0].start}
-                onChange={(e) => handleAvailableTimesChange(day, 'start', e.target.value)}
-              />
-              <input 
-  type="time" 
-  name={`${day.toLowerCase()}_end`}
-  className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0"
-  placeholder="End time"
-  step="1800"
-  value={listing.available_times[day.toLowerCase()][0].end}
-  onChange={(e) => handleAvailableTimesChange(day, 'end', e.target.value)}
-/>
-            </div>
+  {daysOfWeek.map((day, dayIndex) => (
+    <div key={dayIndex} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
+      <label className="text-[#212121] text-base font-red-hat-display">{day}</label>
+      <div className="flex flex-col sm:flex-row sm:space-x-2">
+        {listing.available_times[day.toLowerCase()].map((time, timeIndex) => (
+          <div key={timeIndex} className="flex space-x-2 mt-2">
+            <input 
+              type="time" 
+              name={`${day.toLowerCase()}_start_${timeIndex}`}
+              className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none"
+              placeholder="Start time"
+              step="1800"
+              value={time.start}
+              onChange={(e) => handleAvailableTimesChange(day, timeIndex, 'start', e.target.value)}
+            />
+            <input 
+              type="time" 
+              name={`${day.toLowerCase()}_end_${timeIndex}`}
+              className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none"
+              placeholder="End time"
+              step="1800"
+              value={time.end}
+              onChange={(e) => handleAvailableTimesChange(day, timeIndex, 'end', e.target.value)}
+            />
           </div>
         ))}
       </div>
+    </div>
+  ))}
+</div>
       <div className="self-start w-full mt-10">
         <InputText text="Enter your name" />
         <InputField placeholder="Your name" value={listing.user_name} onChange={(e) => setListing({ ...listing, user_name: e.target.value })} />
