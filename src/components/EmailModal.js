@@ -1,7 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-const EmailModal = ({ isOpen, onClose, email }) => {
+const EmailModal = ({ isOpen, onClose, email, name }) => {
   return (
     <Modal
       isOpen={isOpen}
@@ -12,6 +12,7 @@ const EmailModal = ({ isOpen, onClose, email }) => {
     >
       <div className="flex flex-col items-center">
         <h2 className="text-xl font-semibold mb-4">Contact Lister</h2>
+        {name && <p className="text-lg mb-2">Name: {name}</p>}
         {email ? (
           <>
             <p className="text-lg mb-4">If you have any questions, please email: </p>

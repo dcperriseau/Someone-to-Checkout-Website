@@ -1,5 +1,8 @@
+// src/pages/SignUpPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -10,34 +13,24 @@ const SignUpPage = () => {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const registerUser = async (email, password, firstName, lastName) => {
-    try {
-      const response = await fetch('/api/user/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, firstName, lastName, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to sign up');
-      }
-
-      const data = await response.json();
-      console.log('Sign up successful:', data);
-      setSuccess(true);
-    } catch (error) {
-      console.error('Error signing up:', error);
-      setError(error.message);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-    await registerUser(email, password, firstName, lastName);
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: `${firstName} ${lastName}`
+      });
+      await sendEmailVerification(userCredential.user);
+
+      setSuccess(true);
+      console.log('Sign up successful:', userCredential.user);
+    } catch (error) {
+      console.error('Error signing up:', error);
+      setError(error.message);
+    }
   };
 
   return (

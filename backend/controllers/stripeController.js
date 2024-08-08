@@ -1,5 +1,6 @@
-const stripe = require('stripe')('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
-const { db, auth } = require('../adminConfig');
+require('dotenv').config(); // Load environment variables at the top
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Access Stripe secret key via environment variable
+const { auth, db } = require('../src/firebaseConfig'); // Import the initialized Firebase services
 
 const stripeController = {};
 
@@ -27,7 +28,7 @@ stripeController.createCheckoutSession = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: 3000, // Set the price to $30.00 (2000 cents)
+        unit_amount: 3000, // Set the price to $30.00 (3000 cents)
       },
       quantity: 1,
     }));
@@ -46,7 +47,7 @@ stripeController.createCheckoutSession = async (req, res) => {
       purchaserEmail,
       items: items.map(item => ({
         ...item,
-        price: 20, // Explicitly set the price to 20 dollars for each item in the order
+        price: 30, // Explicitly set the price to 30 dollars for each item in the order
       })),
       createdAt: new Date().toISOString(),
       status: 'pending', // Initial status

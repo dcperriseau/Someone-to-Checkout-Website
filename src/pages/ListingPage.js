@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebaseConfig';
+import { db } from '../firebaseConfig';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 // Custom Text Components
 const Step1Text = ({ text = 'Step 1' }) => <div className="text-[#212121] text-2xl font-bold leading-9 font-red-hat-display">{text}</div>;
@@ -152,9 +153,8 @@ const PostButton = ({ onClick }) => {
 };
 
 const ListingPage = () => {
-  const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const { idToken } = useAuth(); // Accessing the idToken from AuthContext
   const navigate = useNavigate();
-  const today = new Date().toISOString(); // Get today's date in ISO format
   const [listing, setListing] = useState({
     type: '',
     bedroom_count: 0,
@@ -171,18 +171,19 @@ const ListingPage = () => {
     description: '',
     features: [],
     available_times: {
-      sunday: "none",
-      monday: "none",
-      tuesday: "none",
-      wednesday: "none",
-      thursday: "none",
-      friday: "none",
-      saturday: "none"
+      sunday: [{ start: '09:00', end: '17:00' }],
+      monday: [{ start: '09:00', end: '17:00' }],
+      tuesday: [{ start: '09:00', end: '17:00' }],
+      wednesday: [{ start: '09:00', end: '17:00' }],
+      thursday: [{ start: '09:00', end: '17:00' }],
+      friday: [{ start: '09:00', end: '17:00' }],
+      saturday: [{ start: '09:00', end: '17:00' }]
     },
-    date_created: today, // Default to today's date
-    last_updated: today // Default to today's date
+    date_created: serverTimestamp(), 
+    last_updated: serverTimestamp(), 
+    user_name: '', 
+    user_email: '' 
   });
-  
 
   const items = [
     {
@@ -223,7 +224,7 @@ const ListingPage = () => {
       }
   
       const isValidAvailability = Object.values(listing.available_times).some(dayTimes => {
-        if (dayTimes === "none") {
+        if (dayTimes.length === 0) {
           return false;
         }
         return dayTimes.some(slot => slot.start && slot.end);
@@ -255,35 +256,22 @@ const ListingPage = () => {
         return;
       }
   
-      const response = await fetch('/api/listings/postlisting', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({
-          listing: {
-            ...listing,
-          },
-        }),
-      });
+      const newListingRef = doc(db, 'property_listings', `listing_${Date.now()}`);
+      const newListingId = newListingRef.id;
+      const listingWithId = { ...listing, id: newListingId };
   
-      if (!response.ok) {
-        throw new Error('Failed to post listing');
-      }
+      await setDoc(newListingRef, listingWithId);
   
-      const result = await response.json();
-      console.log('Listing posted:', result);
-      
+      console.log('Listing posted:', newListingId);
+  
       // Redirect to home page after successful listing
       navigate('/');
     } catch (error) {
       console.error('Error posting listing:', error);
-      // Handle error scenarios, possibly retry or show error messages
+      
     }
   };
-  
-  
+
   const toggleFeature = (text) => {
     setListing((prevListing) => ({
       ...prevListing,
@@ -346,38 +334,23 @@ const ListingPage = () => {
       description: e.target.value
     }));
   };
-// Function to convert time to 12-hour format with AM/PM
-const convertTo12HourFormat = (time) => {
-  let [hour, minute] = time.split(':');
-  hour = parseInt(hour);
-  const period = hour >= 12 ? 'PM' : 'AM';
-  hour = hour % 12 || 12;
-  return `${hour}:${minute} ${period}`;
-};
 
-const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
-  const formattedTime = convertTo12HourFormat(value);
-  const lowerCaseDay = day.toLowerCase();
-  setListing((prevListing) => {
-    const dayTimes = prevListing.available_times[lowerCaseDay];
-    const updatedTimes = Array.isArray(dayTimes) ? [...dayTimes] : [];
-    
-    if (!updatedTimes[index]) {
-      updatedTimes[index] = {};
-    }
-    updatedTimes[index][timeType] = formattedTime;
-
-    return {
-      ...prevListing,
-      available_times: {
-        ...prevListing.available_times,
-        [lowerCaseDay]: updatedTimes
-      }
-    };
-  });
-  console.log(`Availability updated: ${lowerCaseDay} ${timeType} = ${formattedTime}`);
-  console.log('Updated available_times:', listing.available_times);
-};
+  // Available Times 
+  const handleAvailableTimesChange = (day, index, timeType, value) => {
+    setListing((prevListing) => {
+      const updatedTimes = [...prevListing.available_times[day.toLowerCase()]];
+      updatedTimes[index] = { ...updatedTimes[index], [timeType]: value };
+      
+      return {
+        ...prevListing,
+        available_times: {
+          ...prevListing.available_times,
+          [day.toLowerCase()]: updatedTimes
+        }
+      };
+    });
+    console.log(`Availability updated: ${day} ${timeType} = ${value}`);
+  };
 
   const handlePostListing = () => {
     console.log('Posting listing:', listing);
@@ -386,6 +359,7 @@ const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
 
   const handlePhotoUpload = async (event) => {
     const files = Array.from(event.target.files);
+    const storage = getStorage(); // Initialize Firebase storage
     const uploadPromises = files.map(async (file) => {
       const storageRef = ref(storage, `images/${file.name}`);
       const snapshot = await uploadBytes(storageRef, file);
@@ -411,6 +385,23 @@ const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
       type: prevListing.type === type ? '' : type
     }));
   };
+
+  useEffect(() => {
+    // Set initial available times
+    const initialTimes = {
+      sunday: [{ start: '09:00', end: '17:00' }],
+      monday: [{ start: '09:00', end: '17:00' }],
+      tuesday: [{ start: '09:00', end: '17:00' }],
+      wednesday: [{ start: '09:00', end: '17:00' }],
+      thursday: [{ start: '09:00', end: '17:00' }],
+      friday: [{ start: '09:00', end: '17:00' }],
+      saturday: [{ start: '09:00', end: '17:00' }]
+    };
+    setListing(prevListing => ({
+      ...prevListing,
+      available_times: initialTimes
+    }));
+  }, []);
 
   return (
     <div className="flex flex-col items-center min-h-screen p-4 sm:px-10">
@@ -524,14 +515,43 @@ const handleAvailableTimesChange = (day, timeType, value, index = 0) => {
         </div>
       </div>
       <div className="flex flex-col items-center w-full mt-6">
-        {daysOfWeek.map((day, index) => (
-          <div key={index} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
-            <label className="text-[#212121] text-base font-red-hat-display sm:w-1/4">{day}</label>
-            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailableTimesChange(day, 'start', e.target.value)} />
-            <span className="mx-2 text-[#212121] text-base font-red-hat-display">to</span>
-            <input type="time" className="w-[150px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0" onChange={(e) => handleAvailableTimesChange(day, 'end', e.target.value)} />
+  {daysOfWeek.map((day, dayIndex) => (
+    <div key={dayIndex} className="flex flex-col items-center w-full mb-2 sm:flex-row sm:space-x-4 sm:w-1/2">
+      <label className="text-[#212121] text-base font-red-hat-display">{day}</label>
+      <div className="flex flex-col sm:flex-row sm:space-x-2">
+        {listing.available_times[day.toLowerCase()].map((time, timeIndex) => (
+          <div key={timeIndex} className="flex space-x-2 mt-2">
+            <input 
+              type="time" 
+              name={`${day.toLowerCase()}_start_${timeIndex}`}
+              className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none"
+              placeholder="Start time"
+              step="1800"
+              value={time.start}
+              onChange={(e) => handleAvailableTimesChange(day, timeIndex, 'start', e.target.value)}
+            />
+            <input 
+              type="time" 
+              name={`${day.toLowerCase()}_end_${timeIndex}`}
+              className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none"
+              placeholder="End time"
+              step="1800"
+              value={time.end}
+              onChange={(e) => handleAvailableTimesChange(day, timeIndex, 'end', e.target.value)}
+            />
           </div>
         ))}
+      </div>
+    </div>
+  ))}
+</div>
+      <div className="self-start w-full mt-10">
+        <InputText text="Enter your name" />
+        <InputField placeholder="Your name" value={listing.user_name} onChange={(e) => setListing({ ...listing, user_name: e.target.value })} />
+      </div>
+      <div className="self-start w-full mt-10">
+        <InputText text="Enter your email" />
+        <InputField placeholder="Your email" value={listing.user_email} onChange={(e) => setListing({ ...listing, user_email: e.target.value })} />
       </div>
       <PostButton onClick={handlePostListing} />
     </div>

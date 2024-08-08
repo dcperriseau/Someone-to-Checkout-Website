@@ -1,53 +1,21 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
 const cors = require('cors');
-require('dotenv').config();
+const bodyParser = require('body-parser');
+const stripeRoutes = require('./routes/routes/stripeRoute'); 
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Allow requests from your frontend application
+app.use(cors({ origin: 'http://localhost:3000' })); 
+
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
 
-// Serve static files from the "build" directory
-app.use(express.static(path.join(__dirname, '../build')));
+// Define the route for Stripe API
+app.use('/api/stripe', stripeRoutes);
 
-// Import routes
-const userRoute = require('./routes/userRoute');
-const stripeRoute = require('./routes/stripeRoute');
-const listingsRoute = require('./routes/listingsRoute');
-const cartRoute = require('./routes/cartRoute');
-const orderRoute = require('./routes/orderRoute');
-
-// User routes
-app.use('/api/user', userRoute);
-app.use('/api/stripe', stripeRoute);
-app.use('/api/listings', listingsRoute);
-app.use('/api/cart', cartRoute); 
-app.use('/api/orders', orderRoute);
-
-// Serve the React app for any unknown routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/index.html'));
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  const defaultErr = {
-    log: "Express error handler caught unknown middleware error",
-    status: 500,
-    message: { err: "An error occurred" },
-  };
-  const errorObj = Object.assign({}, defaultErr, err);
-  console.log(errorObj.log);
-  return res.status(errorObj.status).json(errorObj.message);
-});
+// Define the port to run the server on
+const PORT = process.env.PORT || 3001;
 
 // Start the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
