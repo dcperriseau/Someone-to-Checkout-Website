@@ -50,40 +50,16 @@ const HomePage = ({ setSelectedListing }) => {
     <div className="relative flex flex-col items-center min-h-screen">
       <div className="absolute top-[15px] left-[10px] sm:left-[49px]" style={{ width: 'calc(100% - 20px)', maxWidth: '1430px' }}>
         <img src="/homePhoto.jpeg" alt="Background" className="w-full h-[200px] sm:h-[450px] object-cover opacity-85 mx-auto" />
-      </div>
-
-      <div className="relative flex flex-col items-center w-full bg-transparent">
-        <div className="absolute top-[65px] w-full flex justify-center px-4 sm:px-0">
-          <div className="flex flex-col items-center justify-center w-full max-w-xl h-[100px] bg-[#030303] rounded-[26px]">
-            
-          </div>
-        </div>
-
-        <div className="block sm:hidden mt-[220px] text-[#212121] text-black font-red-hat-display font-bold leading-6 text-center px-4">
-          We go and take photos, videos, and write a report of the properties you were interested in moving to
-        </div>
-
-        <div className="flex flex-col items-center justify-center sm:mt-[200px] space-y-10 sm:space-y-20 px-4">
-          <div className="hidden sm:block text-[#737373] text-base sm:text-32px font-red-hat-display font-bold leading-6 sm:leading-42px text-center px-4">
-          We visit properties and take photos, videos, and write a report of the  <br className="hidden sm:block" />
-          properties you are interested in moving to
-          </div>
-          <div className="flex flex-col sm:flex-row items-center mt-[50px] space-y-4 sm:space-y-0">
-            <button className="cursor-pointer w-full sm:w-[428px] h-[62px] px-2 border-0 box-border rounded-full bg-[#000000] text-white text-lg font-red-hat-display font-medium leading-6 sm:mr-[150px]">
-              Get Property Verified
-            </button>
-            <span className="hidden sm:block text-[#737373] text-lg sm:text-32px font-red-hat-display font-bold leading-6 sm:leading-42px text-center sm:mx-[91px]">
-              or
-            </span>
-            <button className="cursor-pointer w-full sm:w-[428px] h-[62px] px-2 border-0 box-border rounded-full bg-[#000000] text-white text-lg font-red-hat-display font-medium leading-6 sm:ml-[150px]">
-              Browse Properties
-            </button>
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="text-white text-base sm:text-32px font-red-hat-display font-bold leading-6 sm:leading-42px text-center px-4">
+            We visit properties and take photos, videos, and write a report of the <br className="hidden sm:block" />
+            properties you are interested in moving to
           </div>
         </div>
       </div>
 
-      <div className="w-full px-4 mt-10 sm:px-0">
-        <div className="w-full my-4 border-t border-gray-300"></div>
+      <div className="w-full mt-[220px] sm:mt-[500px] px-4 sm:px-0">
+        <div className="w-full my-2 border-t border-gray-300"></div>
         <div className="flex flex-col items-center sm:hidden">
           <button onClick={() => setShowFilters(!showFilters)} className="w-full sm:w-auto px-4 py-2 bg-[#47cad2] text-white font-red-hat-display font-medium text-lg rounded-full">
             {showFilters ? 'Close Filters' : 'Filters'}
@@ -151,7 +127,7 @@ const HomePage = ({ setSelectedListing }) => {
         </div>
       </div>
 
-      <div className="w-full px-4 mt-10 sm:px-0">
+      <div className="w-full px-4 mt-6 sm:px-0">
         <div className="w-full my-4 border-t border-gray-300"></div>
         {message && (
           <div className="fixed z-50 px-4 py-2 text-white transform -translate-x-1/2 bg-gray-700 rounded-full top-10 left-1/2">

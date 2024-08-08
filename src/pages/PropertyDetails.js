@@ -65,7 +65,6 @@ const PropertyDetails = ({ selectedListing }) => {
         throw new Error('Persisted listing title is not defined.');
       }
 
-      // Check if user is logged in
       if (!user) {
         console.error('User is not authenticated');
         localStorage.setItem('selectedListing', JSON.stringify(persistedListing));
@@ -74,13 +73,11 @@ const PropertyDetails = ({ selectedListing }) => {
         return;
       }
 
-      console.log('Selected time:', selectedTime);
       if (!selectedTime || !selectedTime.trim() || selectedTime.toLowerCase().includes('none')) {
         alert('Please select a valid available time before proceeding.');
         return;
       }
 
-      // Check if the listing is already in the basket
       const basketQuery = query(
         collection(db, 'user_baskets', user.uid, 'items'),
         where('propertyListing.title', '==', persistedListing.title)

@@ -370,7 +370,7 @@ const ListingPage = () => {
 
   const handlePhotoUpload = async (event) => {
     const files = Array.from(event.target.files);
-    const storage = getStorage(); // Initialize Firebase storage
+    const storage = getStorage(); 
     const uploadPromises = files.map(async (file) => {
       const storageRef = ref(storage, `images/${file.name}`);
       const snapshot = await uploadBytes(storageRef, file);

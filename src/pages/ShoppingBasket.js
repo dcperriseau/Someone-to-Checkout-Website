@@ -38,7 +38,7 @@ const ShoppingBasket = () => {
           image: item.propertyListing.main_image_url || (item.propertyListing.image_urls && item.propertyListing.image_urls[0]) || '',
           address: `${item.propertyListing.location.street_address}, ${item.propertyListing.location.city}, ${item.propertyListing.location.state_name}`,
           time: item.propertyListing.selectedTime,
-          price: 30,
+          price: 3000, // Price in cents
         }));
         setItems(formattedItems);
         setBasketCount(formattedItems.length);
@@ -79,9 +79,9 @@ const ShoppingBasket = () => {
       console.error('User is not authenticated');
       return;
     }
-  
+
     const stripe = await stripePromise;
-  
+
     try {
       const response = await fetch('http://localhost:3001/api/stripe/createcheckoutsession', {
         method: 'POST',
@@ -91,19 +91,19 @@ const ShoppingBasket = () => {
         },
         body: JSON.stringify({ items }),
       });
-  
+
       if (!response.ok) {
         const error = await response.json();
         console.error('Failed to create checkout session:', error.error);
         return;
       }
-  
+
       const session = await response.json();
-  
+
       const result = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-  
+
       if (result.error) {
         console.error(result.error.message);
       } else {
@@ -119,7 +119,7 @@ const ShoppingBasket = () => {
   };
 
   const calculateTotal = () => {
-    return items.reduce((total, item) => total + item.price, 0);
+    return items.reduce((total, item) => total + item.price / 100, 0); // Convert price back to dollars
   };
 
   return (
@@ -162,7 +162,7 @@ const ShoppingBasket = () => {
                       onClick={() => handleDelete(item.id)}
                     />
                   </div>
-                  <strong>${item.price}</strong>
+                  <strong>${item.price / 100}</strong> {/* Convert price back to dollars */}
                 </div>
               </div>
             ))}
@@ -182,7 +182,7 @@ const ShoppingBasket = () => {
               {items.map((item, index) => (
                 <div key={index} className="flex justify-between my-3">
                   <span>{item.name}</span>
-                  <span>${item.price}</span>
+                  <span>${item.price / 100}</span> {/* Convert price back to dollars */}
                 </div>
               ))}
             </div>

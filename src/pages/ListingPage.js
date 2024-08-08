@@ -153,7 +153,7 @@ const PostButton = ({ onClick }) => {
 };
 
 const ListingPage = () => {
-  const { idToken } = useAuth(); // Access the idToken from AuthContext
+  const { idToken } = useAuth(); // Accessing the idToken from AuthContext
   const navigate = useNavigate();
   const [listing, setListing] = useState({
     type: '',
@@ -179,10 +179,10 @@ const ListingPage = () => {
       friday: [{ start: '09:00', end: '17:00' }],
       saturday: [{ start: '09:00', end: '17:00' }]
     },
-    date_created: serverTimestamp(), // Use Firestore server timestamp
-    last_updated: serverTimestamp(), // Use Firestore server timestamp
-    user_name: '', // New field for user name
-    user_email: '' // New field for user email
+    date_created: serverTimestamp(), 
+    last_updated: serverTimestamp(), 
+    user_name: '', 
+    user_email: '' 
   });
 
   const items = [
@@ -268,7 +268,7 @@ const ListingPage = () => {
       navigate('/');
     } catch (error) {
       console.error('Error posting listing:', error);
-      // Handle error scenarios, possibly retry or show error messages
+      
     }
   };
 
@@ -335,7 +335,7 @@ const ListingPage = () => {
     }));
   };
 
-  // Function to handle the available times change
+  // Available Times 
   const handleAvailableTimesChange = (day, timeType, value) => {
     const lowerCaseDay = day.toLowerCase();
     setListing((prevListing) => {
