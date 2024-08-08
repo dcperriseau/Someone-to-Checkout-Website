@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const stripeRoutes = require('../functions/routes/stripeRoute'); // Adjusted path
+const stripeRoutes = require('../functions/routes/stripeRoute'); 
 
 const app = express();
 
 // Allow requests from your frontend application
-app.use(cors({ origin: 'http://localhost:3000' })); // Adjust the origin as per your setup
+app.use(cors({ origin: 'http://localhost:3000' })); 
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());

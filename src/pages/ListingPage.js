@@ -337,6 +337,7 @@ const ListingPage = () => {
 
   // Available Times 
   const handleAvailableTimesChange = (day, timeType, value) => {
+    console.log(`handleAvailableTimesChange called for ${day} ${timeType} with value ${value}`);
     const lowerCaseDay = day.toLowerCase();
     setListing((prevListing) => {
       const dayTimes = prevListing.available_times[lowerCaseDay];
@@ -530,14 +531,14 @@ const ListingPage = () => {
                 onChange={(e) => handleAvailableTimesChange(day, 'start', e.target.value)}
               />
               <input 
-                type="time" 
-                name={`${day.toLowerCase()}_end`}
-                className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0"
-                placeholder="End time"
-                step="1800"
-                value={listing.available_times[day.toLowerCase()][0].end}
-                onChange={(e) => handleAvailableTimesChange(day, 'end', e.target.value)}
-              />
+  type="time" 
+  name={`${day.toLowerCase()}_end`}
+  className="w-[100px] h-[40px] px-2 border border-[#e8e8e8] rounded-full bg-white text-[#030303] text-sm font-roboto leading-[40px] outline-none mt-2 sm:mt-0"
+  placeholder="End time"
+  step="1800"
+  value={listing.available_times[day.toLowerCase()][0].end}
+  onChange={(e) => handleAvailableTimesChange(day, 'end', e.target.value)}
+/>
             </div>
           </div>
         ))}
