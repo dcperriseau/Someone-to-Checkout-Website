@@ -22,10 +22,12 @@ import EmailModal from "../components/EmailModal";
 
 // Utility function to detect iOS Safari
 const isIosSafari = () => {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   return (
-    /iP(ad|od|hone)/i.test(navigator.userAgent) &&
-    /WebKit/i.test(navigator.userAgent) &&
-    !/(CriOS|FxiOS|OPiOS|mercury)/i.test(navigator.userAgent)
+    (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) ||
+    (/Safari/.test(userAgent) &&
+      !/Chrome/.test(userAgent) &&
+      !/CriOS/.test(userAgent))
   );
 };
 
@@ -47,8 +49,10 @@ const PropertyDetails = ({ selectedListing }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Set the isSafari state once on component mount
+    setIsSafari(isIosSafari());
+
     const savedListing = JSON.parse(localStorage.getItem("selectedListing"));
-    setIsSafari(isIosSafari()); 
     if (savedListing) {
       setPersistedListing(savedListing);
     }
@@ -273,8 +277,13 @@ const PropertyDetails = ({ selectedListing }) => {
       </div>
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-[20px] pt-8">
         {/* Image Container */}
-        <div className={`flex h-[250px] sm:h-[300px] md:h-[400px] md:flex-[0_0_auto] ${isSafari ? "ios-flex-1" : ""}`} style={{ width: isSafari ? "80%" : "auto" }}>
-          <div className={`flex flex-col h-full space-y-2 ${isSafari ? "ios-flex-col" : ""}`}>
+        <div
+          className={`flex h-[250px] sm:h-[300px] md:h-[400px] md:flex-[0_0_auto] ${isSafari ? "ios-flex-1" : ""}`}
+          style={{ width: isSafari ? "80%" : "auto" }}
+        >
+          <div
+            className={`flex flex-col h-full space-y-2 ${isSafari ? "ios-flex-col" : ""}`}
+          >
             {remainingImages.slice(0, 3).map((image, index) => (
               <button
                 key={index}
@@ -286,7 +295,6 @@ const PropertyDetails = ({ selectedListing }) => {
                   src={image}
                   alt={`${index + 2}`}
                   className={`object-cover w-full h-full rounded-2xl ${isSafari ? "ios-object-cover ios-rounded-2xl" : ""}`}
-
                   style={{ width: isSafari ? "80%" : "100%" }} // styling
                 />
               </button>
@@ -303,8 +311,7 @@ const PropertyDetails = ({ selectedListing }) => {
                 src={displayedMainImage}
                 alt="Main property"
                 className={`flex-1 object-cover w-full h-full rounded-2xl ${isSafari ? "ios-flex-1 ios-object-cover ios-rounded-2xl" : ""}`}
-
-                style={{ width: isSafari ? "80%" : "100%" }}  // styling
+                style={{ width: isSafari ? "80%" : "100%" }} // styling
               />
               <button
                 onClick={toggleHeart}
@@ -318,7 +325,7 @@ const PropertyDetails = ({ selectedListing }) => {
             </button>
           </div>
         </div>
-  
+
         {/* Text Container */}
         <div className="flex flex-col flex-1">
           <div className="flex flex-col items-center justify-between md:flex-row md:space-x-4">
@@ -395,7 +402,9 @@ const PropertyDetails = ({ selectedListing }) => {
               </button>
             </div>
             <div className="flex-shrink-0 mt-4 md:mt-0 md:ml-4">
-              <h2 className="text-base font-semibold md:text-xl">Unit Details</h2>
+              <h2 className="text-base font-semibold md:text-xl">
+                Unit Details
+              </h2>
               <ul className="mt-4">
                 <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
                   <span>Bedrooms: {bedroom_count}</span>
@@ -405,8 +414,8 @@ const PropertyDetails = ({ selectedListing }) => {
                 </li>
                 <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
                   <span>
-                    Address: {location.address}, {location.city}, {location.state}{" "}
-                    {location.zipCode}
+                    Address: {location.address}, {location.city},{" "}
+                    {location.state} {location.zipCode}
                   </span>
                 </li>
               </ul>
@@ -429,7 +438,6 @@ const PropertyDetails = ({ selectedListing }) => {
       />
     </div>
   );
-  
 };
 
 export default PropertyDetails;
