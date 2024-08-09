@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -15,19 +15,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../build')));
 
 // Import routes
-const userRoute = require('./routes/userRoute');
+//const userRoute = require('./routes/userRoute');
 const stripeRoute = require('./routes/stripeRoute');
-const listingsRoute = require('./routes/listingsRoute');
-const cartRoute = require('./routes/cartRoute');
-const orderRoute = require('./routes/orderRoute');
+//const listingsRoute = require('./routes/listingsRoute');
+//const cartRoute = require('./routes/cartRoute');
+//const orderRoute = require('./routes/orderRoute');
 
 // API routes
-app.use('/api/user', userRoute);
-app.use('/api/stripe', stripeRoute);
-app.use('/api/listings', listingsRoute);
-app.use('/api/cart', cartRoute); 
-app.use('/api/orders', orderRoute);
-app.use('api/stripe', stripeRoute); 
+//app.use('/api/user', userRoute);
+//app.use('/api/stripe', stripeRoute);
+//app.use('/api/listings', listingsRoute);
+//app.use('/api/cart', cartRoute); 
+//app.use('/api/orders', orderRoute);
+app.use('/api/stripe', stripeRoute); 
 
 // Serve the React app for any unknown routes (for Single Page Application support)
 app.get('*', (req, res) => {
@@ -47,7 +47,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

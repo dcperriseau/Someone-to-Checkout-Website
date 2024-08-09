@@ -1,22 +1,36 @@
-const dotenv = require('dotenv');
-const admin = require('firebase-admin'); // Use firebase-admin for admin tasks
+// firebaseConfig.js
+const { initializeApp } = require('firebase/app');
+const { getFirestore } = require('firebase/firestore');
+const { getAuth, setPersistence, browserLocalPersistence } = require('firebase/auth');
+const { getStorage } = require('firebase/storage');
 
-// Load environment variables from .env file
-dotenv.config();
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDzDljTmYAC6Uue5iBsaKKUg-V2iuyd910",
+  authDomain: "sightonscene-a87ca.firebaseapp.com",
+  projectId: "sightonscene-a87ca",
+  storageBucket: "sightonscene-a87ca.appspot.com",
+  messagingSenderId: "1074561935073",
+  appId: "1:1074561935073:web:366ef88ce7ba244c6f79a0",
+  measurementId: "G-PHD0QKDG0H"
+};
 
-if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-  throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY is not defined');
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+// Initialize services
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const getFirebaseApp = () => app;
 
+// Set persistence to local
+setPersistence(auth, browserLocalPersistence)
+  .then(() => {
+    console.log('Persistence set to local');
+  })
+  .catch((error) => {
+    console.error('Error setting persistence:', error);
+  });
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const auth = admin.auth();
-const db = admin.firestore();
-const storage = admin.storage();
-
-module.exports = { auth, db, storage };
+module.exports = { auth, db, storage, getFirebaseApp, app };
