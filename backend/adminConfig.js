@@ -4,8 +4,12 @@ const admin = require('firebase-admin'); // Use firebase-admin for admin tasks
 // Load environment variables from .env file
 dotenv.config();
 
-// Parse the JSON content from the environment variable
+if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+  throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY is not defined');
+}
+
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
