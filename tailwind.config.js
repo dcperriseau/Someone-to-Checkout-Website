@@ -77,10 +77,10 @@ module.exports = {
           '-webkit-flex': '1',
         },
         '.ios-h-full': {
-          'height': '100%',
+          'height': '50%',
         },
         '.ios-w-full': {
-          'width': '100%',
+          'width': '50',
         },
       },
     };

@@ -275,59 +275,53 @@ const PropertyDetails = ({ selectedListing }) => {
       <div className="mt-2">
         <BackButton onClick={() => navigate(-1)} />
       </div>
+
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-[20px] pt-8">
-        {/* Image Container */}
-        <div
-          className={`flex h-[250px] sm:h-[300px] md:h-[400px] md:flex-[0_0_auto] ${isSafari ? "ios-flex-1" : ""}`}
-          style={{ width: isSafari ? "80%" : "auto" }}
-        >
-          <div
-            className={`flex flex-col h-full space-y-2 ${isSafari ? "ios-flex-col" : ""}`}
+        
+        {/* Images Section */}
+        <div className="flex flex-col flex-1" style={{ flex: '0 0 50%' }}>
+          {/* Main Image */}
+          <div 
+            className={`relative w-full h-[450px] rounded-2xl overflow-hidden ${isSafari ? "ios-rounded-2xl" : ""}`}
+            style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', marginBottom: '20px' }}
+            onClick={() => handleImageClick(0)} // Added onClick to main image
           >
+            <img
+              src={displayedMainImage}
+              alt="Main property"
+              className={`object-cover w-full h-full rounded-2xl ${isSafari ? "ios-object-cover ios-rounded-2xl" : ""}`}
+            />
+            <button
+              onClick={toggleHeart}
+              className="absolute flex items-center justify-center w-12 h-12 text-gray-400 bg-gray-200 rounded-full top-2 right-2"
+            >
+              <Heart
+                color={isHearted ? "text-pink-500" : "text-gray-400"}
+                size={18}
+              />
+            </button>
+          </div>
+
+          {/* Sub Images */}
+          <div className="flex justify-center space-x-2">
             {remainingImages.slice(0, 3).map((image, index) => (
               <button
                 key={index}
                 onClick={() => handleImageClick(index + 1)}
-                className={`rounded-md h-[calc(33.3333%-8px)] ${isSafari ? "ios-rounded-md" : ""}`}
-                style={{ width: isSafari ? "80%" : "100%" }} // styling
+                className={`w-1/4 h-[120px] rounded-md ${isSafari ? "ios-rounded-md" : ""}`}
               >
                 <img
                   src={image}
                   alt={`${index + 2}`}
                   className={`object-cover w-full h-full rounded-2xl ${isSafari ? "ios-object-cover ios-rounded-2xl" : ""}`}
-                  style={{ width: isSafari ? "80%" : "100%" }} // styling
                 />
               </button>
             ))}
           </div>
-          <div
-            className={`relative flex-1 ml-2 sm:ml-3 md:ml-4 ${isSafari ? "ios-flex-1" : ""}`}
-          >
-            <button
-              onClick={() => handleImageClick(0)}
-              className={`w-full h-full rounded-2xl ${isSafari ? "ios-rounded-2xl" : ""}`}
-            >
-              <img
-                src={displayedMainImage}
-                alt="Main property"
-                className={`flex-1 object-cover w-full h-full rounded-2xl ${isSafari ? "ios-flex-1 ios-object-cover ios-rounded-2xl" : ""}`}
-                style={{ width: isSafari ? "80%" : "100%" }} // styling
-              />
-              <button
-                onClick={toggleHeart}
-                className="absolute flex items-center justify-center w-12 h-12 text-gray-400 bg-gray-200 rounded-full top-2 right-2"
-              >
-                <Heart
-                  color={isHearted ? "text-pink-500" : "text-gray-400"}
-                  size={18}
-                />
-              </button>
-            </button>
-          </div>
         </div>
-
-        {/* Text Container */}
-        <div className="flex flex-col flex-1">
+  
+        {/* Text Section */}
+        <div className="flex-col flex-1" style={{ flex: '0 0 50%', paddingLeft: '15px' }}>
           <div className="flex flex-col items-center justify-between md:flex-row md:space-x-4">
             <div className="flex justify-between">
               <h1 className="mr-3 text-2xl font-bold md:text-3xl">{title}</h1>
@@ -363,7 +357,7 @@ const PropertyDetails = ({ selectedListing }) => {
                   </p>
                 </div>
               </div>
-              <div className="mt-4 text-sm text-gray-700 md:text-base">
+              <div className="mt-4 text-sm text-gray-700 md:text-base leading-relaxed">
                 {isDescriptionExpanded
                   ? description
                   : `${description.slice(0, descriptionPreviewLength)}...`}
@@ -402,9 +396,7 @@ const PropertyDetails = ({ selectedListing }) => {
               </button>
             </div>
             <div className="flex-shrink-0 mt-4 md:mt-0 md:ml-4">
-              <h2 className="text-base font-semibold md:text-xl">
-                Unit Details
-              </h2>
+              <h2 className="text-base font-semibold md:text-xl">Unit Details</h2>
               <ul className="mt-4">
                 <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
                   <span>Bedrooms: {bedroom_count}</span>
@@ -414,8 +406,8 @@ const PropertyDetails = ({ selectedListing }) => {
                 </li>
                 <li className="flex items-center mb-2 space-x-2 text-xs md:text-sm">
                   <span>
-                    Address: {location.address}, {location.city},{" "}
-                    {location.state} {location.zipCode}
+                    Address: {location.address}, {location.city}, {location.state}{" "}
+                    {location.zipCode}
                   </span>
                 </li>
               </ul>
@@ -423,6 +415,8 @@ const PropertyDetails = ({ selectedListing }) => {
           </div>
         </div>
       </div>
+  
+      {/* Modals */}
       <DetailsModal isOpen={isModalOpen} onClose={closeModal} />
       <SlideshowModal
         isOpen={isSlideshowOpen}

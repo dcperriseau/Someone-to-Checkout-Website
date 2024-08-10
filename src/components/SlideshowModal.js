@@ -45,8 +45,8 @@ const SlideshowModal = ({ isOpen, onClose, images, currentIndex }) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative w-2/3 max-w-lg overflow-hidden bg-transparent shadow-xl rounded-2xl">
-                <div className="relative flex items-center justify-center">
+              <Dialog.Panel className="relative w-full max-w-4xl h-[80vh] overflow-hidden bg-transparent shadow-xl rounded-2xl">
+                <div className="relative flex items-center justify-center h-full">
                   <img src={images[currentSlide]} alt={`Slide ${currentSlide}`} className="object-cover w-full h-full" />
                   <button
                     onClick={prevSlide}
