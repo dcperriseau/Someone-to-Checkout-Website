@@ -32,23 +32,22 @@ const SignInPage = () => {
   const submitLogin = async (email, password) => {
     try {
       const idToken = await loginUser(email, password);
-      console.log('ID Token:', idToken);
       const response = await fetch('/api/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ idToken }), // Send idToken in the request body
+        body: JSON.stringify({ idToken }),
       });
-      console.log('Response:', response);
-      if (!response.ok) {
-        const errorData = await response.json(); // Parse the error message from the response
-        throw new Error(errorData.message || 'Network response was not ok');
+  
+      const responseText = await response.text(); // Get the raw response text
+      try {
+        const data = JSON.parse(responseText); // Try to parse as JSON
+        console.log('Login successful:', data);
+        navigate(redirectPath || '/');
+      } catch (e) {
+        throw new Error('Server returned non-JSON response: ' + responseText);
       }
-
-      const data = await response.json();
-      console.log('Login successful:', data);
-      navigate(redirectPath || '/'); // Redirect back to the previous page or home
     } catch (error) {
       console.error('Error submitting login:', error);
       if (error.message !== 'Email not verified') {
