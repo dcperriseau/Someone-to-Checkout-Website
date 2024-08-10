@@ -1,36 +1,31 @@
-// firebaseConfig.js
-const { initializeApp } = require('firebase/app');
-const { getFirestore } = require('firebase/firestore');
-const { getAuth, setPersistence, browserLocalPersistence } = require('firebase/auth');
-const { getStorage } = require('firebase/storage');
+const admin = require('firebase-admin');
+const dotenv = require('dotenv');
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDzDljTmYAC6Uue5iBsaKKUg-V2iuyd910",
-  authDomain: "sightonscene-a87ca.firebaseapp.com",
-  projectId: "sightonscene-a87ca",
-  storageBucket: "sightonscene-a87ca.appspot.com",
-  messagingSenderId: "1074561935073",
-  appId: "1:1074561935073:web:366ef88ce7ba244c6f79a0",
-  measurementId: "G-PHD0QKDG0H"
+// Load environment variables from .env file
+dotenv.config();
+
+const serviceAccount = {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY,
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
+  universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 // Initialize services
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-const getFirebaseApp = () => app;
+const auth = admin.auth();
+const db = admin.firestore();
+const storage = admin.storage();
 
-// Set persistence to local
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log('Persistence set to local');
-  })
-  .catch((error) => {
-    console.error('Error setting persistence:', error);
-  });
-
-module.exports = { auth, db, storage, getFirebaseApp, app };
+module.exports = { auth, db, storage };
