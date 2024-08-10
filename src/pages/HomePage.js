@@ -10,6 +10,7 @@ const HomePage = ({ setSelectedListing }) => {
   const [listings, setListings] = useState([]);
 
   const navigate = useNavigate();
+  
 
   const toggleSaved = (index) => {
     const newSaved = [...saved];

@@ -1,7 +1,7 @@
-const { initializeApp } = require('firebase/app');
-const { getFirestore } = require('firebase/firestore');
-const { getAuth, setPersistence, browserLocalPersistence } = require('firebase/auth');
-const { getStorage } = require('firebase/storage');
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -14,14 +14,13 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
+// Initialize Firebase 
 const app = initializeApp(firebaseConfig);
 
 // Initialize services
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const getFirebaseApp = () => app;
 
 // Set persistence to local
 setPersistence(auth, browserLocalPersistence)
@@ -32,4 +31,7 @@ setPersistence(auth, browserLocalPersistence)
     console.error('Error setting persistence:', error);
   });
 
-module.exports = { auth, db, storage, getFirebaseApp, app };
+// Function to return the Firebase app instance
+export const getFirebaseApp = () => app;
+
+export { auth, db, storage, app };
