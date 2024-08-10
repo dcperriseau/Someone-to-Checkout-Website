@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, getFirestore } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
 const HomePage = ({ setSelectedListing }) => {
@@ -39,6 +39,25 @@ const HomePage = ({ setSelectedListing }) => {
 
     fetchListings();
   }, []);
+
+  useEffect(() => {
+    const testFirestore = async () => {
+      try {
+        console.log('db type:', typeof db);
+        const testCollection = await getDocs(collection(db, 'property_listings'));
+        testCollection.forEach((doc) => {
+          console.log(doc.id, '=>', doc.data());
+        });
+      } catch (error) {
+        console.error('Test fetch error:', error);
+      }
+    };
+  
+    testFirestore();
+  }, []);
+
+  console.log('db instance:', db);
+
 
   const handleImageClick = (listing) => {
     setSelectedListing(listing);
@@ -181,5 +200,8 @@ const HomePage = ({ setSelectedListing }) => {
     </div>
   );
 };
+
+console.log("Firestore Instance:", db);
+
 
 export default HomePage;
