@@ -21,7 +21,7 @@ const PersonalProfile = ({ setSelectedListing }) => {
           },
         });
         const data = await response.json();
-        console.log('User Profile Data:', data); // Log the data to check its structure
+
         setUser(data.user || { firstName: '', lastName: '' });
       } catch (error) {
         console.error('Error fetching user profile:', error);

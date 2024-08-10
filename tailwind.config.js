@@ -57,5 +57,35 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [function ({ addUtilities }) {
+    const newUtilities = {
+      '@supports (-webkit-touch-callout: none)': {
+        '.ios-object-cover': {
+          'object-fit': 'cover',
+          '-webkit-object-fit': 'cover',
+        },
+        '.ios-rounded-md': {
+          'border-radius': '0.375rem',
+          '-webkit-border-radius': '0.375rem',
+        },
+        '.ios-rounded-2xl': {
+          'border-radius': '1rem',
+          '-webkit-border-radius': '1rem',
+        },
+        '.ios-flex-1': {
+          'flex': '1',
+          '-webkit-flex': '1',
+        },
+        '.ios-h-full': {
+          'height': '50%',
+        },
+        '.ios-w-full': {
+          'width': '50',
+        },
+      },
+    };
+
+    addUtilities(newUtilities);
+  },
+],
 };
