@@ -83,7 +83,7 @@ const ShoppingBasket = () => {
     const stripe = await stripePromise;
 
     try {
-      const response = await fetch('http://localhost:3001/api/stripe/createcheckoutsession', {
+      const response = await fetch('http://localhost:8080/api/stripe/createcheckoutsession', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

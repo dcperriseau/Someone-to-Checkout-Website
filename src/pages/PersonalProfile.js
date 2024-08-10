@@ -13,7 +13,7 @@ const PersonalProfile = ({ setSelectedListing }) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch('/api/user/profile', {
+        const response = await fetch(`/api/users/profile`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -21,6 +21,7 @@ const PersonalProfile = ({ setSelectedListing }) => {
           },
         });
         const data = await response.json();
+
         setUser(data.user || { firstName: '', lastName: '' });
       } catch (error) {
         console.error('Error fetching user profile:', error);

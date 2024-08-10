@@ -7,12 +7,11 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
 
-// Serve static files from the "build" directory
+// Serve static files from the "build" directory (for production)
 app.use(express.static(path.join(__dirname, '../build')));
 
 // Import routes
@@ -22,14 +21,15 @@ const listingsRoute = require('./routes/listingsRoute');
 const cartRoute = require('./routes/cartRoute');
 const orderRoute = require('./routes/orderRoute');
 
-// User routes
+// API routes
 app.use('/api/user', userRoute);
 app.use('/api/stripe', stripeRoute);
 app.use('/api/listings', listingsRoute);
 app.use('/api/cart', cartRoute); 
 app.use('/api/orders', orderRoute);
+app.use('/api/stripe', stripeRoute); 
 
-// Serve the React app for any unknown routes
+// Serve the React app for any unknown routes (for Single Page Application support)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
 });
@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
     message: { err: "An error occurred" },
   };
   const errorObj = Object.assign({}, defaultErr, err);
-  console.log(errorObj.log);
+  console.error(errorObj.log);
   return res.status(errorObj.status).json(errorObj.message);
 });
 
