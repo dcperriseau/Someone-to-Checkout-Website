@@ -22,8 +22,11 @@ const HomePage = ({ setSelectedListing }) => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const querySnapshot = await getDocs(query(collection(db, 'property_listings'), orderBy('date_created', 'desc')));
-        const fetchedListings = querySnapshot.docs.map(doc => {
+        // Ensure db is initialized correctly
+        const listingsCollection = collection(db, 'property_listings'); // Correct usage of collection
+        const listingsQuery = query(listingsCollection, orderBy('date_created', 'desc'));
+        const querySnapshot = await getDocs(listingsQuery);
+        const fetchedListings = querySnapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             ...data,
