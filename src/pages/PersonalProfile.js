@@ -21,7 +21,7 @@ const PersonalProfile = ({ setSelectedListing }) => {
           },
         });
         const data = await response.json();
-        setUser(data.user);
+        setUser(data.user || { firstName: '', lastName: '' });
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
@@ -87,18 +87,15 @@ const PersonalProfile = ({ setSelectedListing }) => {
         </button>
         <div className="flex flex-col items-start mt-12 md:flex-row md:justify-start">
           <div className="relative w-32 h-32 md:w-40 md:h-40">
-            {/* <img
-              src={process.env.PUBLIC_URL + "/personalProfile/propic1.png"}
-              alt={`${user.firstName} ${user.lastName}`}
-              className="object-cover w-full h-full rounded-full"
-            /> */}
+            {/* Profile Picture Placeholder */}
           </div>
-          <div className="flex flex-col items-start w-full mt-4 md:mt-0 md:ml-8 md:w-auto">
-            <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>
-              {user.firstName} {user.lastName}
-            </h1>
-            {/* <p className="text-xl md:text-2xl text-textTeritary" style={{ fontSize: '16px' }}>Los Angeles, CA</p> */}
-          </div>
+          {user && (
+            <div className="flex flex-col items-start w-full mt-4 md:mt-0 md:ml-8 md:w-auto">
+              <h1 className="text-3xl font-bold md:text-5xl text-textTeritary" style={{ fontSize: '46px' }}>
+                {user.firstName} {user.lastName}
+              </h1>
+            </div>
+          )}
         </div>
         <div className="flex flex-col mt-4 space-y-2 md:flex-row md:space-y-0 md:ml-4 md:space-x-2">
           <button className="flex items-center justify-center min-w-[160px] max-w-[200px] px-8 py-2 text-white bg-[#47CAD2] rounded-full">Request a Viewing</button>
@@ -115,10 +112,6 @@ const PersonalProfile = ({ setSelectedListing }) => {
               </button>
               <div className="flex items-center justify-between mb-1">
                 <p className="text-lg font-thin text-textPrimary">{item.title}</p>
-                {/* <span className="flex items-center space-x-2 text-textPrimary">
-                  {item.hearts}
-                  <Heart color="text-pinkHeartColor" size={20} className="ml-2" />
-                </span> */}
               </div>
               <p className="mb-1 font-thin text-textSecondary">
                 {item.location.street_address}, {item.location.city}, {item.location.state_name}, {item.location.zip_code}

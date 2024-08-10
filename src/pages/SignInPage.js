@@ -8,7 +8,7 @@ const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const [verificationError, setVerificationError] = useState(null); // New state for verification error
+  const [verificationError, setVerificationError] = useState(null);
   const { setIdToken, redirectPath } = useAuth();
   const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ const SignInPage = () => {
         throw new Error('Email not verified');
       }
       const idToken = await userCredential.user.getIdToken();
-      console.log('Obtained ID Token:', idToken); // Log the ID token
+      console.log('Obtained ID Token:', idToken);
       setIdToken(idToken);
       return idToken;
     } catch (error) {
@@ -33,7 +33,7 @@ const SignInPage = () => {
     try {
       const idToken = await loginUser(email, password);
       console.log('ID Token:', idToken);
-      const response = await fetch('/api/user/login', {
+      const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ const SignInPage = () => {
       });
       console.log('Response:', response);
       if (!response.ok) {
-        const errorData = await response.json(); // Parse the error message from the response
+        const errorData = await response.json();
         throw new Error(errorData.message || 'Network response was not ok');
       }
 
