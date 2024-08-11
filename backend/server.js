@@ -1,8 +1,13 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import bodyParser from 'body-parser';
+import path from 'path';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 
@@ -11,15 +16,19 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Get the current directory name (since __dirname is not available in ES modules)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 // Serve static files from the "build" directory (for production)
 app.use(express.static(path.join(__dirname, '../build')));
 
 // Import routes
-const userRoute = require('./routes/userRoute');
-const stripeRoute = require('./routes/stripeRoute');
-const listingsRoute = require('./routes/listingsRoute');
-const cartRoute = require('./routes/cartRoute');
-const orderRoute = require('./routes/orderRoute');
+import userRoute from './routes/userRoute.js';
+import stripeRoute from './routes/stripeRoute.js';
+import listingsRoute from './routes/listingsRoute.js';
+import cartRoute from './routes/cartRoute.js';
+import orderRoute from './routes/orderRoute.js';
 
 // API routes
 app.use('/api/user', userRoute);

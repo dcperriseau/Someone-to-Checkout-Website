@@ -1,8 +1,9 @@
-const { auth, db } = require('../adminConfig');  // Use Firebase Admin SDK
+// Import necessary Firebase Admin SDK functions and modules
+import { auth, db } from '../adminConfig';  // Use Firebase Admin SDK
 
 const cartController = {};
 
-// post property listing to cart
+// Post property listing to cart
 cartController.postToCart = async (req, res) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
 
@@ -47,7 +48,7 @@ cartController.postToCart = async (req, res) => {
   }
 };
 
-// get user's cart
+// Get user's cart
 cartController.getCart = async (req, res) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
 
@@ -74,7 +75,7 @@ cartController.getCart = async (req, res) => {
   }
 };
 
-// delete users listing from cart
+// Delete user's listing from cart
 cartController.deleteFromCart = async (req, res, next) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
   if (!idToken) {
@@ -113,6 +114,7 @@ cartController.deleteFromCart = async (req, res, next) => {
   }
 };
 
+// Delete all items from the user's cart
 cartController.deleteAllFromCart = async (req, res) => {
   const idToken = req.headers.authorization?.split('Bearer ')[1];
   console.log('in delete all from cart middleware');
@@ -136,7 +138,4 @@ cartController.deleteAllFromCart = async (req, res) => {
   }
 };
 
-module.exports = cartController;
-
-
-module.exports = cartController;
+export default cartController;

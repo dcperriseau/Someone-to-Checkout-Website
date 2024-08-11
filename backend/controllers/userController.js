@@ -1,6 +1,6 @@
-const { auth, db } = require('../adminConfig');  // Use Firebase Admin SDK
-const admin = require('firebase-admin');
-const nodemailer = require('nodemailer');
+import { auth, db } from '../adminConfig';  // Use Firebase Admin SDK
+import admin from 'firebase-admin';
+import nodemailer from 'nodemailer';
 
 const userController = {};
 
@@ -170,4 +170,4 @@ userController.getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = userController;
+export default userController;

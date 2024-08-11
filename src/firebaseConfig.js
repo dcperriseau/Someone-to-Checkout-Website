@@ -31,7 +31,5 @@ setPersistence(auth, browserLocalPersistence)
     console.error('Error setting persistence:', error);
   });
 
-// Function to return the Firebase app instance
-export const getFirebaseApp = () => app;
-
+// Export the services and Firebase app instance
 export { auth, db, storage, app };

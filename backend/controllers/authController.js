@@ -1,11 +1,12 @@
 // middleware/authMiddleware.js
-const { auth } = require('../adminConfig');
+
+import { auth } from '../adminConfig';
 
 const authController = {};
 
 authController.verifyToken = async (req, res, next) => {
   console.log('in verify token middleware');
-  const token = req.headers.authorization?.split('Bearer ')[1];
+  const token = req.headers.authorization?.split('Bearer ')[1]; // Extract the token
 
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
@@ -21,4 +22,4 @@ authController.verifyToken = async (req, res, next) => {
   }
 };
 
-module.exports = authController;
+export default authController;

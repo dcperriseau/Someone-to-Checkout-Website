@@ -1,4 +1,4 @@
-const { db } = require('../adminConfig');
+import { db } from '../adminConfig';
 
 const orderController = {};
 
@@ -23,4 +23,4 @@ orderController.getOrders = async (req, res) => {
   }
 };
 
-module.exports = orderController;
+export default orderController;

@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import PostListings from './pages/PostListings';
-import SuggestListing from './pages/SuggestListing';
-import ShoppingBasket from './pages/ShoppingBasket';
-import AboutUsPage from './pages/AboutUsPage';
-import ContactUs from './pages/ContactPage';
-import ListingPage from './pages/ListingPage';
-import HomePage from './pages/HomePage';
-import SignInPage from './pages/SignInPage';
-import SignUpPage from './pages/SignUpPage';
-import PersonalProfile from './pages/PersonalProfile';
-import PropertyDetails from './pages/PropertyDetails';
-import ListersProfile from './pages/ListersProfile';
-import Success from './pages/Success';
+import Header from './components/Header.js';
+import Footer from './components/Footer.js';
+import PostListings from './pages/PostListings.js';
+import SuggestListing from './pages/SuggestListing.js';
+import ShoppingBasket from './pages/ShoppingBasket.js';
+import AboutUsPage from './pages/AboutUsPage.js';
+import ContactUs from './pages/ContactPage.js';
+import ListingPage from './pages/ListingPage.js';
+import HomePage from './pages/HomePage.js';
+import SignInPage from './pages/SignInPage.js';
+import SignUpPage from './pages/SignUpPage.js';
+import PersonalProfile from './pages/PersonalProfile.js';
+import PropertyDetails from './pages/PropertyDetails.js';
+import ListersProfile from './pages/ListersProfile.js';
+import Success from './pages/Success.js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { AuthProvider } from './context/AuthContext';
-import { BasketProvider } from './context/BasketContext';
+import { AuthProvider } from './context/AuthContext.js';
+import { BasketProvider } from './context/BasketContext.js';
 
-// Load your publishable key from the Stripe dashboard
 const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
     <AuthProvider>
       <BasketProvider>
         <div className="relative w-full min-h-screen">
-          {/* Grey borders matching footer color */}
           <div className="absolute top-0 left-0 w-full h-[10px] bg-borderGrey"></div>
           <div className="absolute top-0 left-0 w-[10px] h-full bg-borderGrey"></div>
           <div className="absolute top-0 right-0 w-[10px] h-full bg-borderGrey"></div>

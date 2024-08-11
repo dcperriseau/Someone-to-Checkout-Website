@@ -1,4 +1,4 @@
-const { db, auth } = require('../adminConfig');  // Use Firebase Admin SDK
+import { db, auth } from '../adminConfig';  // Use Firebase Admin SDK
 
 const listingsController = {};
 
@@ -95,4 +95,4 @@ listingsController.getUserListings = async (req, res, next) => {
   }
 };
 
-module.exports = listingsController;
+export default listingsController;

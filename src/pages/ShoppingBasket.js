@@ -13,6 +13,7 @@ const ShoppingBasket = () => {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const { user } = useAuth();
+  const { idToken } = useAuth();
   const { setBasketCount } = useBasket();
   const navigate = useNavigate();
 
