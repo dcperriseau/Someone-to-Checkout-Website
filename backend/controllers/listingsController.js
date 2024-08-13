@@ -1,4 +1,4 @@
-import { db, auth } from '../adminConfig';  // Use Firebase Admin SDK
+import { db, auth } from '../adminConfig.js';  // Use Firebase Admin SDK
 
 const listingsController = {};
 
