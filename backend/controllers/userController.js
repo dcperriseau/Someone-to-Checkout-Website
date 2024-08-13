@@ -1,4 +1,5 @@
-import { auth, db } from '../adminConfig';  // Use Firebase Admin SDK
+import { auth, db, storage } from '../adminConfig.js';
+  // Use Firebase Admin SDK
 import admin from 'firebase-admin';
 import nodemailer from 'nodemailer';
 
@@ -19,7 +20,7 @@ userController.createUser = async (req, res, next) => {
       email: email,
       password: password, // Pass plaintext password, Admin SDK will handle hashing
       displayName: `${firstName} ${lastName}`, // Correctly set displayName
-    });
+    });x`x`
 
     // Generate email verification link
     const verificationLink = await auth.generateEmailVerificationLink(email);

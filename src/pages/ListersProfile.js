@@ -1,5 +1,5 @@
 import React from 'react';
-import Heart from '../components/Heart';
+import Heart from '../components/Heart.js';
 
 const ListersProfile = () => {
   const savedListings = [

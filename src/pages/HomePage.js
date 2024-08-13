@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, orderBy, getFirestore } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '../firebaseConfig.js';
 
 const HomePage = ({ setSelectedListing }) => {
   const [showFilters, setShowFilters] = useState(false);

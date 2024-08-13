@@ -1,6 +1,6 @@
 // BasketContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Import useAuth for authentication state
+import { useAuth } from '../context/AuthContext.js'; // Import useAuth for authentication state
 
 const BasketContext = createContext();
 

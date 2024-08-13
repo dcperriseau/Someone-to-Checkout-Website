@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useBasket } from "../context/BasketContext";
+import { useAuth } from "../context/AuthContext.js";
+import { useBasket } from "../context/BasketContext.js";
 import {
   doc,
   getDoc,
@@ -11,14 +11,14 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db } from "../firebaseConfig.js";
 
-import Heart from "../components/Heart";
-import Icon from "../components/ThreeDots";
-import BackButton from "../components/BackButton";
-import SlideshowModal from "../components/SlideshowModal";
-import DetailsModal from "../components/DetailsModel";
-import EmailModal from "../components/EmailModal";
+import Heart from "../components/Heart.js";
+import Icon from "../components/ThreeDots.js";
+import BackButton from "../components/BackButton.js";
+import SlideshowModal from "../components/SlideshowModal.js";
+import DetailsModal from "../components/DetailsModel.js";
+import EmailModal from "../components/EmailModal.js";
 
 // Utility function to detect iOS Safari
 const isIosSafari = () => {

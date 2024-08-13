@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Heart from '../components/Heart';
-import { useAuth } from '../context/AuthContext'; // Assuming you have an AuthContext to get the user token
+import Heart from '../components/Heart.js';
+import { useAuth } from '../context/AuthContext.js'; // Assuming you have an AuthContext to get the user token
 
 const PersonalProfile = ({ setSelectedListing }) => {
   const [savedListings, setSavedListings] = useState([]);

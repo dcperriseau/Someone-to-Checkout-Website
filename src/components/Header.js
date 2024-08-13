@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Import useAuth for authentication state
-import { useBasket } from '../context/BasketContext'; // Import useBasket for basket count
-import LogoutButton from './LogoutButton'; // Import LogoutButton component
+import { useAuth } from '../context/AuthContext.js'; // Import useAuth for authentication state
+import { useBasket } from '../context/BasketContext.js'; // Import useBasket for basket count
+import LogoutButton from './LogoutButton.js'; // Import LogoutButton component
 
 const Header = () => {
   const navigate = useNavigate();
