@@ -23,7 +23,11 @@ stripeController.createCheckoutSession = async (req, res) => {
   }
 
   try {
+
+    console.log('ID Token:', idToken); // token for debugging
     const decodedToken = await auth.verifyIdToken(idToken);
+    console.log('Decoded Token:', decodedToken); // decoded token to make sure its being processed
+
     const purchaserUid = decodedToken.uid;
 
     const purchaserDoc = await db.collection('users').doc(purchaserUid).get();

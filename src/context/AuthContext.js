@@ -1,14 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '../firebaseConfig.js'; // Import auth directly from your firebaseConfig
+import { auth, getFirebaseApp } from '../firebaseConfig.js'; 
 
 const AuthContext = createContext();
+//export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [idToken, setIdToken] = useState(null);
+  console.log('ID Token:', idToken);
 
   useEffect(() => {
+    const auth = getAuth(getFirebaseApp());
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const token = await user.getIdToken(true); // force refresh the token

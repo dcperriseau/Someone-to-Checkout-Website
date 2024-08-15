@@ -21,6 +21,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const getFirebaseApp = () => app;
 
 // Set persistence to local
 setPersistence(auth, browserLocalPersistence)
@@ -32,4 +33,4 @@ setPersistence(auth, browserLocalPersistence)
   });
 
 // Export the services and Firebase app instance
-export { auth, db, storage, app };
+export { auth, db, storage, app, getFirebaseApp };

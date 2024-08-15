@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Heart from '../components/Heart.js';
-import { useAuth } from '../context/AuthContext.js'; // Assuming you have an AuthContext to get the user token
+import { useAuth } from '../context/AuthContext.js';
 
 const PersonalProfile = ({ setSelectedListing }) => {
   const [savedListings, setSavedListings] = useState([]);
@@ -17,61 +17,69 @@ const PersonalProfile = ({ setSelectedListing }) => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
+            'Authorization': `Bearer ${idToken}`,
           },
         });
-        const data = await response.json();
-
+    
+        const text = await response.text(); // Get raw text for debugging
+        console.log('Raw response text:', text); // Log the raw response
+    
+        const data = JSON.parse(text); // Try to parse JSON
         setUser(data.user || { firstName: '', lastName: '' });
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
     };
-  
     const fetchListings = async () => {
       try {
         const response = await fetch('/api/listings/getuserlistings', {
           headers: {
-            'Authorization': `Bearer ${idToken}`
-          }
+            'Authorization': `Bearer ${idToken}`,
+          },
         });
-        const data = await response.json();
+        
+        const text = await response.text();
+        const data = JSON.parse(text);
+        
         setSavedListings(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching user listings:', error);
         setSavedListings([]);
       }
     };
-  
+
     const fetchOrders = async () => {
       try {
         const response = await fetch('/api/orders/getorder', {
           headers: {
-            'Authorization': `Bearer ${idToken}`
-          }
+            'Authorization': `Bearer ${idToken}`,
+          },
         });
-        const data = await response.json();
+
+        const text = await response.text();
+        const data = JSON.parse(text);
+        
         setOrders(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching user orders:', error);
         setOrders([]);
       }
     };
-  
+
     if (idToken) {
       fetchUserProfile();
       fetchListings();
       fetchOrders();
     }
   }, [idToken]);
-  
+
   const getListingImage = (listing) => {
     if (listing.main_image_url) {
       return listing.main_image_url;
     } else if (listing.image_urls && listing.image_urls.length > 0) {
       return listing.image_urls[0];
     } else {
-      return process.env.PUBLIC_URL + "/placeholder-image.png"; // Fallback placeholder image
+      return process.env.PUBLIC_URL + "/placeholder-image.png";
     }
   };
 
