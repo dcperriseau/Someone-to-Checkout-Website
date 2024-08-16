@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { db } from './adminConfig.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -15,6 +16,19 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+(async () => {
+  try {
+    const testDoc = await db.collection('test').doc('testDoc').get();
+    if (testDoc.exists) {
+      console.log('Firestore Access Successful: Document exists');
+    } else {
+      console.log('Firestore Access Successful: Document does not exist');
+    }
+  } catch (error) {
+    console.error('Firestore Access Error:', error);
+  }
+})();
 
 // Get the current directory name (since __dirname is not available in ES modules)
 const __filename = fileURLToPath(import.meta.url);
