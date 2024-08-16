@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { db } from '../adminConfig.js'; // Make sure this is the correct path to your adminConfig.js
+import { db, auth } from '../adminConfig.js'; // Ensure auth is imported for token verification
 
 // Initialize Stripe
 const stripe = new Stripe('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
@@ -10,13 +10,19 @@ stripeController.createCheckoutSession = async (req, res) => {
   const { items, uid } = req.body; // Accept uid from the request body
   const authHeader = req.headers.authorization;
 
-  console.log('Authorization Header:', authHeader); // Log the auth header
-
-  if (!uid) {
-    return res.status(400).json({ message: 'User ID (uid) is required' });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided or incorrect format' });
   }
 
+  const token = authHeader.split('Bearer ')[1];
+  console.log('Authorization Header:', authHeader); // Log the auth header
+  console.log('Token extracted:', token); // Log the extracted token
+
   try {
+    // Verify the token
+    const decodedToken = await auth.verifyIdToken(token);
+    console.log('Decoded Token:', decodedToken); // Log the decoded token
+
     // Fetch the user's document from Firestore using the uid
     const purchaserDoc = await db.collection('users').doc(uid).get();
     if (!purchaserDoc.exists) {
@@ -63,8 +69,8 @@ stripeController.createCheckoutSession = async (req, res) => {
     // Return the session ID to the frontend
     res.json({ sessionId: session.id });
   } catch (error) {
-    console.error('Error creating checkout session:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Error verifying token or creating checkout session:', error);
+    res.status(401).json({ message: 'Unauthorized', error: error.message });
   }
 };
 
