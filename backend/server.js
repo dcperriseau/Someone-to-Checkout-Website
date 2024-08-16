@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import cookieParser from 'cookie-parser'; // Import cookie-parser
 
 // Load environment variables from .env file
 dotenv.config();
@@ -12,9 +13,10 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: 'http://localhost:3000', credentials: true })); // Allow credentials (cookies) to be sent
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser()); // Use cookie-parser to handle cookies
 
 // Get the current directory name (since __dirname is not available in ES modules)
 const __filename = fileURLToPath(import.meta.url);
@@ -30,13 +32,14 @@ import listingsRoute from './routes/listingsRoute.js';
 import cartRoute from './routes/cartRoute.js';
 import orderRoute from './routes/orderRoute.js';
 
+
 // API routes
 app.use('/api/user', userRoute);
 app.use('/api/stripe', stripeRoute);
 app.use('/api/listings', listingsRoute);
 app.use('/api/cart', cartRoute); 
 app.use('/api/orders', orderRoute);
-app.use('/api/stripe', stripeRoute); 
+
 
 // Serve the React app for any unknown routes (for Single Page Application support)
 app.get('*', (req, res) => {

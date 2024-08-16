@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig.js';
-import { AuthContext, useAuth } from '../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 
 const SignInPage = () => {
@@ -9,7 +8,6 @@ const SignInPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [verificationError, setVerificationError] = useState(null);
-  const { setIdToken, redirectPath } = useAuth();
   const navigate = useNavigate();
 
   const loginUser = async (email, password) => {
@@ -19,42 +17,12 @@ const SignInPage = () => {
         setVerificationError('Email not verified. Please check your inbox.');
         throw new Error('Email not verified');
       }
-      const idToken = await userCredential.user.getIdToken();
-      console.log('Obtained ID Token:', idToken);
-      setIdToken(idToken);
-      return idToken;
+      // No need to set the ID token manually; Firebase will manage the session
+      console.log('User logged in successfully:', userCredential.user);
+      navigate('/'); // Redirect to home or the desired page
     } catch (error) {
       console.error('Error logging in:', error);
-      throw error;
-    }
-  };
-
-  const submitLogin = async (email, password) => {
-    try {
-      const idToken = await loginUser(email, password);
-
-      const response = await fetch('/api/user/login', {
-
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-  
-      const responseText = await response.text(); // Get the raw response text
-      try {
-        const data = JSON.parse(responseText); // Try to parse as JSON
-        console.log('Login successful:', data);
-        navigate(redirectPath || '/');
-      } catch (e) {
-        throw new Error('Server returned non-JSON response: ' + responseText);
-      }
-    } catch (error) {
-      console.error('Error submitting login:', error);
-      if (error.message !== 'Email not verified') {
-        setError(error.message);
-      }
+      setError(error.message);
     }
   };
 
@@ -62,7 +30,7 @@ const SignInPage = () => {
     e.preventDefault();
     setError(null);
     setVerificationError(null); // Reset verification error
-    await submitLogin(email, password);
+    await loginUser(email, password);
   };
 
   return (

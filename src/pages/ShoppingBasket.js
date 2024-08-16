@@ -13,7 +13,6 @@ const ShoppingBasket = () => {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const { user } = useAuth();
-  const { idToken } = useAuth();
   const { setBasketCount } = useBasket();
   const navigate = useNavigate();
 
@@ -81,6 +80,10 @@ const ShoppingBasket = () => {
       return;
     }
 
+    // Log the token to ensure it is valid
+    const token = await user.getIdToken();
+    console.log('Auth Token:', token); // Log the token to check its validity
+
     const stripe = await stripePromise;
 
     try {
@@ -88,9 +91,9 @@ const ShoppingBasket = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          'Authorization': `Bearer ${token}` // Pass the token in the Authorization header
         },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items, uid: user.uid }),  // Pass the user's UID
       });
 
       if (!response.ok) {

@@ -1,5 +1,3 @@
-// middleware/authMiddleware.js
-
 import { auth } from '../adminConfig.js';
 
 const authController = {};

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
+import { auth } from '../firebaseConfig.js';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -12,20 +14,18 @@ const SignUpPage = () => {
 
   const registerUser = async (email, password, firstName, lastName) => {
     try {
-      const response = await fetch('/api/user/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, firstName, lastName, password }),
+      // Create user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Update the user's profile with first name and last name
+      await updateProfile(userCredential.user, {
+        displayName: `${firstName} ${lastName}`
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to sign up');
-      }
+      // Send email verification
+      await sendEmailVerification(userCredential.user);
 
-      const data = await response.json();
-      console.log('Sign up successful:', data);
+      console.log('Sign up successful:', userCredential.user);
       setSuccess(true);
     } catch (error) {
       console.error('Error signing up:', error);

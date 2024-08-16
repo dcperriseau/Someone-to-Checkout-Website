@@ -1,47 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Heart from '../components/Heart.js';
-import { useAuth } from '../context/AuthContext.js';
+import { auth, db, storage } from '../firebaseConfig.js';
 
 const PersonalProfile = ({ setSelectedListing }) => {
   const [savedListings, setSavedListings] = useState([]);
   const [orders, setOrders] = useState([]);
   const [user, setUser] = useState({ firstName: '', lastName: '' });
-  const { idToken } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`/api/users/profile`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-          },
-        });
-    
-        const text = await response.text(); // Get raw text for debugging
-        console.log('Raw response text:', text); // Log the raw response
-    
-        const data = JSON.parse(text); // Try to parse JSON
-        setUser(data.user || { firstName: '', lastName: '' });
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+          const userDoc = await db.collection('users').doc(currentUser.uid).get();
+          if (userDoc.exists) {
+            setUser(userDoc.data());
+          } else {
+            console.error('No user document found!');
+          }
+        } else {
+          console.error('No user is currently signed in!');
+        }
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
     };
+
     const fetchListings = async () => {
       try {
-        const response = await fetch('/api/listings/getuserlistings', {
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-          },
-        });
-        
-        const text = await response.text();
-        const data = JSON.parse(text);
-        
-        setSavedListings(Array.isArray(data) ? data : []);
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+          const listingsSnapshot = await db.collection('property_listings')
+            .where('userId', '==', currentUser.uid)
+            .get();
+
+          const listings = listingsSnapshot.docs.map(doc => doc.data());
+          setSavedListings(listings);
+        } else {
+          console.error('No user is currently signed in!');
+        }
       } catch (error) {
         console.error('Error fetching user listings:', error);
         setSavedListings([]);
@@ -50,28 +50,33 @@ const PersonalProfile = ({ setSelectedListing }) => {
 
     const fetchOrders = async () => {
       try {
-        const response = await fetch('/api/orders/getorder', {
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-          },
-        });
+        const currentUser = auth.currentUser;
 
-        const text = await response.text();
-        const data = JSON.parse(text);
-        
-        setOrders(Array.isArray(data) ? data : []);
+        if (currentUser) {
+          const ordersSnapshot = await db.collection('orders')
+            .where('purchaserUid', '==', currentUser.uid)
+            .get();
+
+          const orders = ordersSnapshot.docs.map(doc => doc.data());
+          setOrders(orders);
+        } else {
+          console.error('No user is currently signed in!');
+        }
       } catch (error) {
         console.error('Error fetching user orders:', error);
         setOrders([]);
       }
     };
 
-    if (idToken) {
+    // Fetch data only if user is signed in
+    if (auth.currentUser) {
       fetchUserProfile();
       fetchListings();
       fetchOrders();
+    } else {
+      navigate('/signin'); // Redirect to sign-in if no user is signed in
     }
-  }, [idToken]);
+  }, [navigate]);
 
   const getListingImage = (listing) => {
     if (listing.main_image_url) {

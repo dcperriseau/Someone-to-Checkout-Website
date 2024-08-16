@@ -1,41 +1,30 @@
 import Stripe from 'stripe';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { db } from '../adminConfig.js'; // Make sure this is the correct path to your adminConfig.js
 
-// Get __dirname for ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Construct the path to firebaseConfig.js
-const firebaseConfigPath = path.join(__dirname, '../../src/firebaseConfig.js');
-const { auth, db } = await import(firebaseConfigPath);
-
+// Initialize Stripe
 const stripe = new Stripe('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
 
 const stripeController = {};
 
 stripeController.createCheckoutSession = async (req, res) => {
-  const { items } = req.body;
-  const idToken = req.headers.authorization?.split('Bearer ')[1];
+  const { items, uid } = req.body; // Accept uid from the request body
+  const authHeader = req.headers.authorization;
 
-  if (!idToken) {
-    return res.status(400).json({ message: 'Authorization token is required' });
+  console.log('Authorization Header:', authHeader); // Log the auth header
+
+  if (!uid) {
+    return res.status(400).json({ message: 'User ID (uid) is required' });
   }
 
   try {
-
-    console.log('ID Token:', idToken); // token for debugging
-    const decodedToken = await auth.verifyIdToken(idToken);
-    console.log('Decoded Token:', decodedToken); // decoded token to make sure its being processed
-
-    const purchaserUid = decodedToken.uid;
-
-    const purchaserDoc = await db.collection('users').doc(purchaserUid).get();
+    // Fetch the user's document from Firestore using the uid
+    const purchaserDoc = await db.collection('users').doc(uid).get();
     if (!purchaserDoc.exists) {
       return res.status(404).json({ message: 'Purchaser not found' });
     }
     const purchaserEmail = purchaserDoc.data().email;
 
+    // Prepare line items for Stripe checkout session
     const lineItems = items.map(item => ({
       price_data: {
         currency: 'usd',
@@ -47,6 +36,7 @@ stripeController.createCheckoutSession = async (req, res) => {
       quantity: 1,
     }));
 
+    // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
@@ -57,7 +47,7 @@ stripeController.createCheckoutSession = async (req, res) => {
 
     // Save the order to Firestore
     const orderData = {
-      purchaserUid,
+      purchaserUid: uid, // Use the uid directly
       purchaserEmail,
       items: items.map(item => ({
         ...item,
@@ -70,6 +60,7 @@ stripeController.createCheckoutSession = async (req, res) => {
     const orderRef = await db.collection('orders').add(orderData);
     console.log('Order created in Firestore with ID:', orderRef.id);
 
+    // Return the session ID to the frontend
     res.json({ sessionId: session.id });
   } catch (error) {
     console.error('Error creating checkout session:', error);
