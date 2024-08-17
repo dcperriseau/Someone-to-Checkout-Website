@@ -7,7 +7,7 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig.js';
 import { useBasket } from '../context/BasketContext.js';
 
-const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
+const stripePromise = loadStripe('pk_live_51PKNI2GDWcOLiYf2JXRspBmODIUpsTVcRez14ZzJy0sJYHqU78eLYybiZmClaQXea0tRlfiP99HRCJy9xzy7YcDQ00LGExfvhF');
 
 const ShoppingBasket = () => {
   const [items, setItems] = useState([]);

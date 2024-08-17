@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 //const firebaseConfigPath = path.join(__dirname, '../../src/firebaseConfig.js');
 //const { auth, db } = await import(firebaseConfigPath);
 
-const stripe = new Stripe('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
+const stripe = new Stripe('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');
 
 const stripeController = {};
 

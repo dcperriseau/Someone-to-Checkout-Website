@@ -21,9 +21,15 @@ const serviceAccount = {
 console.log('Service Account:', serviceAccount);
 
 // Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+try {
+  // Attempt to initialize Firebase Admin SDK
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+  console.log('Firebase Admin initialized successfully');
+} catch (error) {
+  console.error('Error initializing Firebase Admin:', error);
+}
 
 // Initialize services
 const auth = admin.auth();
