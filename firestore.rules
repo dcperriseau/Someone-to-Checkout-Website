@@ -2,15 +2,8 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read access to all users, but restrict write access to authenticated users
-    match /property_listings/{documentId} {
-      allow read: if true; // Public read access
-      allow write: if request.auth != null; // Only authenticated users can write
-    }
-
-    // Restrict access to users' own documents in the 'users' collection
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }

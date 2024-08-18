@@ -44,11 +44,11 @@ try {
   console.error('Error connecting to Firestore:', error);
 }
 
-try {
-  await auth.getUser('testUserId');
-  console.log('Auth service connection successful.');
-} catch (error) {
-  console.error('Error connecting to Auth service:', error);
-}
+//try {
+ // await auth.getUser('testUserId');
+ // console.log('Auth service connection successful.');
+//} catch (error) {
+ // console.error('Error connecting to Auth service:', error);
+//}
 
 export { auth, db, storage };
