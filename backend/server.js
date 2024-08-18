@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -50,7 +50,6 @@ app.use('/api/stripe', stripeRoute);
 app.use('/api/listings', listingsRoute);
 app.use('/api/cart', cartRoute); 
 app.use('/api/orders', orderRoute);
-app.use('/api/stripe', stripeRoute); 
 
 // Serve the React app for any unknown routes (for Single Page Application support)
 app.get('*', (req, res) => {

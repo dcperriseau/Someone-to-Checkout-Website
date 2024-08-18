@@ -7,6 +7,7 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig.js';
 import { useBasket } from '../context/BasketContext.js';
 
+// Initialize Stripe with your publishable key
 const stripePromise = loadStripe('pk_live_51PKNI2GDWcOLiYf2JXRspBmODIUpsTVcRez14ZzJy0sJYHqU78eLYybiZmClaQXea0tRlfiP99HRCJy9xzy7YcDQ00LGExfvhF');
 
 const ShoppingBasket = () => {
@@ -84,7 +85,7 @@ const ShoppingBasket = () => {
     const stripe = await stripePromise;
 
     try {
-      const response = await fetch('http://localhost:8080/api/stripe/createcheckoutsession', {
+      const response = await fetch('/api/stripe/createcheckoutsession', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
