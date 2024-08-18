@@ -5,7 +5,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import cookieParser from 'cookie-parser'; // Import cookie-parser
 
 // Load environment variables from .env file
 dotenv.config();
@@ -13,10 +12,9 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:3000', credentials: true })); // Allow credentials (cookies) to be sent
+app.use(cors({ origin: 'http://localhost:3000', credentials: true })); 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser()); // Use cookie-parser to handle cookies
 
 // Get the current directory name (since __dirname is not available in ES modules)
 const __filename = fileURLToPath(import.meta.url);
