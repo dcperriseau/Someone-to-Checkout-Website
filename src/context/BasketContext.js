@@ -15,7 +15,7 @@ export const BasketProvider = ({ children }) => {
       if (!idToken) return;
       // console.log('Fetching basket count...');
       try {
-        const response = await fetch('/api/cart/getCart', {
+        const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/getcart', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

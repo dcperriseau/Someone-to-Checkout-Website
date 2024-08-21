@@ -32,7 +32,7 @@ const PersonalProfile = ({ setSelectedListing }) => {
     };
     const fetchListings = async () => {
       try {
-        const response = await fetch('/api/listings/getuserlistings', {
+        const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/getuserlistings', {
           headers: {
             'Authorization': `Bearer ${idToken}`,
           },

@@ -12,7 +12,7 @@ const Success = () => {
       const deleteItemsFromCart = async () => {
         console.log('Deleting items from cart after successful checkout');
         try {
-          const response = await fetch('/api/cart/deleteAllFromCart', {
+          const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/deleteAllFromCart', {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',

@@ -1,7 +1,8 @@
-import { auth, db, storage } from '../adminConfig.js';
+import { auth, db, storage } from '../adminConfig.mjs';
   // Use Firebase Admin SDK
 import admin from 'firebase-admin';
 import nodemailer from 'nodemailer';
+import "dotenv/config";
 
 const userController = {};
 
@@ -9,7 +10,7 @@ const userController = {};
 userController.createUser = async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
   
-  console.log('req.body', req.body);
+  //functions.logger.info('req.body', req.body);
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
@@ -20,7 +21,7 @@ userController.createUser = async (req, res, next) => {
       email: email,
       password: password, // Pass plaintext password, Admin SDK will handle hashing
       displayName: `${firstName} ${lastName}`, // Correctly set displayName
-    });x`x`
+    });
 
     // Generate email verification link
     const verificationLink = await auth.generateEmailVerificationLink(email);
@@ -70,7 +71,7 @@ userController.createUser = async (req, res, next) => {
   }
 };
 
-// Login user
+// // Login user
 userController.loginUser = async (req, res) => {
   const { idToken } = req.body; // Get idToken from the request body
   console.log('in login middleware', req.body);

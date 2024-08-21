@@ -12,7 +12,7 @@ const SignUpPage = () => {
 
   const registerUser = async (email, password, firstName, lastName) => {
     try {
-      const response = await fetch('/api/user/signup', {
+      const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 // Import necessary Firebase Admin SDK functions and modules
-import { auth, db } from '../adminConfig.js';  // Use Firebase Admin SDK
+import { auth, db } from '../adminConfig.mjs';  // Use Firebase Admin SDK
 
 const cartController = {};
 

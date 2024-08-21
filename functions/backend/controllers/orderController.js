@@ -1,4 +1,4 @@
-import { db } from '../adminConfig.js';
+import { db } from '../adminConfig.mjs';
 
 const orderController = {};
 

@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { auth, db } from '../adminConfig.js'
+import { auth, db } from '../adminConfig.mjs'
 
 // Get __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);

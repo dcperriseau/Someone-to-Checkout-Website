@@ -85,7 +85,8 @@ const ShoppingBasket = () => {
     const stripe = await stripePromise;
 
     try {
-      const response = await fetch('/api/stripe/createcheckoutsession', {
+      console.log("right before fetch request")
+      const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/createcheckoutsession', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
