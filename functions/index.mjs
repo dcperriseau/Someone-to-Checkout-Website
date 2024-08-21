@@ -10,8 +10,6 @@ import admin from "firebase-admin";
 import express from "express";
 import cors from "cors"; 
 
-//import "dotenv/config";
-
 // Initialize Firebase Admin SDK
 //admin.initializeApp();
 //const db = admin.firestore();
@@ -47,5 +45,6 @@ app.post('/createcheckoutsession', stripeController.createCheckoutSession);
 
 // Export the API to Firebase Cloud Functions
 // exports.expressApi = functions.https.onRequest(app);
+//export const signUp = functions.https.onRequest(userController.createUser);
 export const expressApi = functions.https.onRequest(app);
 // export default app.router;
