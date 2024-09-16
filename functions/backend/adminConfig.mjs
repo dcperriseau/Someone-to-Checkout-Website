@@ -1,5 +1,4 @@
 import admin from 'firebase-admin';
-//import dotenv from 'dotenv';
 import 'dotenv/config';
 
 // Load environment variables from .env file
@@ -29,6 +28,7 @@ import 'dotenv/config';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const serviceAccount = require('../serviceAccountKey.json')
+console.log("Service Account: ", serviceAccount);
 
 
 // Initialize Firebase Admin SDK
