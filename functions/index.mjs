@@ -42,7 +42,7 @@ app.delete('/deleteallfromcart', cartController.deleteAllFromCart);
 // Stripe routes
 app.post('/createcheckoutsession', stripeController.createCheckoutSession);
 
-// Chrome Extension route: Submit property
+// Chrome Extension route for Submit property
 app.post('/submitProperty', async (req, res) => {
   const { url, contact } = req.body;
 
