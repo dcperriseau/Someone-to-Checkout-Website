@@ -19,3 +19,11 @@ chrome.action.onClicked.addListener((tab) => {
     });
   });
   
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'activatePopup') {
+    // Open the popup programmatically when the content script detects a matching URL
+    chrome.action.openPopup();
+  }
+});
+
