@@ -14,6 +14,10 @@ if (window.location.href.includes('chakra-ui.com')) {
     container.style.border = '1px solid #ddd';
     container.style.borderRadius = '5px';
     container.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.justifyContent = 'center';
+    container.style.alignItems = 'center';
 
     // Set the inner HTML to the content of your popup
     container.innerHTML = `
@@ -40,11 +44,18 @@ if (window.location.href.includes('chakra-ui.com')) {
         statusDiv.textContent = message;
         statusDiv.className = `status ${type}`;
         statusDiv.style.display = 'block';
+        statusDiv.style.color = type === 'error' ? 'red' : 'green';
 
         // Hide the message after 3 seconds
         setTimeout(() => {
             statusDiv.style.display = 'none';
         }, 3000);
     }
+
+    chrome.runtime.onMessage.addListener((message) => {
+        if (message.action === 'showStatus') {
+            showStatus(message.text, message.type);
+        }
+    });
 };
 
