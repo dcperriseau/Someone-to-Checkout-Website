@@ -10,7 +10,6 @@
       "service_worker": "background.js"
     },
     "action": {
-      "default_popup": "popup.html",
       "default_title": "Save Property URL"
     },
     "oauth2": {
@@ -28,6 +27,12 @@
       {
         "resources": ["popup.html"],
         "matches": ["<all_urls>"]
+      }
+    ],
+    "content_scripts": [
+      {
+        "matches": ["*://*.chakra-ui.com/*"],
+        "js": ["content-script.js"]
       }
     ]
   }
