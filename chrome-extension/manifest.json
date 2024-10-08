@@ -3,7 +3,8 @@
     "name": "Dibby",
     "version": "1.2",
     "permissions": [
-      "activeTab", 
+      "activeTab",
+      "tabs", 
       "identity"
     ],
     "background": {
@@ -13,7 +14,7 @@
       "default_title": "Save Property URL"
     },
     "oauth2": {
-      "client_id": "1074561935073-i9b96fmnu42fv8kq8vs2gtnqva61cbpr.apps.googleusercontent.com",
+      "client_id": "1074561935073-mgfn942huhv1l95ul92jini67d1en9ab.apps.googleusercontent.com",
       "scopes": [
         "https://www.googleapis.com/auth/userinfo.email"
       ]

@@ -31,65 +31,7 @@ if (window.location.href.includes('chakra-ui.com')) {
         console.log('Submit button clicked');
 
         // Get the active tab's URL
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const activeTab = tabs[0];
-            const url = activeTab?.url || '';
-            console.log('Active tab URL:', url);
-
-            if (!url) {
-                console.error('URL is missing');
-                showStatus('Failed to submit property: Missing URL.', 'error');
-                return;
-            }
-
-            // Authenticate and fetch user's email using OAuth2
-            chrome.identity.getAuthToken({ interactive: true }, function (token) {
-                if (chrome.runtime.lastError) {
-                    console.error('Authentication error:', chrome.runtime.lastError);
-                    showStatus('Failed to authenticate user.', 'error');
-                    return;
-                }
-
-                fetch('https://www.googleapis.com/oauth2/v2/userinfo?alt=json', {
-                    headers: {
-                        'Authorization': 'Bearer ' + token
-                    }
-                })
-                .then(response => response.json())
-                .then(userInfo => {
-                    const contact = userInfo?.email || '';
-
-                    if (!contact) {
-                        console.error('Contact (email) is missing');
-                        showStatus('Failed to submit property: Missing contact info.', 'error');
-                        return;
-                    }
-
-                    console.log('User email:', contact);
-
-                    fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/submitProperty', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ url, contact })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Response from Firebase function:', data);
-                        showStatus('Property submitted successfully!', 'success');
-                    })
-                    .catch(error => {
-                        console.error('Error submitting property:', error);
-                        showStatus('Failed to submit property.', 'error');
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching user info:', error);
-                    showStatus('Failed to retrieve user info.', 'error');
-                });
-            });
-        });
+        chrome.runtime.sendMessage({ action: 'submitProperty' });
     });
 
     // Function to show status message
