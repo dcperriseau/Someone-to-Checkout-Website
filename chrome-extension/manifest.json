@@ -7,6 +7,21 @@
       "tabs", 
       "identity"
     ],
+    "host_permissions": [
+        "*://*.facebook.com/*",
+        "*://*.zillow.com/*",
+        "*://*.apartments.com/*",
+        "*://*.trulia.com/*",
+        "*://*.craigslist.org/*",
+        "*://*.furnishedfinder.com/*",
+        "*://*.homes.com/*",
+        "*://*.rent.com/*",
+        "*://*.realtor.com/*",
+        "*://*.streeteasy.com/*",
+        "*://*.redfin.com/*",
+        "*://*.hotpads.com/*",
+        "*://*.apartmentfinder.com/*"
+    ],
     "background": {
       "service_worker": "background.js"
     },
@@ -32,7 +47,21 @@
     ],
     "content_scripts": [
       {
-        "matches": ["*://*.chakra-ui.com/*"],
+        "matches": [
+          "*://*.facebook.com/*",
+          "*://*.zillow.com/*",
+          "*://*.apartments.com/*",
+          "*://*.trulia.com/*",
+          "*://*.craigslist.org/*",
+          "*://*.furnishedfinder.com/*",
+          "*://*.homes.com/*",
+          "*://*.rent.com/*",
+          "*://*.realtor.com/*",
+          "*://*.streeteasy.com/*",
+          "*://*.redfin.com/*",
+          "*://*.hotpads.com/*",
+          "*://*.apartmentfinder.com/*"
+        ],
         "js": ["content-script.js"]
       }
     ]
