@@ -23,10 +23,10 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
     container.id = 'dibby-floating-container';
     container.style.position = 'fixed';
     container.style.top = '80px';
-    container.style.right = '20px';
+    container.style.right = '0px';
     container.style.zIndex = '10000';
-    container.style.width = '60px';
-    container.style.height = '60px';
+    container.style.width = '120px'; //size of box
+    container.style.height = '120px';
     container.style.backgroundColor = '#fff';
     container.style.border = '1px solid #ddd';
     container.style.borderRadius = '10px'; // Rounded corners for the white box
@@ -40,8 +40,8 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
     const dibbyIcon = document.createElement('img');
     dibbyIcon.src = chrome.runtime.getURL('dibby-icon.PNG'); 
     dibbyIcon.alt = 'Dibby Icon';
-    dibbyIcon.style.width = '44px'; 
-    dibbyIcon.style.height = '44px';
+    dibbyIcon.style.width = '88px'; //size of dibby dog
+    dibbyIcon.style.height = '88px';
 
     // Append the image to the container
     container.appendChild(dibbyIcon);
@@ -49,12 +49,20 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
     // Append the container to the body of the webpage
     document.body.appendChild(container);
 
-    // Add click event listener to the container
-    container.addEventListener('click', () => {
+     // Add click event listener to the container
+     container.addEventListener('click', () => {
         console.log('Dibby icon clicked');
-        chrome.runtime.sendMessage({ action: 'submitProperty' });
+        
+        // Send message to background.js to submit the property and handle the response
+        chrome.runtime.sendMessage({ action: 'submitProperty' }, (response) => {
+            if (response.success) {
+                showStatus(response.message, 'success'); // Show success message
+            } else {
+                showStatus(response.message, 'error'); // Show error message
+            }
+        });
     });
-
+    
     // Optional: Function to show status message (if needed)
     function showStatus(message, type) {
         const statusDiv = document.createElement('div');

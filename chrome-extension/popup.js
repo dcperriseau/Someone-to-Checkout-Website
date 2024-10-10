@@ -75,13 +75,21 @@ document.getElementById('submitButton').addEventListener('click', () => {
 
 // Function to show status message
 function showStatus(message, type) {
-    const statusDiv = document.getElementById('status');
+    const statusDiv = document.createElement('div');
     statusDiv.textContent = message;
-    statusDiv.className = `status ${type}`;
-    statusDiv.style.display = 'block';
+    statusDiv.style.position = 'fixed';
+    statusDiv.style.top = '150px';
+    statusDiv.style.right = '20px';
+    statusDiv.style.padding = '10px';
+    statusDiv.style.border = '1px solid #ddd';
+    statusDiv.style.borderRadius = '5px';
+    statusDiv.style.backgroundColor = type === 'error' ? 'red' : 'green';
+    statusDiv.style.color = '#fff';
+    statusDiv.style.zIndex = '10001';
+    document.body.appendChild(statusDiv);
 
     // Hide the message after 3 seconds
     setTimeout(() => {
-        statusDiv.style.display = 'none';
+        statusDiv.remove();
     }, 3000);
 }

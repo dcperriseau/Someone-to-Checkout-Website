@@ -123,6 +123,8 @@ export const submitProperty = functions.https.onRequest((req, res) => {
         submittedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
+      await sendUsageEmails();
+
       res.status(200).json({ message: 'Property submitted successfully' });
     } catch (error) {
       console.error('Error submitting property:', error);
