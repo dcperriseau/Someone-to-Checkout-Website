@@ -1,3 +1,6 @@
+//this is what happens when the user actually clicks on the actual extension button, not on the Dibby icon that pops up on the
+//page you are wanting it to show up on 
+
 console.log('Popup.js loaded');
 
 // Event listener for the button click

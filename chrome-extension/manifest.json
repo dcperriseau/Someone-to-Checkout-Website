@@ -41,7 +41,7 @@
     },
     "web_accessible_resources": [
       {
-        "resources": ["popup.html"],
+        "resources": ["dibby-icon.PNG"],
         "matches": ["<all_urls>"]
       }
     ],
