@@ -60,24 +60,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                                 'Content-Type': 'application/json',
                                 'Authorization': 'Bearer ' + token
                             },
-                            body: JSON.stringify({ userEmail: contact })
+                            body: JSON.stringify({ userEmail: contact, url })
                         })
                         .then(emailResponse => emailResponse.json())
                         .then(emailData => {
                             console.log('Email sent:', emailData);
-                            sendResponse({ success: true, message: 'Property submitted and email sent successfully!' });
-                            chrome.tabs.sendMessage(sender.tab.id, { action: 'showStatus', text: 'Property submitted successfully!', type: 'success' });
+                            sendResponse({ success: true, message: 'Link submitted and email sent successfully!' });
+                            chrome.tabs.sendMessage(sender.tab.id, { action: 'showStatus', text: 'Link submitted successfully!', type: 'success' });
                         })
                         .catch(error => {
                             console.error('Error sending email:', error);
-                            sendResponse({ success: true, message: 'Property submitted, but failed to send email.' });
-                            chrome.tabs.sendMessage(sender.tab.id, { action: 'showStatus', text: 'Property submitted, but failed to send email', type: 'error' });
+                            sendResponse({ success: true, message: 'Link submitted, but failed to send email.' });
+                            chrome.tabs.sendMessage(sender.tab.id, { action: 'showStatus', text: 'Link submitted, but failed to send email', type: 'error' });
                         });
                     })
                     .catch(error => {
                         console.error('Error submitting property:', error);
-                        sendResponse({ success: false, message: 'Failed to submit property.' });
-                        chrome.tabs.sendMessage(sender.tab.id, { action: 'showStatus', text: 'Failed to submit property.', type: 'error' });
+                        sendResponse({ success: false, message: 'Failed to submit Link.' });
+                        chrome.tabs.sendMessage(sender.tab.id, { action: 'showStatus', text: 'Failed to submit Link.', type: 'error' });
                     });
                 })
                 .catch(error => {
@@ -124,6 +124,11 @@ chrome.action.onClicked.addListener((tab) => {
             .then(emailData => console.log('Email sent:', emailData))
             .catch(error => console.error('Error sending email:', error));
         })
-        .catch(error => console.error('Error submitting property:', error));
+        .catch(error => console.error('Error submitting link:', error));
     });
 });
+
+
+// chrome.browserAction.onClicked.addListener((tab) => {
+//     chrome.tabs.sendMessage(tab.id, { action: 'toggleFloatingContainer' });
+// });

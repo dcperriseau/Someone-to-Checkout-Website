@@ -43,11 +43,34 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
     dibbyIcon.style.width = '88px'; //size of dibby dog
     dibbyIcon.style.height = '88px';
 
+    // Add the close button
+    // const closeButton = document.createElement('div');
+    // closeButton.textContent = 'X';
+    // closeButton.style.padding = '1px';
+    // closeButton.style.borderRadius = '50%';
+    // closeButton.style.border = '1px solid black';
+    // closeButton.style.backgroundColor = 'black';
+    // closeButton.style.color = 'white';
+    // closeButton.style.position = 'absolute';
+    // closeButton.style.top = '0';
+    // closeButton.style.right = '0';
+    // closeButton.style.cursor = 'pointer';
+
+    // Append the button to the container
+    //container.appendChild(closeButton);
+
     // Append the image to the container
     container.appendChild(dibbyIcon);
 
     // Append the container to the body of the webpage
     document.body.appendChild(container);
+
+    // Add click event listener to the close button
+    //  closeButton.addEventListener('click', () => {
+    //     event.stopPropagation();
+    //     console.log("Close button has been clicked");
+    //     container.remove();
+    //  });
 
      // Add click event listener to the container
      container.addEventListener('click', () => {
@@ -68,8 +91,8 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
         const statusDiv = document.createElement('div');
         statusDiv.textContent = message;
         statusDiv.style.position = 'fixed';
-        statusDiv.style.top = '150px';
-        statusDiv.style.right = '20px';
+        statusDiv.style.top = '50%';
+        statusDiv.style.left = '50%';
         statusDiv.style.padding = '10px';
         statusDiv.style.border = '1px solid #ddd';
         statusDiv.style.borderRadius = '5px';

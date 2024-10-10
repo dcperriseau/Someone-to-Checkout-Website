@@ -60,38 +60,46 @@ export const sendUsageEmails = functions.https.onRequest((req, res) => {
   // Use CORS middleware
   corsHandler(req, res, async () => {
     try {
-      const { userEmail } = req.body;
+      const { userEmail, url } = req.body;
 
-      if (!userEmail) {
-        return res.status(400).json({ message: 'Missing user email' });
+      if (!userEmail || !url) {
+        return res.status(400).json({ message: 'Missing user email or url' });
       }
 
-      // 1. Confirmation email to the user
+      // 1. Updated Confirmation email to the user
       const userMsg = {
         to: userEmail,
         from: 'dibby@someonetocheckout.com',
         subject: 'Confirmation: Thank you for using Dibby!',
-        text: 'Hi there,\n\nThank you for using Dibby. Someone from our team will be in touch with you very soon about your requested viewing.',
+        text: `Hi there,\n\nThank you for using Dibby. We will send someone to check out the property you submitted within 5 business days.\n\nYou will receive photos, videos, a written report, as well as a tour of the neighborhood. Only after you receive your photos and videos we request $30 for the service.\n\nIf you have any specific requests or questions, feel free to reply to this email or contact us at dibby@someonetocheckout.com.\n\nBest regards,\n\nThe Dibby Team`,
         html: `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <h2>Hi there,</h2>
-            <p>Thank you for using <strong>Dibby</strong>. Someone from our team will be in touch with you very soon regarding your requested viewing.</p>
-            <p>If you have any questions, feel free to reply to this email or contact us at <a href="mailto:dibby@someonetocheckout.com">dibby@someonetocheckout.com</a>.</p>
+            <p>Thank you for using <strong>Dibby</strong>. We will send someone to check out the property you submitted within <strong>5 business days</strong>.</p>
+            <p>You will receive photos, videos, a written report, as well as a tour of the neighborhood. Only after you receive your photos and videos, we request $30 for the service.</p>
+            <p>If you have any specific requests or questions, feel free to reply to this email or contact us at <a href="mailto:dibby@someonetocheckout.com">dibby@someonetocheckout.com</a>.</p>
             <br>
             <p>Best regards,</p>
             <p>The Dibby Team</p>
-            <hr style="border:none; border-top:1px solid #ddd; margin:20px 0;">
-            <p style="font-size:12px; color:#999;">You are receiving this email because you used the Dibby Chrome Extension. If you did not make this request, please ignore this email.</p>
           </div>
         `,
       };
 
-      // 2. Notification email to yourself
+      // 2. Updated Notification email to yourself, including the submitted URL
       const notificationMsg = {
         to: 'dibby@someonetocheckout.com', // email for receiving notifications
         from: 'dibby@someonetocheckout.com', 
         subject: 'New Usage Notification from Dibby Extension',
-        text: `The Chrome extension was used by ${userEmail}. Check firebase for details.`,
+        text: `The Chrome extension was used by ${userEmail}.\n\nSubmitted URL: ${url}\n\nCheck Firebase for more details.`,
+        html: `
+          <div style="font-family: Arial, sans-serif; color: #333;">
+            <h2>New Usage Notification</h2>
+            <p>The Chrome extension was used by <strong>${userEmail}</strong>.</p>
+            <p><strong>Submitted URL:</strong> <a href="${url}" target="_blank">${url}</a></p>
+            <br>
+            <p>Check Firebase for more details.</p>
+          </div>
+        `,
       };
 
       // Send both emails in parallel
