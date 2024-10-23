@@ -22,9 +22,9 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
     const container = document.createElement('div');
     container.id = 'dibby-floating-container';
     container.style.position = 'fixed';
+    container.style.zIndex = '99999';
     container.style.top = '80px';
     container.style.right = '0px';
-    container.style.zIndex = '10000';
     container.style.width = '120px'; //size of box
     container.style.height = '120px';
     container.style.backgroundColor = '#fff';
@@ -35,10 +35,15 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
     container.style.justifyContent = 'center';
     container.style.alignItems = 'center';
     container.style.cursor = 'pointer';
+    container.style.isolation = 'isolate';
+    container.style.backdropFilter = 'none';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
+
 
     // Add the Dibby icon image inside the container
     const dibbyIcon = document.createElement('img');
-    dibbyIcon.src = chrome.runtime.getURL('dibby-icon.PNG'); 
+    dibbyIcon.src = chrome.runtime.getURL('dibby-icon.PNG');
     dibbyIcon.alt = 'Dibby Icon';
     dibbyIcon.style.width = '88px'; //size of dibby dog
     dibbyIcon.style.height = '88px';
@@ -75,7 +80,7 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
      // Add click event listener to the container
      container.addEventListener('click', () => {
         console.log('Dibby icon clicked');
-        
+
         // Send message to background.js to submit the property and handle the response
         chrome.runtime.sendMessage({ action: 'submitProperty' }, (response) => {
             if (response.success) {
@@ -85,7 +90,7 @@ if (allowedWebsites.some(website => window.location.href.includes(website))) {
             }
         });
     });
-    
+
     // Optional: Function to show status message (if needed)
     function showStatus(message, type) {
         const statusDiv = document.createElement('div');
