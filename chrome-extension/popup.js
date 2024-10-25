@@ -1,5 +1,6 @@
-//this is what happens when the user actually clicks on the actual extension button, not on the Dibby icon that pops up on the
-//page you are wanting it to show up on 
+//this is what happens when the user actually clicks on the actual extension button, not on the Dibby dog icon that pops up on the
+//page you are wanting it to show up on. This is for people who are actually using the extension button for when they are not
+//on one of the host pages (zillow, rent.com, etc) so this will be for misc submissions but is still fully functional 
 
 console.log('Popup.js loaded');
 
