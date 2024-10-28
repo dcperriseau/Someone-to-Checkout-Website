@@ -1,6 +1,6 @@
 // BasketContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Import useAuth for authentication state
+import { useAuth } from '../context/AuthContext.js'; // Import useAuth for authentication state
 
 const BasketContext = createContext();
 
@@ -15,7 +15,7 @@ export const BasketProvider = ({ children }) => {
       if (!idToken) return;
       // console.log('Fetching basket count...');
       try {
-        const response = await fetch('/api/cart/getCart', {
+        const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/getcart', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

@@ -1,0 +1,69 @@
+{
+    "manifest_version": 3,
+    "name": "Dibby",
+    "version": "1.4",
+    "permissions": [
+      "activeTab",
+      "tabs", 
+      "identity"
+    ],
+    "host_permissions": [
+        "*://*.facebook.com/*",
+        "*://*.zillow.com/*",
+        "*://*.apartments.com/*",
+        "*://*.trulia.com/*",
+        "*://*.craigslist.org/*",
+        "*://*.furnishedfinder.com/*",
+        "*://*.homes.com/*",
+        "*://*.rent.com/*",
+        "*://*.realtor.com/*",
+        "*://*.streeteasy.com/*",
+        "*://*.redfin.com/*",
+        "*://*.hotpads.com/*",
+        "*://*.apartmentfinder.com/*"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_title": "Save Property URL"
+    },
+    "oauth2": {
+      "client_id": "1074561935073-es80re05k6eh2vsbsnjptmn0hbf7m0vi.apps.googleusercontent.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/userinfo.email"
+      ]
+    },
+    "externally_connectable": {
+      "matches": [
+        "https://us-central1-sightonscene-a87ca.cloudfunctions.net/*"
+      ]
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["dibby-icon.PNG"],
+        "matches": ["<all_urls>"]
+      }
+    ],
+    "content_scripts": [
+      {
+        "matches": [
+          "*://*.facebook.com/*",
+          "*://*.zillow.com/*",
+          "*://*.apartments.com/*",
+          "*://*.trulia.com/*",
+          "*://*.craigslist.org/*",
+          "*://*.furnishedfinder.com/*",
+          "*://*.homes.com/*",
+          "*://*.rent.com/*",
+          "*://*.realtor.com/*",
+          "*://*.streeteasy.com/*",
+          "*://*.redfin.com/*",
+          "*://*.hotpads.com/*",
+          "*://*.apartmentfinder.com/*"
+        ],
+        "js": ["content-script.js"]
+      }
+    ]
+  }
+  

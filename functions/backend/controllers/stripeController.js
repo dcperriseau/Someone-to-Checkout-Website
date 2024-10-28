@@ -1,6 +1,17 @@
-const stripe = require('stripe')('sk_test_51PKNI2GDWcOLiYf23iB6UbyUVg5HVBqVAdAOVhyI6wtrVR5XFv1cwuMxX9s8k0QJ5ZpwKIGNQeBid2aJzM6drs4P00LjAfcWC7');
-const { auth, db } = require('../../src/firebaseConfig');
+import Stripe from 'stripe';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { auth, db } from '../adminConfig.mjs'
 
+// Get __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Construct the path to firebaseConfig.js
+//const firebaseConfigPath = path.join(__dirname, '../../src/firebaseConfig.js');
+//const { auth, db } = await import(firebaseConfigPath);
+
+const stripe = new Stripe('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');
 
 const stripeController = {};
 
@@ -13,7 +24,11 @@ stripeController.createCheckoutSession = async (req, res) => {
   }
 
   try {
+
+    console.log('ID Token:', idToken); // token for debugging
     const decodedToken = await auth.verifyIdToken(idToken);
+    console.log('Decoded Token:', decodedToken); // decoded token to make sure its being processed
+
     const purchaserUid = decodedToken.uid;
 
     const purchaserDoc = await db.collection('users').doc(purchaserUid).get();
@@ -37,8 +52,8 @@ stripeController.createCheckoutSession = async (req, res) => {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel',
+      success_url: 'http://someonetocheckout.com/homePage',
+      cancel_url: 'http://someonetocheckout.com/shoppingBasket',
     });
 
     // Save the order to Firestore
@@ -63,4 +78,4 @@ stripeController.createCheckoutSession = async (req, res) => {
   }
 };
 
-module.exports = stripeController;
+export default stripeController;

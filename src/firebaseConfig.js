@@ -3,6 +3,10 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
+
+console.log("firebaseConfig", process.env);
+
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -21,6 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const getFirebaseApp = () => app;
 
 // Set persistence to local
 setPersistence(auth, browserLocalPersistence)
@@ -31,7 +36,5 @@ setPersistence(auth, browserLocalPersistence)
     console.error('Error setting persistence:', error);
   });
 
-// Function to return the Firebase app instance
-export const getFirebaseApp = () => app;
-
-export { auth, db, storage, app };
+// Export the services and Firebase app instance
+export { auth, db, storage, app, getFirebaseApp };

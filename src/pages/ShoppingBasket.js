@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import { useBasket } from '../context/BasketContext';
+import { db } from '../firebaseConfig.js';
+import { useBasket } from '../context/BasketContext.js';
 
-const stripePromise = loadStripe('pk_test_51PKNI2GDWcOLiYf2jKY1gkCudeZCUSiPVQFMno0rYR7eZzdtbCWRaMKkKFcRKwRkR3x5vpciTQyAyvxswHauk70g00tOcFkqmP');
+// Initialize Stripe with your publishable key
+const stripePromise = loadStripe('pk_live_51PKNI2GDWcOLiYf2JXRspBmODIUpsTVcRez14ZzJy0sJYHqU78eLYybiZmClaQXea0tRlfiP99HRCJy9xzy7YcDQ00LGExfvhF');
 
 const ShoppingBasket = () => {
   const [items, setItems] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const { user } = useAuth();
+  const { idToken } = useAuth();
   const { setBasketCount } = useBasket();
   const navigate = useNavigate();
 
@@ -83,7 +85,8 @@ const ShoppingBasket = () => {
     const stripe = await stripePromise;
 
     try {
-      const response = await fetch('http://localhost:8080/api/stripe/createcheckoutsession', {
+      console.log("right before fetch request")
+      const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/createcheckoutsession', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

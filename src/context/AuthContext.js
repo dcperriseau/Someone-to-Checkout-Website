@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { getFirebaseApp } from '../firebaseConfig'; // Ensure this points to your Firebase config
+import { auth, getFirebaseApp } from '../firebaseConfig.js'; 
 
 const AuthContext = createContext();
+//export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [idToken, setIdToken] = useState(null);
+  console.log('ID Token:', idToken);
 
   useEffect(() => {
     const auth = getAuth(getFirebaseApp());
@@ -25,7 +27,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = () => {
-    const auth = getAuth(getFirebaseApp());
     signOut(auth)
       .then(() => {
         setUser(null);

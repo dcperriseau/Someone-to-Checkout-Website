@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
-import { useAuth } from '../context/AuthContext';
+import { auth } from '../firebaseConfig.js';
+import { useAuth } from '../context/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 
 const SignInPage = () => {
@@ -33,15 +33,14 @@ const SignInPage = () => {
     try {
       const idToken = await loginUser(email, password);
 
-      const response = await fetch('/api/user/login', {
-
+      const response = await fetch('https://us-central1-sightonscene-a87ca.cloudfunctions.net/expressApi/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ idToken }),
       });
-  
+
       const responseText = await response.text(); // Get the raw response text
       try {
         const data = JSON.parse(responseText); // Try to parse as JSON

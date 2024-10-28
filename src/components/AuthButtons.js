@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Adjust the path as necessary
-import LogoutButton from './LogoutButton'; // Adjust the path as necessary
+import { useAuth } from '../context/AuthContext.js'; // Adjust the path as necessary
+import LogoutButton from './LogoutButton.js'; // Adjust the path as necessary
 
 const AuthButtons = () => {
   const navigate = useNavigate();

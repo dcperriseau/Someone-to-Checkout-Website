@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { useAuth } from '../context/AuthContext.js'; // Import the useAuth hook
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db } from '../firebaseConfig';
+import { db } from '../firebaseConfig.js';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 // Custom Text Components
